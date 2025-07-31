@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New FlexCapture{% endblock %}
+
+{% block body %}
+    <h1>Create new FlexCapture</h1>
+
+    {{ include('flex_capture/_form.html.twig') }}
+
+    <a href="{{ path('app_flex_capture_index') }}">back to list</a>
+{% endblock %}

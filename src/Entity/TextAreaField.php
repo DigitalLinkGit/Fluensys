@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\TextAreaFieldResponseRepository;
+use App\Repository\TextAreaFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TextAreaFieldResponseRepository::class)]
-class TextAreaFieldResponse extends FieldResponse
+#[ORM\Entity(repositoryClass: TextAreaFieldRepository::class)]
+class TextAreaField extends Field
 {
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable:  true)]
     private ?string $value = null;
 
     public function getValue(): ?string

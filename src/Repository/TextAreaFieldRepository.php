@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\TextAreaFieldResponse;
+use App\Entity\TextAreaField;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TextAreaFieldResponse>
+ * @extends ServiceEntityRepository<TextAreaField>
  */
-class TextAreaFieldResponseRepository extends ServiceEntityRepository
+class TextAreaFieldRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TextAreaFieldResponse::class);
+        parent::__construct($registry, TextAreaField::class);
     }
 
     //    /**
-    //     * @return TextAreaFieldResponse[] Returns an array of TextAreaFieldResponse objects
+    //     * @return TextAreaField[] Returns an array of TextAreaField objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class TextAreaFieldResponseRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?TextAreaFieldResponse
+    //    public function findOneBySomeField($value): ?TextAreaField
     //    {
     //        return $this->createQueryBuilder('t')
     //            ->andWhere('t.exampleField = :val')

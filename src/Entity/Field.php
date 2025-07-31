@@ -5,7 +5,12 @@ namespace App\Entity;
 use App\Repository\FieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FieldRepository::class)]
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ORM\DiscriminatorMap([
+    'textarea' =>TextAreaField::class,
+])]
 abstract class Field
 {
     #[ORM\Id]
@@ -23,11 +28,13 @@ abstract class Field
     protected ?bool $required = null;
 
     #[ORM\Column]
-    protected ?int $index = null;
+    protected ?int $position = null;
 
     #[ORM\ManyToOne(inversedBy: 'fields')]
     #[ORM\JoinColumn(nullable: false)]
     protected ?CaptureElement $captureElement = null;
+
+    abstract public function getValue(): mixed;
 
     public function getId(): ?int
     {
@@ -70,14 +77,14 @@ abstract class Field
         return $this;
     }
 
-    public function getIndex(): ?int
+    public function getPosition(): ?int
     {
-        return $this->index;
+        return $this->position;
     }
 
-    public function setIndex(int $index): static
+    public function setPosition(int $position): static
     {
-        $this->index = $index;
+        $this->position = $position;
 
         return $this;
     }

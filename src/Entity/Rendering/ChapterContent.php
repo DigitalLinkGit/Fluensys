@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Rendering;
 
 use App\Repository\ChapterContentRepository;
 use Doctrine\ORM\Mapping as ORM;

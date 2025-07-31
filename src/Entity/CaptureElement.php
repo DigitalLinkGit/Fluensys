@@ -2,12 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Rendering\Chapter;
+use App\Entity\Rendering\ChapterRenderInterface;
 use App\Repository\CaptureElementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CaptureElementRepository::class)]
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ORM\DiscriminatorMap([
+    'flex' => FlexCapture::class,
+])]
 abstract class CaptureElement
 {
     #[ORM\Id]

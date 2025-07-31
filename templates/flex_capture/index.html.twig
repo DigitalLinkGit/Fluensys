@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FlexCapture index{% endblock %}
+
+{% block body %}
+    <h1>FlexCapture index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for flex_capture in flex_captures %}
+            <tr>
+                <td>{{ flex_capture.id }}</td>
+                <td>
+                    <a href="{{ path('app_flex_capture_show', {'id': flex_capture.id}) }}">show</a>
+                    <a href="{{ path('app_flex_capture_edit', {'id': flex_capture.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_flex_capture_new') }}">Create new</a>
+{% endblock %}

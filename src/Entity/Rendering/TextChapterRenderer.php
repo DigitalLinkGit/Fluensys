@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Rendering;
+use App\Entity\CaptureElement;
+
 class TextChapterRenderer implements ChapterRenderInterface
 {
     public function render(CaptureElement $element): Chapter

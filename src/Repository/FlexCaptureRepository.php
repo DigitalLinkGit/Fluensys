@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\FieldResponse;
+use App\Entity\FlexCapture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<FieldResponse>
+ * @extends ServiceEntityRepository<FlexCapture>
  */
-class FieldResponseRepository extends ServiceEntityRepository
+class FlexCaptureRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, FieldResponse::class);
+        parent::__construct($registry, FlexCapture::class);
     }
 
     //    /**
-    //     * @return FieldResponse[] Returns an array of FieldResponse objects
+    //     * @return FlexCapture[] Returns an array of FlexCapture objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class FieldResponseRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?FieldResponse
+    //    public function findOneBySomeField($value): ?FlexCapture
     //    {
     //        return $this->createQueryBuilder('f')
     //            ->andWhere('f.exampleField = :val')

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit FlexCapture{% endblock %}
+
+{% block body %}
+    <h1>Edit FlexCapture</h1>
+
+    {{ include('flex_capture/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_flex_capture_index') }}">back to list</a>
+
+    {{ include('flex_capture/_delete_form.html.twig') }}
+{% endblock %}
