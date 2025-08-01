@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\CaptureElement;
 
-use App\Entity\CaptureElement;
-use App\Entity\Field;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\AbstractType;
+use App\Entity\Field\Field;
+use App\Form\Field\ExternalFieldForm;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CollectionExternalFieldForm extends CaptureElementForm
+class CaptureElementExternalForm extends CaptureElementForm
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

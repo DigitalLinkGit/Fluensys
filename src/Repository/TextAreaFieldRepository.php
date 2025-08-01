@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\TextAreaField;
+use App\Entity\Field\TextAreaField;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

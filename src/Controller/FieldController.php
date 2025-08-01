@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Field;
-use App\Form\FieldForm;
+use App\Entity\Field\Field;
+use App\Form\Field\ConfigFieldForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +29,7 @@ final class FieldController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $field = new Field();
-        $form = $this->createForm(FieldForm::class, $field);
+        $form = $this->createForm(ConfigFieldForm::class, $field);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -56,7 +56,7 @@ final class FieldController extends AbstractController
     #[Route('/{id}/edit', name: 'app_field_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Field $field, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(FieldForm::class, $field);
+        $form = $this->createForm(ConfigFieldForm::class, $field);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

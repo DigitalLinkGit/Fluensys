@@ -2,9 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Field\TextAreaField;
 use App\Entity\FlexCapture;
 use App\Entity\ParticipantRole;
-use App\Entity\TextAreaField;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Field;
 
-use App\Repository\FieldRepository;
+use App\Entity\CaptureElement;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]

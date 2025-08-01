@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\CaptureElement;
 
 use App\Entity\CaptureElement;
-use App\Entity\Field;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\AbstractType;
+use App\Form\Field\ConfigFieldForm;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CollectionConfigFieldForm extends CaptureElementForm
+class CaptureElementConfigForm extends CaptureElementForm
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -24,6 +22,9 @@ class CollectionConfigFieldForm extends CaptureElementForm
                 'by_reference' => false,
                 'prototype' => true,
                 'entry_options' => ['label' => false],
+                'attr' => [
+                    'data-controller'=> 'capture-element'
+                ]
             ])
         ;
     }

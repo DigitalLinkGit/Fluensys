@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Field\Field;
 use App\Entity\Rendering\Chapter;
 use App\Entity\Rendering\ChapterRenderInterface;
-use App\Repository\CaptureElementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
