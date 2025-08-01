@@ -41,15 +41,6 @@ class CaptureElementForm extends AbstractType
                     'placeholder' => 'Description de la capture...',
                 ],
             ])
-            ->add('fields', CollectionType::class, [
-                'entry_type' => FieldForm::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'label' => false,
-                'by_reference' => false,
-                'prototype' => true,
-                'entry_options' => ['label' => false],
-            ])
         ;
     }
 
