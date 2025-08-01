@@ -3,9 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Field\Field;
-use App\Entity\Field\TextAreaField;
-use App\Entity\FieldFactory;
 use App\Entity\FlexCapture;
+use App\Factory\FieldFactory;
 use App\Form\CaptureElement\CaptureElementConfigForm;
 use App\Repository\FlexCaptureRepository;
 use Doctrine\ORM\EntityManagerInterface;
