@@ -46,6 +46,7 @@ class ConfigFieldForm extends AbstractType
                 'texte court' => 'text',
                 'nombre entier' => 'integer',
                 'nombre décimal' => 'decimal',
+                'date' => 'date',
             ],
             'mapped' => false,
             'required' => true,

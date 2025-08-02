@@ -2,6 +2,7 @@
 
 namespace App\Factory;
 
+use App\Entity\Field\DateField;
 use App\Entity\Field\DecimalField;
 use App\Entity\Field\Field;
 use App\Entity\Field\IntegerField;
@@ -15,7 +16,7 @@ class FieldFactory
         'text'     => TextField::class,
         'integer'  => IntegerField::class,
         'decimal'  => DecimalField::class,
-        // 'date'  => DateField::class,
+        'date'  => DateField::class,
     ];
 
     public static function createFromType(string $type): Field
@@ -60,6 +61,7 @@ class FieldFactory
             $field instanceof TextField => 'text',
             $field instanceof IntegerField => 'integer',
             $field instanceof DecimalField => 'decimal',
+            $field instanceof DateField => 'date',
             default => throw new \LogicException('Type de champ non supporté'),
         };
     }
@@ -71,6 +73,7 @@ class FieldFactory
             $field instanceof TextField => \Symfony\Component\Form\Extension\Core\Type\TextType::class,
             $field instanceof IntegerField => \Symfony\Component\Form\Extension\Core\Type\IntegerType::class,
             $field instanceof DecimalField => \Symfony\Component\Form\Extension\Core\Type\NumberType::class,
+            $field instanceof DateField => \Symfony\Component\Form\Extension\Core\Type\DateType::class,
             default => throw new \LogicException('Type de champ non supporté pour ' . get_class($field)),
         };
     }

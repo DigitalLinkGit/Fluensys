@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
     'text' =>TextField::class,
     'integer' =>IntegerField::class,
     'decimal' =>DecimalField::class,
+    'date' =>DateField::class,
 ])]
 abstract class Field
 {

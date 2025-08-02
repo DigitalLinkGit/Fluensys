@@ -8,15 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DecimalFieldRepository::class)]
 class DecimalField extends Field
 {
-    #[ORM\Column(length: 255,nullable:  true)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private ?float $value = null;
 
-    public function getValue(): ?string
+    public function getValue(): ?float
     {
         return $this->value;
     }
 
-    public function setValue(string $value): static
+    public function setValue(?float $value): static
     {
         $this->value = $value;
 
