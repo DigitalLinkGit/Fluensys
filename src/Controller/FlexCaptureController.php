@@ -7,6 +7,7 @@ use App\Entity\FlexCapture;
 use App\Factory\FieldFactory;
 use App\Form\CaptureElement\CaptureElementConfigForm;
 use App\Form\CaptureElement\CaptureElementExternalForm;
+use App\Form\CaptureElement\CaptureElementInternalForm;
 use App\Form\Field\ExternalFieldForm;
 use App\Repository\FlexCaptureRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -89,7 +90,17 @@ final class FlexCaptureController extends AbstractController
     public function externalPreview(FlexCapture $flexCapture): Response
     {
         $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
-        return $this->render('flex_capture/external_preview.html.twig', [
+        return $this->render('flex_capture/preview.html.twig', [
+            'flex_capture' => $flexCapture,
+            'form'=>$form,
+        ]);
+    }
+
+    #[Route('/{id}/internal-preview', name: 'app_flex_capture_internal_preview', methods: ['GET'])]
+    public function internalPreview(FlexCapture $flexCapture): Response
+    {
+        $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
+        return $this->render('flex_capture/preview.html.twig', [
             'flex_capture' => $flexCapture,
             'form'=>$form,
         ]);

@@ -4,6 +4,14 @@
 
 {% include 'global/components/button/_btn_bar.html.twig' with {
     buttons: {
+        preview_internal: {
+            type: 'link',
+            route: 'app_flex_capture_internal_preview',
+            param_map: { id: 'flex_capture.id' },
+            icon: 'bi-eye',
+            label: 'Aperçu interne',
+            class: 'btn btn-outline-primary btn-sm'
+        },
         preview_external: {
             type: 'link',
             route: 'app_flex_capture_external_preview',
