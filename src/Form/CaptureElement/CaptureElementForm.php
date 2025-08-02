@@ -4,6 +4,7 @@ namespace App\Form\CaptureElement;
 
 use App\Entity\CaptureElement;
 use App\Entity\ParticipantRole;
+use App\Repository\ParticipantRoleRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -24,12 +25,32 @@ class CaptureElementForm extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('participantRoles', EntityType::class, [
+            ->add('respondent', EntityType::class, [
                 'class' => ParticipantRole::class,
                 'choice_label' => 'name',
-                'multiple' => true,
-                'expanded' => false,
-                'by_reference' => false,
+                'query_builder' => function (ParticipantRoleRepository $r) {
+                    return $r->createQueryBuilder('role')
+                        ->orderBy('role.name', 'ASC');
+                },
+                'placeholder' => 'Sélectionner un rôle...',
+            ])
+            ->add('responsible', EntityType::class, [
+                'class' => ParticipantRole::class,
+                'choice_label' => 'name',
+                'query_builder' => function (ParticipantRoleRepository $r) {
+                    return $r->createQueryBuilder('role')
+                        ->orderBy('role.name', 'ASC');
+                },
+                'placeholder' => 'Sélectionner un rôle...',
+            ])
+            ->add('validator', EntityType::class, [
+                'class' => ParticipantRole::class,
+                'choice_label' => 'name',
+                'query_builder' => function (ParticipantRoleRepository $r) {
+                    return $r->createQueryBuilder('role')
+                        ->orderBy('role.name', 'ASC');
+                },
+                'placeholder' => 'Sélectionner un rôle...',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',

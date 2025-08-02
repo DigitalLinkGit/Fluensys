@@ -1,40 +1,32 @@
-import { Controller } from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
+
+    static targets = ["container"];
+
     connect() {
-            this.index = this.element.childElementCount
-            const btn = document.createElement("button")
-            btn.type = "button"
-            btn.className = "btn btn-outline-primary mt-2"
-            btn.innerText = "Ajouter un élément"
-            btn.addEventListener("click", this.addElement)
-            this.element.childNodes.forEach(this.addDeleteButton)
-            this.element.append(btn)
-
+        console.log('CE controller');
+        if (!this.index) {
+            this.index = this.element.querySelectorAll('fieldset').length;
+        }
     }
 
-    addElement = (e) => {
-        e.preventDefault()
+    add(event) {
+        console.log("CLIC ADD");
+        event.preventDefault();
+        const prototype = this.element.dataset.prototype;
+        const html = prototype.replace(/__name__/g, this.index);
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        const fieldset = temp.firstElementChild;
 
-        const element = document.createRange().createContextualFragment(
-            this.element.dataset['prototype'].replaceAll("__name__", this.index)
-        ).firstElementChild
-        this.index++
-        e.currentTarget.insertAdjacentElement('beforebegin',element)
-        this.addDeleteButton(element)
-
-
+        this.element.insertBefore(fieldset, event.target); // avant le bouton "Ajouter"
+        this.index++;
     }
 
-    addDeleteButton = (item) => {
-        const btn = document.createElement("button")
-        btn.type = "button"
-        btn.className = "btn btn-outline-danger btn-sm mt-2"
-        btn.innerText = "Supprimer"
-        item.append(btn)
-        btn.addEventListener("click", (e) => {
-            e.preventDefault()
-            item.remove()
-        })
+    remove(event) {
+        console.log("CLIC DELETE");
+        event.preventDefault();
+        event.target.closest('fieldset').remove();
     }
 }

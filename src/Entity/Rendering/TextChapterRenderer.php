@@ -20,7 +20,7 @@ class TextChapterRenderer implements ChapterRenderInterface
         // Basique : concatène les valeurs des fields
         $lines = [];
         foreach ($element->getFields() as $field) {
-            $lines[] = $field->getLabel() . ' : ______';
+            $lines[] = $field->getExternalLabel() . ' : ______';
         }
 
         return implode("\n", $lines);

@@ -1,18 +1,21 @@
-<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+<div id="confirmationModal"
+     class="modal fade"
+     tabindex="-1"
+     data-controller="modal-confirmation"
+     data-modal-confirmation-target="modal"
+     data-confirmation-form-target="form"
+     data-confirmation-body-target="body"
+     data-confirmation-token-target="token">
     <div class="modal-dialog">
-        <form method="post" class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-                Êtes-vous sûr ?
-            </div>
-            <div class="modal-footer">
-                <input type="hidden" name="_token" id="confirmation-token">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-danger btn-sm" id="confirm-yes">Confirmer</button>
-            </div>
-        </form>
+        <div class="modal-content">
+            <form method="post" data-modal-confirmation-target="form">
+            <div class="modal-body" data-modal-confirmation-target="body"></div>
+                <input type="hidden" name="_token" data-modal-confirmation-target="token">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Confirmer</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

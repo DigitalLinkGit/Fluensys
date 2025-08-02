@@ -303,7 +303,7 @@ hr {
     z-index: 1055;
     box-shadow: 0 0 0 4px var(--easy-danger), 0 0 10px 4px rgba(0, 0, 0, 0.4);
     transition: box-shadow 0.3s ease, background-color 0.3s ease;
-    border-radius: var(--easy-radius);
+    border-radius: var(--easy-max-radius);
 }
 
 .tutorial-overlay {
@@ -329,7 +329,7 @@ hr {
     font-weight: 600;
     background-color: var(--easy-bg-light);
     font-weight: bold;
-    border: 1px solid var(--easy-primary-accent-darkdark-dark);
+    border: 1px solid var(--easy-primary-accent-dark);
 }
 
 .alert-success {
@@ -358,8 +358,8 @@ hr {
     margin: 2rem auto;
     padding: 1rem;
     background-color: var(--easy-bg-light, #f8f9fa);
-    border: 1px solid var(--easy-border, #ccc);
-    border-radius: var(--easy-radius, 0.5rem);
+    border: 1px solid var(--easy-border-strong, #ccc);
+    border-radius: var(--easy-min-radius, 0.5rem);
     box-shadow: var(--easy-shadow, 0 2px 6px rgba(0, 0, 0, 0.1));
     overflow: hidden;
     position: relative;
@@ -374,7 +374,7 @@ hr {
     padding: 0.5rem;
     background: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: var(--easy-radius, 0.375rem);
+    border-radius: var(--easy-min-radius, 0.375rem);
 }
 
 .scrollable-response pre {
@@ -387,8 +387,8 @@ hr {
     overflow-y: auto;
     overflow-x: auto;
     border: 1px solid #dee2e6;
-    border-radius: var(--easy-radius, 0.375rem);
-    background: var(--easy-surface, #fff);
+    border-radius: var(--easy-min-radius, 0.375rem);
+    background: var(--easy-bg-surface, #fff);
 }
 
 .resizable-table thead th {
@@ -426,25 +426,25 @@ input[name$="[url]"]:hover {
 
 /* ===================== NAVBAR ===================== */
 .navbar-section {
-    background-color: var(--easy-surface);
+    background-color: var(--easy-bg-surface);
 }
 
 .navbar-section .nav-link {
     padding: 0.25rem 0.5rem 0.25rem 1.25rem;
     font-size: 0.85rem;
     color: var(--easy-text);
-    border-radius: var(--easy-radius);
+    border-radius: var(--easy-min-radius);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .navbar-section .nav-link:hover {
-    background-color: var(--easy-soft);
+    background-color: var(--easy-bg-light);
     color: var(--easy-primary);
     font-weight: 500;
 }
 
 .navbar-section .nav-link.active {
-    background-color: var(--easy-soft);
+    background-color: var(--easy-bg-light);
     font-weight: 600;
     color: var(--easy-primary);
 }
@@ -495,3 +495,4 @@ input[name$="[url]"]:hover {
     border-radius: var(--easy-min-radius);
 
 }
+

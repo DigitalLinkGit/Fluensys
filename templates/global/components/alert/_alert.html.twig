@@ -9,9 +9,12 @@
         'warning': 'bi-exclamation-lg',
         'info': 'bi-info-lg'
     }[label] ?? 'bi-info-lg' %}
-    
+
     {% for message in items %}
-        <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm my-2 mx-3 d-flex align-items-center" role="alert">
+        <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm my-2 mx-3 d-flex align-items-center"
+             role="alert"
+             data-controller="alert"
+             data-alert-autodismiss-value="5000">
             <i class="bi {{ icon }} me-2"></i>
             <div class="flex-grow-1">
                 {{ message }}
@@ -20,4 +23,3 @@
         </div>
     {% endfor %}
 {% endfor %}
-

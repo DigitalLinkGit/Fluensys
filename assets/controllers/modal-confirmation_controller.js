@@ -1,16 +1,21 @@
-// controllers/alert_controller.js
+// controllers/confirmation_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+    static targets = ["modal", "form", "body", "token"]
     static values = {
-        autodismiss: Number
+        action: String,
+        token: String,
+        message: String
     }
 
-    connect() {
-        const delay = this.autodismissValue || 3000;
-        setTimeout(() => {
-            this.element.classList.add("fade");
-            this.element.addEventListener("transitionend", () => this.element.remove());
-        }, delay);
+    open(event) {
+        event.preventDefault()
+
+        this.formTarget.action = this.actionValue
+        this.tokenTarget.value = this.tokenValue
+        this.bodyTarget.textContent = this.messageValue || "Êtes-vous sûr de vouloir continuer ?"
+
+        new bootstrap.Modal(this.modalTarget).show()
     }
 }

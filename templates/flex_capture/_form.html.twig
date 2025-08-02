@@ -1,5 +1,49 @@
 {{ form_start(form) }}
+
     {{ include('capture_element/_form_header.html.twig') }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+{% include 'global/components/button/_btn_bar.html.twig' with {
+    buttons: {
+        preview_external: {
+            type: 'link',
+            route: 'app_flex_capture_external_preview',
+            param_map: { id: 'flex_capture.id' },
+            icon: 'bi-eye',
+            label: 'Aperçu répondant',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        back: {
+            type: 'link',
+            route: 'app_flex_capture_index',
+            icon: 'bi-arrow-left',
+            label: 'Retour',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        save: {
+            type: 'submit',
+            icon: 'bi-check',
+            label: 'Enregistrer',
+            class: 'btn btn-primary btn-sm'
+        },
+    }
+} %}
+
+
+{% set prototype %}
+    {% include 'capture_element/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
+{% endset %}
+<div
+    data-controller="capture-element"
+    data-prototype="{{ prototype|e('html_attr') }}"
+>
+    {% for fieldForm in form.fields %}
+        {% include 'capture_element/_field_prototype.html.twig' with { form: fieldForm } %}
+    {% endfor %}
+
+    <button type="button" class="btn btn-outline-primary btn-sm mt-2"
+            data-action="capture-element#add"><i class="bi bi-plus"></i> Ajouter
+    </button>
+</div>
+
 
 {{ form_end(form) }}

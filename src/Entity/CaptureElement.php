@@ -29,12 +29,6 @@ abstract class CaptureElement
     protected ?string $description = null;
 
     /**
-     * @var Collection<int, ParticipantRole>
-     */
-    #[ORM\ManyToMany(targetEntity: ParticipantRole::class, inversedBy: 'captureElements')]
-    protected Collection $participantRoles;
-
-    /**
      * @var Collection<int, Field>
      */
     #[ORM\OneToMany(targetEntity: Field::class, mappedBy: 'captureElement', orphanRemoval: true)]
@@ -48,9 +42,20 @@ abstract class CaptureElement
 
     protected ?ChapterRenderInterface $chapterRenderer = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ParticipantRole $respondent = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ParticipantRole $responsible = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ParticipantRole $validator = null;
+
     public function __construct()
     {
-        $this->participantRoles = new ArrayCollection();
         $this->fields = new ArrayCollection();
         $this->calculatedvariables = new ArrayCollection();
     }
@@ -80,30 +85,6 @@ abstract class CaptureElement
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ParticipantRole>
-     */
-    public function getParticipantRoles(): Collection
-    {
-        return $this->participantRoles;
-    }
-
-    public function addParticipantRole(ParticipantRole $participantRole): static
-    {
-        if (!$this->participantRoles->contains($participantRole)) {
-            $this->participantRoles->add($participantRole);
-        }
-
-        return $this;
-    }
-
-    public function removeParticipantRole(ParticipantRole $participantRole): static
-    {
-        $this->participantRoles->removeElement($participantRole);
 
         return $this;
     }
@@ -185,5 +166,39 @@ abstract class CaptureElement
         return $this->chapterRenderer->render($this);
     }
 
+    public function getRespondent(): ?ParticipantRole
+    {
+        return $this->respondent;
+    }
 
+    public function setRespondent(?ParticipantRole $respondent): static
+    {
+        $this->respondent = $respondent;
+
+        return $this;
+    }
+
+    public function getResponsible(): ?ParticipantRole
+    {
+        return $this->responsible;
+    }
+
+    public function setResponsible(?ParticipantRole $responsible): static
+    {
+        $this->responsible = $responsible;
+
+        return $this;
+    }
+
+    public function getValidator(): ?ParticipantRole
+    {
+        return $this->validator;
+    }
+
+    public function setValidator(?ParticipantRole $validator): static
+    {
+        $this->validator = $validator;
+
+        return $this;
+    }
 }

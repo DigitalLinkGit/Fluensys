@@ -20,11 +20,11 @@ class FieldFactory
 
     private static function fromBase(Field $base, Field $typed): Field
     {
-        $typed->setLabel($base->getLabel());
+        $typed->setExternalLabel($base->getExternalLabel());
+        $typed->setInternalLabel($base->getInternalLabel());
         $typed->setTechnicalName($base->getTechnicalName());
         $typed->setRequired($base->isRequired());
         $typed->setPosition($base->getPosition());
-
 
         $typed->setCaptureElement($base->getCaptureElement());
 
@@ -56,5 +56,16 @@ class FieldFactory
             default => throw new \LogicException('Type de champ non supporté'),
         };
     }
+
+    public static function getSymfonyTypeFromInstance(Field $field): string
+    {
+        return match (true) {
+            $field instanceof TextareaField => \Symfony\Component\Form\Extension\Core\Type\TextareaType::class,
+            $field instanceof IntegerField => \Symfony\Component\Form\Extension\Core\Type\IntegerType::class,
+            default => throw new \LogicException('Type de champ non supporté pour ' . get_class($field)),
+        };
+    }
+
+
 
 }

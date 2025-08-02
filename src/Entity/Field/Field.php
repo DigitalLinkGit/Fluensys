@@ -20,7 +20,10 @@ abstract class Field
     protected ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    protected ?string $label = null;
+    protected ?string $externalLabel = null;
+
+    #[ORM\Column(length: 255)]
+    protected ?string $internalLabel = null;
 
     #[ORM\Column(length: 255)]
     protected ?string $technicalName = null;
@@ -42,14 +45,34 @@ abstract class Field
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getExternalLabel(): ?string
     {
-        return $this->label;
+        return $this->externalLabel;
     }
 
-    public function setLabel(string $label): static
+    public function setExternalLabel(string $externalLabel): static
     {
-        $this->label = $label;
+        $this->externalLabel = $externalLabel;
+
+        return $this;
+    }
+
+    public function getInternalLabel(): ?string
+    {
+        return $this->internalLabel;
+    }
+
+    public function setInternalLabel(string $internalLabel): static
+    {
+        $this->internalLabel = $internalLabel;
+
+        if (empty($this->technicalName)) {
+            $this->technicalName = strtoupper(
+                preg_replace('/[^A-Z0-9_]/', '_',
+                    transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $internalLabel)
+                )
+            );
+        }
 
         return $this;
     }

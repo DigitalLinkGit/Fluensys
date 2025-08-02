@@ -6,6 +6,8 @@ use App\Entity\Field\Field;
 use App\Entity\FlexCapture;
 use App\Factory\FieldFactory;
 use App\Form\CaptureElement\CaptureElementConfigForm;
+use App\Form\CaptureElement\CaptureElementExternalForm;
+use App\Form\Field\ExternalFieldForm;
 use App\Repository\FlexCaptureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -83,13 +85,14 @@ final class FlexCaptureController extends AbstractController
         return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    public function copyFrom(Field $other): void
+    #[Route('/{id}/external-preview', name: 'app_flex_capture_external_preview', methods: ['GET'])]
+    public function externalPreview(FlexCapture $flexCapture): Response
     {
-        $this->setLabel($other->getLabel());
-        $this->setTechnicalName($other->getTechnicalName());
-        $this->setRequired($other->isRequired());
-        $this->setPosition($other->getPosition());
-        $this->setCaptureElement($other->getCaptureElement());
+        $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
+        return $this->render('flex_capture/external_preview.html.twig', [
+            'flex_capture' => $flexCapture,
+            'form'=>$form,
+        ]);
     }
 
     /**

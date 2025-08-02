@@ -1,32 +1,27 @@
-import { Controller } from "@hotwired/stimulus";
+// controllers/sidebar_controller.js
+import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-
-    static targets = ["container"];
+    static targets = ["panel", "toggle"]
 
     connect() {
-        console.log('CE controller');
-        if (!this.index) {
-            this.index = this.element.querySelectorAll('fieldset').length;
+        document.addEventListener("click", this.closeIfOutside.bind(this))
+    }
+
+    disconnect() {
+        document.removeEventListener("click", this.closeIfOutside.bind(this))
+    }
+
+    toggle() {
+        const isOpen = getComputedStyle(this.panelTarget).transform === "matrix(1, 0, 0, 1, 0, 0)"
+        this.panelTarget.style.transform = isOpen ? "translateX(-100%)" : "translateX(0)"
+    }
+
+    closeIfOutside(event) {
+        if (!this.panelTarget.contains(event.target) &&
+            !this.toggleTarget.contains(event.target) &&
+            getComputedStyle(this.panelTarget).transform === "matrix(1, 0, 0, 1, 0, 0)") {
+            this.panelTarget.style.transform = "translateX(-100%)"
         }
-    }
-
-    add(event) {
-        console.log("CLIC ADD");
-        event.preventDefault();
-        const prototype = this.element.dataset.prototype;
-        const html = prototype.replace(/__name__/g, this.index);
-        const temp = document.createElement('div');
-        temp.innerHTML = html;
-        const fieldset = temp.firstElementChild;
-
-        this.element.insertBefore(fieldset, event.target); // avant le bouton "Ajouter"
-        this.index++;
-    }
-
-    remove(event) {
-        console.log("CLIC DELETE");
-        event.preventDefault();
-        event.target.closest('fieldset').remove();
     }
 }

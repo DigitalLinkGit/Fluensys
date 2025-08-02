@@ -6,6 +6,8 @@ use App\Entity\Field\Field;
 use App\Factory\FieldFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -18,44 +20,42 @@ class ConfigFieldForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('label')
-            ->add('technicalName')
-            /*
-            ->add('type', ChoiceType::class, [
-                'choices' => [
-                    'texte long' => 'textarea',
-                    'texte court' => 'text',
-                    'nombre entier' => 'integer',
-                    'nombre décimal' => 'decimal',
+            ->add('externalLabel', TextareaType::class, [
+                'label' => 'Label',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Label visible par le répondant'
                 ],
-                'mapped' =>false,
-                'data' => isset($options['data']) ? FieldFactory::getTypeFromInstance($options['data']) : 'textarea',
-
             ])
-            */
+            ->add('internalLabel', TextType::class, [
+                'label' => 'Label interne',
+                'required' => true,
+                'attr' => [
+                    'placeholder' => 'Label visible par les utilisateurs'
+                ],
+            ])
             ->add('required')
-            ->add('position');
+            ->add('type', ChoiceType::class, [
+                'label' => 'Type de réponse',
+            'choices' => [
+                'texte long' => 'textarea',
+                'texte court' => 'text',
+                'nombre entier' => 'integer',
+                'nombre décimal' => 'decimal',
+            ],
+            'mapped' => false,
+            'required' => true,
+            'placeholder' => 'Type de réponse',
+        ]);
 
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             $form = $event->getForm();
             $data = $event->getData();
 
-            if (!$data instanceof Field) {
-                return;
+            if ($data instanceof Field) {
+                $form->get('type')->setData(FieldFactory::getTypeFromInstance($data));
             }
-
-            $form->add('type', ChoiceType::class, [
-                'choices' => [
-                    'texte long' => 'textarea',
-                    'texte court' => 'text',
-                    'nombre entier' => 'integer',
-                    'nombre décimal' => 'decimal',
-                ],
-                'mapped' => false,
-                'data' => FieldFactory::getTypeFromInstance($data),
-            ]);
         });
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
