@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
     'textarea' =>TextAreaField::class,
     'text' =>TextField::class,
     'integer' =>IntegerField::class,
+    'decimal' =>DecimalField::class,
 ])]
 abstract class Field
 {
