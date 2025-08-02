@@ -1,0 +1,115 @@
+{# Composant générique basé sur une entité DataTable #}
+
+{% if cells is not defined or cells is empty %}
+	<div class="text-muted text-center">Aucune cellule à afficher.</div>
+{% else %}
+	{% set table_id = 'table_' ~ random() %}
+
+	{# Regroupement des cellules par ligne et colonne #}
+	{% set grouped = {} %}
+	{% set all_col_indexes = [] %}
+	{% for cell in cells %}
+		{% set grouped = grouped|merge({
+      (cell.rowIndex): (grouped[cell.rowIndex]|default({}))|merge({ (cell.colIndex): cell })
+    }) %}
+		{% if all_col_indexes is not defined or cell.colIndex not in all_col_indexes %}
+			{% set all_col_indexes = all_col_indexes|merge([cell.colIndex]) %}
+		{% endif %}
+	{% endfor %}
+
+	{% set all_col_indexes = all_col_indexes|sort %}
+
+	{# Extraction des en-têtes depuis les colonnes uniques triées #}
+	{% set headers = [] %}
+	{% for colIndex in all_col_indexes %}
+		{% set firstCell = null %}
+		{% for row in grouped %}
+			{% if row[colIndex] is defined and firstCell is null %}
+				{% set firstCell = row[colIndex] %}
+			{% endif %}
+		{% endfor %}
+		{% set headers = headers|merge([firstCell.columnName|default('')]) %}
+	{% endfor %}
+
+	{{ dump('grouped:', grouped) }}
+	{{ dump('headers:', headers) }}
+
+	<div class="scrollable-table">
+		<table class="table table-hover align-middle" id="{{ table_id }}">
+			<thead class="table-light">
+				<tr>
+					{% for header in headers %}
+						<th>{{ header }}</th>
+					{% endfor %}
+					<th></th>
+				</tr>
+				<tr class="filter-row">
+					{% for i in 0..headers|length - 1 %}
+						<td class="position-relative">
+							<div class="d-flex gap-1">
+								<input type="text" class="form-control form-control-sm filter" placeholder="Filtrer {{ headers[i] }}" oninput="filterTable(this)" data-filter-column="{{ i }}" data-table-id="{{ table_id }}">
+								<button type="button" class="btn btn-sm" onclick="sortTable('{{ table_id }}', {{ i }})" title="Trier cette colonne">
+									<i class="bi bi-sort-alpha-down"></i>
+								</button>
+								<button type="button" class="btn btn-sm btn-link text-danger" onclick="removeColumn('{{ table_id }}', {{ i }})" title="Supprimer la colonne">
+									<i class="bi bi-x-circle"></i>
+								</button>
+							</div>
+						</td>
+					{% endfor %}
+					<td></td>
+				</tr>
+			</thead>
+
+			<tbody>
+				{% for rowIndex in grouped|keys|sort %}
+					{% set columns = grouped[rowIndex] %}
+					<tr>
+						{% for colIndex in all_col_indexes %}
+							<td>{{ columns[colIndex].value|default('') }}</td>
+						{% endfor %}
+						<td>
+							<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
+								<i class="bi bi-x"></i>
+							</button>
+						</td>
+					</tr>
+				{% endfor %}
+				{% if grouped is empty %}
+					<tr>
+						<td colspan="{{ headers|length + 1 }}" class="text-muted text-center">
+							Aucun élément à afficher.
+						</td>
+					</tr>
+				{% endif %}
+			</tbody>
+
+
+		</table>
+	</div>
+{% endif %}
+
+<script>
+	function removeRow(button) {
+const row = button.closest('tr');
+if (row) 
+row.remove();
+
+
+
+}
+
+function removeColumn(tableId, colIndex) {
+const table = document.getElementById(tableId);
+if (! table) 
+return;
+
+
+
+for (const row of table.rows) {
+if (row.cells[colIndex]) {
+row.deleteCell(colIndex);
+}
+}
+}
+</script>

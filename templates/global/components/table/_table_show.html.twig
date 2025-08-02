@@ -1,0 +1,56 @@
+{% set table_id = 'show_table_' ~ random() %}
+
+<table class="table table-bordered align-middle" id="{{ table_id }}">
+  <tbody>
+    {% for field in form %}
+      {% set name = field.vars.name %}
+      {% set label = field.vars.label|default(name) %}
+
+      {% if name starts with '_' %}
+      {% else %}
+        <tr>
+          <th scope="row" class="text-nowrap">{{ label }}</th>
+          <td>
+            {% set value = field.vars.value %}
+
+            {# Si c'est une liste (mais pas une string) #}
+            {% if value is iterable and value is not same as(value|keys) %}
+              {% for v in value %}
+                {% if v is not null %}
+                  {% if attribute(v, 'label') is defined %}
+                    {{ attribute(v, 'label') }}
+                  {% elseif attribute(v, 'name') is defined %}
+                    {{ attribute(v, 'name') }}
+                  {% elseif attribute(v, 'id') is defined %}
+                    Objet n°{{ attribute(v, 'id') }}
+                  {% else %}
+                    [objet]
+                  {% endif %}
+                  {% if not loop.last %}, {% endif %}
+                {% endif %}
+              {% endfor %}
+
+            {% elseif value is same as(true) %}
+              Oui
+            {% elseif value is same as(false) %}
+              Non
+            {% elseif value is empty %}
+              <span class="text-muted">–</span>
+
+            {# Si c’est un objet avec propriété exploitable #}
+            {% elseif attribute(value, 'label') is defined %}
+              {{ attribute(value, 'label') }}
+            {% elseif attribute(value, 'name') is defined %}
+              {{ attribute(value, 'name') }}
+            {% elseif attribute(value, 'id') is defined %}
+              Objet n°{{ attribute(value, 'id') }}
+
+            {% else %}
+              {{ value|default('[valeur non affichable]') }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>

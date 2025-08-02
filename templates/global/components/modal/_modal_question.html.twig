@@ -1,0 +1,62 @@
+{% import _self as macros %}
+{{ macros.render_instance(instance) }}
+
+{% macro render_instance(instance) %}
+  {% set collapseId = 'collapse_' ~ instance.id %}
+
+  <div class="d-flex justify-content-between align-items-center mb-3" style="font-size: 1.4rem">
+    <span>({{ instance.id }}) {{ instance.question.name }} : {{ instance.question.content }}</span>
+  </div>
+
+  <div id="{{ collapseId }}" class="collapse show">
+    <div class="card-body pt-0">
+      {% if instance.question.proposals|length > 0 %}
+        <ul class="list-group list-group-flush mb-2">
+          {% for proposal in instance.question.proposals %}
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="fs-6">{{ proposal.id }} : {{ proposal.content }}</div>
+                <div>
+                  {% set condition = instance.conditions|filter(c => c.proposalId == proposal.id)|first %}
+                  {% if condition %}
+                    →
+                    <a href="{{ path('app_quiz_unlink_question', { quizId: instance.quiz.id, instanceId: instance.id, proposalId: proposal.id }) }}"
+                       class="text-danger me-1 fs-5" title="Supprimer la suite conditionnelle">
+                      <i class="bi bi-x-circle"></i>
+                    </a>
+                    {% if condition.nextQuestionInstance %}
+                      <span class="fs-5">{{ condition.nextQuestionInstance.question.name }}</span>
+                    {% endif %}
+                  {% else %}
+                    {% if instance.nextQuestionInstance is null %}
+                      <a href="{{ path('app_quiz_add_question', { quizId: instance.quiz.id, previousInstanceId: instance.id, proposalId: proposal.id }) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-arrow-down-circle"></i>
+                        Conditionner
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">Aucune proposition.</p>
+      {% endif %}
+
+      {% if instance.conditions|length == 0 and instance.nextQuestionInstance is not null %}
+        →
+        <a href="{{ path('app_quiz_unlink_question', { quizId: instance.quiz.id, instanceId: instance.id }) }}"
+           class="text-danger me-1 fs-5" title="Supprimer la suite par défaut">
+          <i class="bi bi-x-circle"></i>
+        </a>
+        <span class="fs-5">{{ instance.nextQuestionInstance.question.name }}</span>
+      {% elseif instance.conditions|length == 0 and instance.nextQuestionInstance is null %}
+        <a href="{{ path('app_quiz_add_question', { quizId: instance.quiz.id, previousInstanceId: instance.id }) }}" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-arrow-down-circle"></i>
+          Ajouter une question suivante
+        </a>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

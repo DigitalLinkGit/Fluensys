@@ -1,0 +1,18 @@
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr ?
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" name="_token" id="confirmation-token">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-danger btn-sm" id="confirm-yes">Confirmer</button>
+            </div>
+        </form>
+    </div>
+</div>

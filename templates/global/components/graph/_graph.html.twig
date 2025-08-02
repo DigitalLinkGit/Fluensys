@@ -1,0 +1,219 @@
+{% set graphId = 'd3-container-' ~ random() %}
+{% set height = 1000 %}
+
+{# Affiche le bouton pour ajouter la première question si aucune instance n'existe #}
+{% if quiz.questionsInstances|length == 0 %}
+  <a href="{{ path('app_quiz_add_question', { quizId: quiz.id }) }}" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i>
+    Ajouter une première question
+  </a>
+{% else %}
+  {# Conteneur principal du graphe avec scroll activé #}
+  <div id="{{ graphId }}" class="graph-container card mb-3 overflow-auto" style="height: {{ height }}px !important;">
+    <div class="mb-3">
+      {# Zoom controls désactivés mais conservés pour réactivation future #}
+      {#
+      <button id="zoom-in-{{ graphId }}" class="btn btn-sm btn-outline-primary">+</button>
+      <button id="zoom-out-{{ graphId }}" class="btn btn-sm btn-outline-primary">−</button>
+      <button id="zoom-reset-{{ graphId }}" class="btn btn-sm btn-outline-primary">Reset</button>
+      #}
+    </div>
+  </div>
+{% endif %}
+
+{# Modale utilisée pour afficher les détails de la question au clic sur un nœud #}
+<div class="modal fade" id="graphModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Détail</h5>
+        <button class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body" id="graphModalContent">
+        <p class="text-muted">Chargement…</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Récupération du conteneur et dimensions disponibles
+    const container = document.getElementById('{{ graphId }}');
+    if (!container) return console.error('Graph container not found');
+
+    const width = container.offsetWidth;
+    const height = {{ height }};
+    const graphContentWidth = 800;
+
+    // Décalage initial du rendu
+    const offsetX = 0;
+    const offsetY = 0;
+
+    // Données brutes injectées depuis le contrôleur Symfony
+    const nodes = {{ graphData.nodes|json_encode|raw }};
+    const links = {{ graphData.links|json_encode|raw }};
+    const questionsByLevel = {{ graphData.questionsByLevel|json_encode|raw }};
+    const conditionablesByLevel = {{ graphData.conditionablesByLevel|json_encode|raw }};
+
+    // Espacement vertical entre les niveaux (modifiable pour ajuster la hauteur entre les rangées)
+    const spacingY = 150;
+
+    // Espacement horizontal personnalisé entre les questions et propositions
+    const questionSpacingX = 300;
+    const proposalSpacingX = 160;
+    let globalY = 0;
+
+    // Placement automatique des nœuds par type et niveau
+    Object.entries(questionsByLevel).forEach(([level, count]) => {
+      const currentLevel = parseInt(level);
+
+      let currentX = 0;
+      const questions = nodes.filter(n => n.type === "question" && n.level === currentLevel);
+      questions.forEach((node, i) => {
+        node.x = (i + 1) * questionSpacingX;
+        node.y = spacingY * globalY;
+      });
+
+      globalY++;
+
+      const proposalCount = conditionablesByLevel[currentLevel] ?? 0;
+      if (proposalCount > 0) {
+        currentX = 0;
+        const proposals = nodes.filter(n => n.type === "proposal" && n.level === currentLevel );
+        proposals.forEach((node, i) => {
+          node.x = (i + 1) * proposalSpacingX;
+          node.y = spacingY * globalY;
+        });
+        globalY++;
+      }
+    });
+
+    // Création du canevas SVG
+    const svg = d3.select(container)
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    // Conteneur pour tous les éléments déplacés
+    const g = svg.append("g");
+
+    // Zoom initial (fixe) appliqué au groupe
+    const initialTransform = d3.zoomIdentity.translate(offsetX, offsetY + 50).scale(0.6);
+    g.attr("transform", initialTransform.toString());
+
+    // Définition de la flèche utilisée dans les liens
+    svg.append("defs").append("marker")
+      .attr("id", "arrow")
+      .attr("viewBox", "0 -5 10 10")
+      .attr("refX", 15)
+      .attr("refY", 0)
+      .attr("markerWidth", 6)
+      .attr("markerHeight", 6)
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+      .attr("fill", "#444");
+
+    // Création d'un index rapide des nœuds par ID
+    const nodeById = Object.fromEntries(nodes.map(n => [n.id, n]));
+    links.forEach(l => {
+      l.source = nodeById[l.source];
+      l.target = nodeById[l.target];
+    });
+
+    // Création des liens visuels
+    const linkGroup = g.selectAll(".link")
+      .data(links)
+      .enter().append("g")
+      .attr("class", "link")
+      .on("click", (e, d) => alert("Lien : " + d.label));
+
+    // Lignes fléchées entre les nœuds
+    linkGroup.append("line")
+      .attr("stroke", d => d && d.label === 'condition' ? '#851cba' : '#444')
+      .attr("stroke-width", d => d && d.label === 'condition' ? 2.5 : 1.5)
+      .attr("marker-end", "url(#arrow)");
+
+    // Mise à jour de la position des liens (appelée au drag)
+    function updateLinks() {
+      linkGroup.select("line")
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+    }
+
+    // Drag & Drop sur les nœuds
+    const drag = d3.drag().on("drag", (event, d) => {
+      d.x = event.x;
+      d.y = event.y;
+      d3.select(event.subject.el).attr("transform", `translate(${d.x},${d.y})`);
+      updateLinks();
+    });
+
+    // Groupe de tous les nœuds (questions + propositions)
+    const nodeGroup = g.selectAll(".node")
+      .data(nodes)
+      .enter().append("g")
+      .attr("class", "node clickable")
+      .attr("transform", d => {
+        if (typeof d.x === 'undefined' || typeof d.y === 'undefined') {
+          console.warn("Position manquante pour le nœud :", d);
+          return "translate(0,0)";
+        }
+        return `translate(${d.x},${d.y})`;
+      })
+      .each((d, i, n) => { d.el = n[i]; })
+      .on("click", (e, d) => {
+        if (!d.questionInstanceId) return;
+        fetch(`/quiz/question/${d.questionInstanceId}`)
+          .then(r => r.text())
+          .then(html => {
+            document.getElementById('graphModalContent').innerHTML = html;
+            const modal = new bootstrap.Modal(document.getElementById('graphModal'));
+            modal.show();
+          });
+      })
+      .call(drag);
+
+    // Forme des blocs : rectangulaire pour tout (personnalisable ici)
+    nodeGroup.each(function(d) {
+      const shape = d3.select(this).append("rect")
+        .attr("x", d.type === "proposal" ? -80 : -120)
+        .attr("y", d.type === "proposal" ? -20 : -30)
+        .attr("width", d.type === "proposal" ? 160 : 240)
+        .attr("height", d.type === "proposal" ? 40 : 60)
+        .attr("fill", d.type === "proposal" ? "var(--easy-surface, #fff)" : "var(--easy-accent, #2395b2)")
+        .attr("stroke", d.type === "proposal" ? "var(--easy-border-strong, #333)" : "none")
+        .attr("stroke-width", 1.5)
+        .attr("rx", d.type === "proposal" ? 8 : 12);
+
+      // Style au survol pour indiquer le clic possible
+      shape.on("mouseover", function () {
+        d3.select(this).attr("stroke", "#000").attr("stroke-width", 2).style("cursor", "pointer");
+      }).on("mouseout", function () {
+        d3.select(this).attr("stroke", d.type === "proposal" ? "var(--easy-border-strong, #333)" : "none").attr("stroke-width", 1.5);
+      });
+    });
+
+    // Texte au survol (utilise le contenu de la question)
+    nodeGroup.append("title")
+      .text(d => d.type === "question" ? d.content ?? d.label : null);
+
+    // Texte affiché dans le nœud (visible)
+    nodeGroup.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", 5)
+      .attr("fill", d => d.type === "proposal" ? "#000" : "#fff")
+      .style("font-size", d => d.type === "question" ? "20px" : "18px")
+      .style("font-weight", "bold")
+      .style("text-shadow", "0.5px 0.5px 1px rgba(0,0,0,0.3)")
+      .style("pointer-events", "none")
+      .text(d => d.label);
+
+    // Mise à jour initiale des liens
+    updateLinks();
+  });
+</script>

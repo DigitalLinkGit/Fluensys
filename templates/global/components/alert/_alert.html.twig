@@ -1,0 +1,23 @@
+{% if messages is not defined %}
+    {% set messages = app.flashes %}
+{% endif %}
+
+{% for label, items in messages %}
+    {% set icon = {
+        'success': 'bi-check-lg',
+        'danger': 'bi-x-lg',
+        'warning': 'bi-exclamation-lg',
+        'info': 'bi-info-lg'
+    }[label] ?? 'bi-info-lg' %}
+    
+    {% for message in items %}
+        <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm my-2 mx-3 d-flex align-items-center" role="alert">
+            <i class="bi {{ icon }} me-2"></i>
+            <div class="flex-grow-1">
+                {{ message }}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    {% endfor %}
+{% endfor %}
+

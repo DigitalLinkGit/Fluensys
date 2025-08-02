@@ -1,0 +1,53 @@
+<div class="d-flex justify-content-end gap-2 mt-4">
+    {% for key, btn in buttons %}
+        {% set type = btn.type|default('link') %}
+        {% set params = {} %}
+        {% set expected = btn.param_map|default({}) %}
+        {% set allParamsValid = true %}
+
+        {% if type == 'link' %}
+            {% for param, prop in expected %}
+                {% set parts = prop|split('.') %}
+                {% set value = _context[parts[0]] ?? null %}
+
+                {% if value is not null %}
+                    {% for part in parts|slice(1) %}
+                        {% if value is not null and attribute(value, part) is defined %}
+                            {% set value = attribute(value, part) %}
+                        {% else %}
+                            {% set value = null %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if value is not null %}
+                    {% set params = params|merge({ (param): value }) %}
+                {% else %}
+                    {% set allParamsValid = false %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% if type != 'link' or allParamsValid %}
+            {% if type == 'link' %}
+                <a href="{{ path(btn.route, params) }}"
+                   class="{{ btn.class|default('btn btn-primary') }} d-inline-flex align-items-center gap-1"
+                   title="{{ btn.title|default(btn.label) }}">
+                    {% if btn.icon is defined %}
+                        <i class="bi {{ btn.icon }}"></i>
+                    {% endif %}
+                    {{ btn.label }}
+                </a>
+            {% elseif type == 'submit' %}
+                <button type="submit"
+                        class="{{ btn.class|default('btn btn-primary') }}"
+                        title="{{ btn.title|default(btn.label) }}">
+                    {% if btn.icon is defined %}
+                        <i class="bi {{ btn.icon }} me-1"></i>
+                    {% endif %}
+                    {{ btn.label }}
+                </button>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>

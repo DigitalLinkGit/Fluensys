@@ -1,0 +1,14 @@
+<form method="post" action="{{ path(route, params) }}" class="d-inline">
+	<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ params.id) }}">
+
+	<button type="button"
+		class="btn btn-outline-primary btn-sm"
+		data-confirm="true"
+		data-action="{{ path(route, params) }}"
+		data-token="{{ csrf_token('delete' ~ params.id) }}"
+		data-message="Voulez-vous vraiment supprimer cet élément ?"
+		title="Supprimer">
+		<i class="bi bi-trash"></i>
+	</button>
+</form>
+

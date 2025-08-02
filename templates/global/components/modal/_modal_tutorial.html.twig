@@ -1,0 +1,26 @@
+{# templates/components/_tutorial_modal.html.twig #}
+{% if tutorial is defined and tutorial %}
+<div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="tutorialModalLabel">Tutoriel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p id="tutorial-step-text" class="lead fw-semibold text-dark"></p>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <div class="text-muted">
+                    Étape <span id="tutorial-step-indicator">1</span>
+                </div>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm" id="tutorial-prev">Précédent</button>
+                    <button class="btn btn-primary btn-sm" id="tutorial-next">Suivant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
