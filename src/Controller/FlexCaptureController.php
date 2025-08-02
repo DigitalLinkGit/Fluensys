@@ -36,8 +36,7 @@ final class FlexCaptureController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->processFields($form, $flexCapture, $entityManager);
-            $entityManager->persist($flexCapture);
-            $entityManager->flush();
+            $this->persistFlexCapture($flexCapture,$entityManager);
 
             return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -64,7 +63,7 @@ final class FlexCaptureController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->processFields($form, $flexCapture, $entityManager);
-            $entityManager->flush();
+            $this->persistFlexCapture($flexCapture,$entityManager);
 
             return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -126,6 +125,29 @@ final class FlexCaptureController extends AbstractController
             $entityManager->persist($typedField);
             $entityManager->remove($rawField); // si orphanRemoval ou cascade persist est actif
         }
+    }
+
+    public function persistFlexCapture(FlexCapture $flexCapture, EntityManagerInterface $em): void
+    {
+        $fields = $flexCapture->getFields();
+
+        // On trie ceux qui ont déjà une position
+        $ordered = $fields->filter(fn($f) => $f->getPosition() !== null)
+            ->toArray();
+
+        usort($ordered, fn($a, $b) => $a->getPosition() <=> $b->getPosition());
+
+        // On ajoute ceux qui n’ont pas de position à la fin
+        $noPosition = $fields->filter(fn($f) => $f->getPosition() === null);
+
+        $final = array_merge($ordered, $noPosition->toArray());
+
+        foreach ($final as $index => $field) {
+            $field->setPosition($index);
+        }
+
+        $em->persist($flexCapture);
+        $em->flush();
     }
 
 }

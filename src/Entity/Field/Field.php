@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
     'textarea' =>TextAreaField::class,
+    'text' =>TextField::class,
     'integer' =>IntegerField::class,
 ])]
 abstract class Field

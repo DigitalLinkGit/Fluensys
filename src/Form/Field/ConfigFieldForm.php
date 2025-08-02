@@ -6,6 +6,7 @@ use App\Entity\Field\Field;
 use App\Factory\FieldFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +21,9 @@ class ConfigFieldForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('position', HiddenType::class, [
+                'required' => false,
+            ])
             ->add('externalLabel', TextareaType::class, [
                 'label' => 'Label',
                 'required' => true,
