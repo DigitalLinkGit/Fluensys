@@ -4,21 +4,21 @@
 
 {% block body %}
     {{ form_start(form) }}
+{#    #}
+{#    {{ include('capture_element/_form_header.html.twig') }}#}
 
-    {{ include('capture_element/_form_header.html.twig') }}
-
-    {% include 'global/components/button/_btn_bar.html.twig' with {
-        buttons: {
-            back: {
-                type: 'link',
-                route: 'app_flex_capture_edit',
-                param_map: { id: 'flex_capture.id' },
-                icon: 'bi-arrow-left',
-                label: 'Retour',
-                class: 'btn btn-outline-primary btn-sm'
-            },
-        }
-    } %}
+{#    {% include 'global/components/button/_btn_bar.html.twig' with {#}
+{#        buttons: {#}
+{#            back: {#}
+{#                type: 'link',#}
+{#                route: 'app_flex_capture_edit',#}
+{#                param_map: { id: 'flex_capture.id' },#}
+{#                icon: 'bi-arrow-left',#}
+{#                label: 'Retour',#}
+{#                class: 'btn btn-outline-primary btn-sm'#}
+{#            },#}
+{#        }#}
+{#    } %}#}
 
     {{ form_end(form) }}
 

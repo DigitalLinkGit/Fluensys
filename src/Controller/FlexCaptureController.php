@@ -7,8 +7,7 @@ use App\Entity\FlexCapture;
 use App\Factory\FieldFactory;
 use App\Form\CaptureElement\CaptureElementConfigForm;
 use App\Form\CaptureElement\CaptureElementExternalForm;
-use App\Form\CaptureElement\CaptureElementInternalForm;
-use App\Form\Field\ExternalFieldForm;
+use App\Form\Field\ConfigFieldForm;
 use App\Repository\FlexCaptureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,16 +57,16 @@ final class FlexCaptureController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_flex_capture_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, FlexCapture $flexCapture, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, FlexCapture $flexCapture, EntityManagerInterface $entityManager,int $id): Response
     {
-        $form = $this->createForm(CaptureElementConfigForm::class, $flexCapture);
+        $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->processFields($form, $flexCapture, $entityManager);
             $this->persistFlexCapture($flexCapture,$entityManager);
 
-            return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_flex_capture_edit', ['id'=>$id], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('flex_capture/edit.html.twig', [
@@ -87,23 +86,58 @@ final class FlexCaptureController extends AbstractController
         return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/external-preview', name: 'app_flex_capture_external_preview', methods: ['GET'])]
-    public function externalPreview(FlexCapture $flexCapture): Response
-    {
-        $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
-        return $this->render('flex_capture/preview.html.twig', [
-            'flex_capture' => $flexCapture,
-            'form'=>$form,
+    #[Route('/{id}/field/create', name: 'app_flex_capture_field_create', methods: ['GET', 'POST'])]
+    public function createField(
+        Request $request,
+        FlexCapture $flexCapture,
+        EntityManagerInterface $em
+    ): Response {
+        $fieldForm = $this->createForm(ConfigFieldForm::class, null, [
+            'action' => $this->generateUrl('app_flex_capture_field_create', ['id' => $flexCapture->getId()])
         ]);
+
+        $fieldForm->handleRequest($request);
+
+        if ($fieldForm->isSubmitted() && $fieldForm->isValid()) {
+            // On encapsule le Field dans un faux formulaire pour réutiliser processFields()
+            $containerForm = $this->createFormBuilder()
+                ->add('fields', CollectionType::class, [
+                    'entry_type' => ConfigFieldForm::class,
+                    'data' => [$fieldForm->getData()],
+                ])
+                ->getForm();
+
+            $this->processFields($containerForm, $flexCapture, $em);
+            $this->persistFlexCapture($flexCapture, $em);
+
+            return new JsonResponse(['success' => true]);
+        }
+
+        return $this->render('field/modal_form.html.twig', [
+            'form' => $fieldForm instanceof \Symfony\Component\Form\FormInterface
+                ? $fieldForm->createView()
+                : $fieldForm,
+            'flex_capture' => $flexCapture,
+        ]);
+
     }
 
-    #[Route('/{id}/internal-preview', name: 'app_flex_capture_internal_preview', methods: ['GET'])]
-    public function internalPreview(FlexCapture $flexCapture): Response
+
+    #[Route('/field/{id}/edit', name: 'app_flex_capture_field_edit', methods: ['GET', 'POST'])]
+    public function editField(Request $request, Field $field, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
-        return $this->render('flex_capture/preview.html.twig', [
-            'flex_capture' => $flexCapture,
-            'form'=>$form,
+        $form = $this->createForm(ConfigFieldForm::class, $field);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            return new Response('UPDATED', 200); // ou JSON si tu veux
+        }
+
+        return $this->render('field/modal_form.html.twig', [
+            'form' => $form->createView(),
+            'field' => $field,
         ]);
     }
 

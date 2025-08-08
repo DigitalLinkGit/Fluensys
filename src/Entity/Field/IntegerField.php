@@ -2,7 +2,6 @@
 
 namespace App\Entity\Field;
 
-use App\Repository\TextAreaFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: IntegerFieldRepository::class)]

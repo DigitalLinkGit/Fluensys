@@ -2,7 +2,6 @@
 
 namespace App\Entity\Field;
 
-use App\Repository\TextAreaFieldRepository;
 use App\Repository\TextFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 

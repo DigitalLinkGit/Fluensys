@@ -1,0 +1,19 @@
+{{ form_start(form, {
+    action: path('app_flex_capture_field_create', { id: flex_capture.id }),
+    attr: {
+        id: 'field-create-form'
+    }
+}) }}
+    {{ form_row(form.externalLabel) }}
+    {{ form_row(form.internalLabel) }}
+    {{ form_row(form.required) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.position) }}
+<button
+    type="button"
+    class="btn btn-primary"
+    data-action="click->field-modal#submit"
+>
+    Créer
+</button>
+{{ form_end(form) }}
