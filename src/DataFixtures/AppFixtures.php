@@ -13,48 +13,60 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $r1 = new ParticipantRole();
-        $r1->setInternal(false);
-        $r1->setName("répondant");
-        $r1->setDescription("Externe");
+        $r1 = $this->createParticipantRole(
+            false,
+            'répondant',
+            'Externe',
+        );
+        $r2 = $this->createParticipantRole(
+            true,
+            'responsable',
+            'Interne',
+        );
+        $r3 = $this->createParticipantRole(
+            true,
+            'valideur',
+            'Interne',
+        );
+
         $manager->persist($r1);
-
-        $r2 = new ParticipantRole();
-        $r2->setInternal(true);
-        $r2->setName("responsable");
-        $r2->setDescription("Interne");
         $manager->persist($r2);
-
-        $r3 = new ParticipantRole();
-        $r3->setInternal(true);
-        $r3->setName("valideur");
-        $r3->setDescription("Interne");
         $manager->persist($r3);
 
-        $f1 = new TextAreaField();
-        $f1->setPosition(1);
-        $f1->setExternalLabel("Textarea");
-        $f1->setRequired(true);
-        $f1->setTechnicalName("Textarea");
+        $f1 = (new TextAreaField())
+            ->setPosition(1)
+            ->setExternalLabel("Textarea")
+            ->setInternalLabel("InternalLabel")
+            ->setRequired(true)
+            ->setTechnicalName("Textarea");
         $manager->persist($f1);
 
-        $f2 = new IntegerField();
-        $f2->setPosition(1);
-        $f2->setExternalLabel("Integer");
-        $f2->setRequired(false);
-        $f2->setTechnicalName("Integer");
+        $f2 = (new IntegerField())
+            ->setPosition(1)
+            ->setExternalLabel("Integer")
+            ->setInternalLabel("InternalLabel")
+            ->setRequired(false)
+            ->setTechnicalName("Integer");
         $manager->persist($f2);
 
-        $flex = new flexCapture();
-        $flex->setDescription("Flex description");
-        $flex->setName("Flex");
-        $flex->setRespondent($r1);
-        $flex->setResponsible($r2);
-        $flex->setValidator($r3);
-        $flex->addField($f1);
-        $flex->addField($f2);
+        $flex = (new flexCapture())
+            ->setDescription("Flex description")
+            ->setName("Flex")
+            ->setRespondent($r1)
+            ->setResponsible($r2)
+            ->setValidator($r3)
+            ->addField($f1)
+            ->addField($f2);
         $manager->persist($flex);
 
         $manager->flush();
+    }
+
+    private function createParticipantRole(bool $internal, string $name, string $description): ParticipantRole
+    {
+        return (new ParticipantRole())
+            ->setInternal($internal)
+            ->setName($name)
+            ->setDescription($description);
     }
 }
