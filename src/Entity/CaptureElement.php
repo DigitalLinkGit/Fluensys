@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Field\Field;
+use App\Entity\Rendering\CalculatedVariable;
 use App\Entity\Rendering\Chapter;
 use App\Entity\Rendering\ChapterRenderInterface;
 use Doctrine\Common\Collections\ArrayCollection;
