@@ -3,7 +3,6 @@
 namespace App\Form\Field;
 
 use App\Entity\Field\Field;
-use App\Entity\Field\TextAreaField;
 use App\Factory\FieldFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

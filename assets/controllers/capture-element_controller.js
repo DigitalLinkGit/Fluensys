@@ -1,4 +1,34 @@
+// controllers/capture_element_controller.js
+/*
 import { Controller } from "@hotwired/stimulus";
+
+export default class extends Controller {
+    static targets = ["modalBody"];
+
+    connect() {
+        this.index = 0;
+    }
+
+    showModal() {
+        const proto = document.querySelector('#field-prototype').innerHTML;
+        const html = proto.replace(/__name__/g, this.index);
+        this.modalBodyTarget.innerHTML = html;
+    }
+
+
+
+    validate(event) {
+        event.preventDefault();
+
+        // Ici, le champ a été injecté dans le DOM. Symfony le prendra.
+        this.index++;
+        document.querySelector('#addFieldModal .btn-close').click();
+    }
+}*/
+
+
+
+/*import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
 
@@ -29,4 +59,4 @@ export default class extends Controller {
         event.preventDefault();
         event.target.closest('fieldset').remove();
     }
-}
+}*/

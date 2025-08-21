@@ -23,6 +23,7 @@ class ConfigFieldForm extends AbstractType
         $builder
             ->add('position', HiddenType::class, [
                 'required' => false,
+                'data' => 0,
             ])
             ->add('externalLabel', TextareaType::class, [
                 'label' => 'Label',

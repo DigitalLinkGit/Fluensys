@@ -1,25 +1,9 @@
 {{ form_start(form) }}
 
-    {{ include('capture_element/_form_header.html.twig') }}
+{{ include('capture_element/_form_header.html.twig') }}
 
 {% include 'global/components/button/_btn_bar.html.twig' with {
     buttons: {
-        preview_internal: {
-            type: 'link',
-            route: 'app_flex_capture_internal_preview',
-            param_map: { id: 'flex_capture.id' },
-            icon: 'bi-eye',
-            label: 'Aperçu interne',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        preview_external: {
-            type: 'link',
-            route: 'app_flex_capture_external_preview',
-            param_map: { id: 'flex_capture.id' },
-            icon: 'bi-eye',
-            label: 'Aperçu répondant',
-            class: 'btn btn-outline-primary btn-sm'
-        },
         back: {
             type: 'link',
             route: 'app_flex_capture_index',
@@ -36,22 +20,31 @@
     }
 } %}
 
-
-{% set prototype %}
-    {% include 'capture_element/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
-{% endset %}
-<div
-    data-controller="capture-element"
-    data-prototype="{{ prototype|e('html_attr') }}"
->
-    {% for fieldForm in form.fields %}
-        {% include 'capture_element/_field_prototype.html.twig' with { form: fieldForm } %}
-    {% endfor %}
-
-    <button type="button" class="btn btn-outline-primary btn-sm mt-2"
-            data-action="capture-element#add"><i class="bi bi-plus"></i> Ajouter
+<div data-controller="field-modal"
+     data-field-modal-url-value="{{ path('app_flex_capture_field_create', { id: flex_capture.id }) }}">
+    <button type="button"
+            class="btn btn-outline-primary btn-sm"
+            data-action="field-modal#open">
+        Ajouter un champ
     </button>
+
+    <div class="modal fade" id="fieldModal" tabindex="-1" aria-hidden="true"
+         data-field-modal-target="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Créer un champ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" data-field-modal-target="modalBody">
+                    <!-- Formulaire chargé ici -->
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-
 {{ form_end(form) }}
+
+
+
