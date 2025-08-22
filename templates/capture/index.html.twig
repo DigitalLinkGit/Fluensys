@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Capture index</h1>
 
-    {% include 'global/components/table/_table.html.twig' with {
+    {% include 'components/table/_table.html.twig' with {
         items: captures,
         columns: ['name', 'description'],
         headers: ['Nom', 'Description'],

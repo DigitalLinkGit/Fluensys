@@ -1,64 +1,17 @@
 {{ form_start(form) }}
 <div class="row">
-    <!-- Colonne gauche : formulaire -->
     <div class="col-md-6">
         {{ form_row(form.name) }}
         {{ form_row(form.description) }}
     </div>
 
-    <!-- Colonne droite : rôles -->
     <div class="col-md-6">
-        <h5 class="mb-3">Rôles requis</h5>
-
-        <div class="mb-3">
-            <div class="fw-semibold mb-1">Répondant(s)</div>
-            {% if capture.getRespondentRoles is empty %}
-                <div class="text-muted">Aucun</div>
-            {% else %}
-                <div class="d-flex flex-wrap gap-2">
-                    {% for role in capture.getRespondentRoles %}
-                        <span class="badge bg-light text-dark border">{{ role.name }}
-              <small class="ms-2 text-muted">{{ role.isInternal ? 'interne' : 'externe' }}</small>
-            </span>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="mb-3">
-            <div class="fw-semibold mb-1">Responsable(s)</div>
-            {% if capture.getResponsibleRoles is empty %}
-                <div class="text-muted">Aucun</div>
-            {% else %}
-                <div class="d-flex flex-wrap gap-2">
-                    {% for role in capture.getResponsibleRoles %}
-                        <span class="badge bg-light text-dark border">{{ role.name }}
-              <small class="ms-2 text-muted">{{ role.isInternal ? 'interne' : 'externe' }}</small>
-            </span>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="mb-3">
-            <div class="fw-semibold mb-1">Validateur(s)</div>
-            {% if capture.getValidatorRoles is empty %}
-                <div class="text-muted">Aucun</div>
-            {% else %}
-                <div class="d-flex flex-wrap gap-2">
-                    {% for role in capture.getValidatorRoles %}
-                        <span class="badge bg-light text-dark border">{{ role.name }}
-              <small class="ms-2 text-muted">{{ role.isInternal ? 'interne' : 'externe' }}</small>
-            </span>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
+        {% include 'participant_role/_required_participant_roles.html.twig' %}
     </div>
 </div>
 
 
-{% include 'global/components/button/_btn_bar.html.twig' with {
+{% include 'components/button/_btn_bar.html.twig' with {
     buttons: {
         back: {
             type: 'link',

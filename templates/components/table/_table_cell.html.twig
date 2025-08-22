@@ -1,0 +1,28 @@
+{% macro value(v) %}
+    {# Null value #}
+    {% if v is null %}
+        —
+
+    {# Bool value #}
+    {% elseif v is same as(true) %}
+        Oui
+    {% elseif v is same as(false) %}
+        Non
+
+    {# Classic value #}
+    {% elseif v.value is defined %}
+        {{ _self.value(v.value) }}
+
+    {# List value #}
+    {% elseif v is iterable %}
+        {% set out = [] %}
+        {% for el in v %}
+            {% set out = out|merge([ _self.value(el) ]) %}
+        {% endfor %}
+        {{ out|join(', ') }}
+
+    {# Other value #}
+    {% else %}
+        {{ v }}
+    {% endif %}
+{% endmacro %}

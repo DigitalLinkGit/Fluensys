@@ -5,16 +5,16 @@
 {% block body %}
     <h1>ParticipantRole</h1>
 
-    {% include 'global/components/table/_table_show.html.twig' with {
+    {% include 'components/table/_table_show.html.twig' with {
         object: participant_role,
         fields: [
-            { label: 'Nom', field: 'name' },
-            { label: 'Description', field: 'description' },
-            { label: 'Interne', field: 'respondent.internal' }
+            { label: 'Nom', property: 'name' },
+            { label: 'Description', property: 'description' },
+            { label: 'Interne', property: 'internal' }
         ]
     } %}
 
-    {% include 'global/components/button/_btn_bar.html.twig' with {
+    {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {
             back: {
                 type: 'link',

@@ -31,11 +31,11 @@
 	</head>
 
 	<body class="d-flex flex-column min-vh-100">
-		{% include 'global/components/partials/_navbar.html.twig' %}
+		{% include 'components/partials/_navbar.html.twig' %}
 
 		{# Alertes globales fixées en haut à droite #}
 		<div style="position: fixed; top: 1rem; right: 1rem; z-index: 1050;">
-            {% include 'global/components/alert/_alert.html.twig' %}
+            {% include 'components/alert/_alert.html.twig' %}
 		</div>
 
 		<main class="flex-grow-1" style="padding-top: 70px;">
@@ -43,10 +43,10 @@
 				</div>
 			</main>
 
-			{% include 'global/components/partials/_footer.html.twig' %}
+			{% include 'components/partials/_footer.html.twig' %}
 
 			{# Modales globales (hors container) #}
-			{% include 'global/components/modal/_modal_confirm.html.twig' %}
+			{% include 'components/modal/_modal_confirm.html.twig' %}
 
 			{# Scripts applicatifs
 			<script src="{{ asset('js/app-ui.js') }}"></script>

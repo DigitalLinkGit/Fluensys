@@ -15,14 +15,16 @@ class AppExtension extends AbstractExtension
 
     public function attributeChain($object, string $property)
     {
-        $parts = explode('.', $property);
-        foreach ($parts as $part) {
-            $getter = 'get' . ucfirst($part);
-            if (!is_object($object) || !method_exists($object, $getter)) {
-                return null;
+        foreach (explode('.', $property) as $part) {
+            if (!is_object($object)) return null;
+            $uc = ucfirst($part);
+            foreach (["get$uc", "is$uc", "has$uc"] as $m) {
+                if (method_exists($object, $m)) { $object = $object->$m(); continue 2; }
             }
-            $object = $object->$getter();
+            if (property_exists($object, $part)) { $object = $object->$part; continue; }
+            return null;
         }
         return $object;
     }
+
 }

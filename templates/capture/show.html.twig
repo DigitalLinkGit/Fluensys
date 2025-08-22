@@ -5,15 +5,15 @@
 {% block body %}
     <h1>Capture</h1>
 
-    {% include 'global/components/table/_table_show.html.twig' with {
+    {% include 'components/table/_table_show.html.twig' with {
         object: capture,
         fields: [
-            { label: 'Nom', field: 'name' },
-            { label: 'Description', field: 'description' },
+            { label: 'Nom', property: 'name' },
+            { label: 'Description', property: 'description' },
         ]
     } %}
 
-    {% include 'global/components/button/_btn_bar.html.twig' with {
+    {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {
             back: {
                 type: 'link',

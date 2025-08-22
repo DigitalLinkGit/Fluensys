@@ -21,14 +21,24 @@
                     {% endif %}
                 </td>
             </tr>
+            {% else %}
+            aucun capture élement à ajouter
         {% endfor %}
         </tbody>
     </table>
 
-    {% if capture_id %}
-        <a href="{{ path('app_capture_edit', { id: capture_id }) }}"
-           class="btn btn-outline-primary btn-sm">Retour</a>
-    {% endif %}
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                route: 'app_capture_index',
+                param_map: { id: 'capture.id' },
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary btn-sm'
+            },
+        }
+    } %}
 
 
 {% endblock %}

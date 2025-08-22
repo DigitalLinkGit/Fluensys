@@ -5,7 +5,7 @@
 {% block body %}
     <h1>FlexCapture index</h1>
 
-    {% include 'global/components/table/_table.html.twig' with {
+    {% include 'components/table/_table.html.twig' with {
         items: flex_captures,
         columns: ['name', 'description'],
         headers: ['Nom', 'Description'],

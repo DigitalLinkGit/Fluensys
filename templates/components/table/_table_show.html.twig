@@ -1,0 +1,17 @@
+{% set table_id = 'show_table_' ~ random() %}
+{% set fields = fields is defined ? fields : [] %}
+{% set object = object is defined ? object : null %}
+{% import 'components/table/_table_cell.html.twig' as cell_format %}
+<table class="table table-bordered align-middle" id="{{ table_id }}">
+    <tbody>
+    {% for field in fields %}
+        {% set value = attribute_chain(object, field.property) %}
+        <tr>
+            <th scope="row" class="text-nowrap">{{ field.label }}</th>
+            <td>
+                {{ cell_format.value(value) }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
