@@ -8,10 +8,10 @@
 
     <!-- Colonne droite : rôles -->
     <div class="col-md-6">
-        <h5 class="mb-3">Rôles requis par type</h5>
+        <h5 class="mb-3">Rôles requis</h5>
 
         <div class="mb-3">
-            <div class="fw-semibold mb-1">Répondant</div>
+            <div class="fw-semibold mb-1">Répondant(s)</div>
             {% if capture.getRespondentRoles is empty %}
                 <div class="text-muted">Aucun</div>
             {% else %}
@@ -26,7 +26,7 @@
         </div>
 
         <div class="mb-3">
-            <div class="fw-semibold mb-1">Responsable</div>
+            <div class="fw-semibold mb-1">Responsable(s)</div>
             {% if capture.getResponsibleRoles is empty %}
                 <div class="text-muted">Aucun</div>
             {% else %}
@@ -41,7 +41,7 @@
         </div>
 
         <div class="mb-3">
-            <div class="fw-semibold mb-1">Validateur</div>
+            <div class="fw-semibold mb-1">Validateur(s)</div>
             {% if capture.getValidatorRoles is empty %}
                 <div class="text-muted">Aucun</div>
             {% else %}

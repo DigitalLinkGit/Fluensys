@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ParticipantRole index{% endblock %}
+
+{% block body %}
+    <h1>ParticipantRole index</h1>
+
+    {% include 'global/components/table/_table.html.twig' with {
+        items: participant_roles,
+        columns: ['name', 'description', 'internal'],
+        headers: ['Nom', 'Description','Interne'],
+        filter: true,
+        sort: true,
+        actions: {
+            show:  {
+                route: 'app_participant_role_show',
+                param_map: { id: 'id' }
+            },
+            edit:  {
+                route: 'app_participant_role_edit',
+                param_map: { id: 'id' }
+            },
+            delete: {
+                route: 'app_participant_role_delete',
+                param_map: { id: 'id' }
+            },
+            add: {route: 'app_participant_role_new'}
+        }
+    } %}
+
+{% endblock %}

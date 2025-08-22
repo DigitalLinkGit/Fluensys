@@ -6,28 +6,30 @@
          style="height: 60px; position: fixed; top: 0; width: 100%; z-index: 1050;">
         <button class="btn btn-outline-primary btn-sm btn-icon"
                 data-sidebar-target="toggle"
-                data-action="click->sidebar#toggle">☰</button>
+                data-action="click->sidebar#toggle">☰
+        </button>
         <span class="fw-bold ms-2 app-title">FluensyS</span>
     </nav>
 
-    {# Sidebar (rattachée au contrôleur) #}
+    {# Sidebar #}
     <div id="sidebarPanel"
          data-sidebar-target="panel"
          class="position-fixed top-0 start-0 bg-white border-end shadow"
          style="width: 250px; height: 100vh; transform: translateX(-100%); transition: transform 0.3s; z-index: 1040; padding-top: 60px;">
-        <div class="p-2">
-            {% include 'global/components/partials/_sidebar_section.html.twig' with {
-                icon: '',
-                title: 'Compose',
-                groups: [
-                    {
-                        links: [
-                        { label: 'Mes Flex capture', route: 'app_flex_capture_index' }
-                    ]
-                    }
+
+        {% include 'global/components/partials/_sidebar_section.html.twig' with {
+            icon: '',
+            title: 'Compose',
+            groups: [
+                {
+                    links: [
+                    { label: 'Mes Flex captures', route: 'app_flex_capture_index' },
+                    { label: 'Mes captures', route: 'app_capture_index' }
                 ]
-            } %}
-        </div>
+                }
+            ]
+        } %}
+
     </div>
 
 </div>
