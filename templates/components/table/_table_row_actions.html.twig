@@ -1,0 +1,27 @@
+{% set default_btn_class = default_btn_class|default('btn btn-outline-primary btn-sm') %}
+
+{% for action in actions %}
+    {% if action.route is defined %}
+        {# Construire les paramètres depuis param_map #}
+        {% set params = {} %}
+        {% for key, path in action.param_map|default({ id: 'id' }) %}
+            {# Fallback: si attribute_chain(item, path) renvoie null, on prend la valeur littérale 'path' #}
+            {% set candidate = attribute_chain(item, path) %}
+            {% set params = params|merge({ (key): (candidate is not null ? candidate : path) }) %}
+        {% endfor %}
+
+        {# Icône Bootstrap Icons (tolère 'bi-pencil' ou 'bi bi-pencil') #}
+        {% set icon = action.icon|default(null) %}
+        {% if icon %}
+            {% set icon_class = icon starts with 'bi ' ? icon : 'bi ' ~ (icon starts with 'bi-' ? icon : 'bi-' ~ icon) %}
+        {% endif %}
+
+        <a href="{{ path(action.route, params) }}"
+           class="{{ action.class|default(default_btn_class) }}"
+           title="{{ action.label|default('') }}"
+           aria-label="{{ action.label|default('') }}">
+            {% if icon %}<i class="{{ icon_class }}"></i>{% endif %}
+        </a>
+
+    {% endif %}
+{% endfor %}

@@ -11,21 +11,27 @@
         headers: ['Nom', 'Description','Interne'],
         filter: true,
         sort: true,
-        actions: {
-            show:  {
+        add: {route: 'app_participant_role_new'},
+        actions: [
+            {
                 route: 'app_participant_role_show',
-                param_map: { id: 'id' }
+                param_map: { id: 'id' },
+                icon: 'bi-eye',
+                label: 'Voir',
             },
-            edit:  {
+            {
                 route: 'app_participant_role_edit',
-                param_map: { id: 'id' }
+                param_map: { id: 'id' },
+                icon: 'bi-pencil',
+                label: 'Éditer',
             },
-            delete: {
+            {
                 route: 'app_participant_role_delete',
-                param_map: { id: 'id' }
-            },
-            add: {route: 'app_participant_role_new'}
-        }
+                param_map: { id: 'id' },
+                icon: 'bi-trash',
+                label: 'Supprimer',
+            }
+        ]
     } %}
 
 {% endblock %}

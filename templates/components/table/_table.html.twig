@@ -5,35 +5,40 @@
 {% set columns = columns is defined ? columns : [] %}
 {% set headers = headers is defined ? headers : null %}
 {% set table_id = 'table_' ~ random() %}
-{% set actions = actions is defined ? actions : {} %}
 {% set filter = filter is defined ? filter : false %}
 {% set sort = sort is defined ? sort : false %}
+{% set row_actions = actions|default([]) %}
+{% set has_row_actions = row_actions|length > 0 %}
+{% set add_action = add|default(null) %}
 
 {% import 'components/table/_table_cell.html.twig' as cell_format %}
 
-
-{# Bouton Ajouter (hors filtre) #}
-	{% if actions.add.route is defined and not filter %}
+{# Add button (if no filters) #}
+{% if add_action is not null and add_action.route is defined and not filter %}
+    <div class="text-end">
         {% include 'components/button/_btn_new.html.twig' with {
-            route: actions.add.route,
-            params: actions.add.params|default({})
+            route: add_action.route,
+            params: add_action.params|default({})
         } %}
-    {% endif %}
+    </div>
+{% endif %}
 
 
-{# Table principale #}
+
+
+{# Header #}
 <table class="table table-hover align-middle" id="{{ table_id }}">
     <thead class="table-light">
     <tr>
         {% for header in headers %}
             <th>{{ header }}</th>
         {% endfor %}
-        {% if actions.show.route is defined or actions.edit.route is defined or actions.delete.route is defined %}
+        {% if has_row_actions %}
             <th></th>
         {% endif %}
     </tr>
 
-    {# Ligne de filtres et tris #}
+    {# Filters and sorts row #}
     {% if filter or sort %}
         <tr class="filter-row">
             {% for column in columns %}
@@ -56,15 +61,14 @@
                     </div>
                 </td>
             {% endfor %}
-            {% if actions.show.route is defined or actions.edit.route is defined or actions.delete.route is defined %}
+            {% if has_row_actions %}
                 <td class="table-actions">
-                    {% if actions.add.route is defined %}
+                    {% if add_action is not null and add_action.route is defined %}
                         {% include 'components/button/_btn_new.html.twig' with {
-                            route: actions.add.route,
-                            params: actions.add.params|default({})
+                            route: add_action.route,
+                            params: add_action.params|default({})
                         } %}
                     {% endif %}
-
                 </td>
             {% endif %}
         </tr>
@@ -74,56 +78,26 @@
     <tbody>
     {% for item in items %}
         <tr>
-            {# Colonnes dynamiques #}
+            {# Values #}
             {% for property in columns %}
                 {% set value = attribute_chain(item, property) %}
                 <td>{{ cell_format.value(value) }}</td>
             {% endfor %}
 
-
-
-
-            {# Boutons d'action #}
-            {% if actions.show.route is defined or actions.edit.route is defined or actions.delete.route is defined %}
-                <td
-                    class="text-nowrap btn-fixed-width">
-
-                    {# SHOW #}
-                    {% if actions.show.route is defined %}
-                        {% include 'components/button/_btn_icon_show.html.twig' with {
-                            route: actions.show.route,
-                            params: { id: attribute(item, 'id') }
+            {# Action buttons #}
+                {% if has_row_actions %}
+                    <td class="text-nowrap btn-fixed-width">
+                        {% include 'components/table/_table_row_actions.html.twig' with {
+                            actions: row_actions,
+                            item: item,
+                            default_btn_class: 'btn btn-outline-primary btn-sm'
                         } %}
-                    {% endif %}
-
-                    {# EDIT #}
-                    {% if actions.edit.route is defined %}
-                        {% include 'components/button/_btn_icon_edit.html.twig' with {
-                            route: actions.edit.route,
-                            params: { id: attribute(item, 'id') }
-                        } %}
-                    {% endif %}
-
-                    {# DELETE avec param_map #}
-                    {% if actions.delete.route is defined %}
-                        {% set delete_params = {} %}
-                        {% for key, path in actions.delete.param_map|default({ id: 'id' }) %}
-                            {% set delete_params = delete_params|merge({ (key): attribute_chain(item, path) }) %}
-                        {% endfor %}
-                        {% include 'components/button/_btn_icon_delete.html.twig' with {
-                            route: actions.delete.route,
-                            params: delete_params
-                        } %}
-                    {% endif %}
-
-                </td>
-            {% endif %}
+                    </td>
+                {% endif %}
         </tr>
     {% else %}
         <tr>
-            <td colspan="{{ columns|length + 1 }}" class="text-muted text-center">
-                Aucun élément à afficher.
-            </td>
+            <td colspan="{{ columns|length + (has_row_actions ? 1 : 0) }}" class="text-muted text-center">
         </tr>
     {% endfor %}
     </tbody>
