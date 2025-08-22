@@ -38,14 +38,14 @@
 
 
 {% set prototype %}
-    {% include 'capture_element/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
+    {% include 'field/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
 {% endset %}
 <div
     data-controller="capture-element"
     data-prototype="{{ prototype|e('html_attr') }}"
 >
     {% for fieldForm in form.fields %}
-        {% include 'capture_element/_field_prototype.html.twig' with { form: fieldForm } %}
+        {% include 'field/_field_prototype.html.twig' with { form: fieldForm } %}
     {% endfor %}
 
     <button type="button" class="btn btn-outline-primary btn-sm mt-2"

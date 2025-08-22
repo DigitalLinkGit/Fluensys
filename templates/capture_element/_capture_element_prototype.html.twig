@@ -1,0 +1,30 @@
+<fieldset class="mb-3 form-container mt-3 p-2 position-relative border rounded">
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.name) }}
+        </div>
+
+        <div class="col-md-8">
+            {{ form_row(form.description) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.respondent) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.responsible) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.validator) }}
+        </div>
+    </div>
+    <div class="d-flex">
+        <button type="button"
+                class="btn btn-outline-danger btn-sm ms-auto"
+                data-action="click->capture#remove"
+                title="Supprimer">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
+</fieldset>

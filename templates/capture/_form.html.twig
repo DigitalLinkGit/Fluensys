@@ -1,0 +1,96 @@
+{{ form_start(form) }}
+<div class="row">
+    <!-- Colonne gauche : formulaire -->
+    <div class="col-md-6">
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+    </div>
+
+    <!-- Colonne droite : rôles -->
+    <div class="col-md-6">
+        <h5 class="mb-3">Rôles requis par type</h5>
+
+        <div class="mb-3">
+            <div class="fw-semibold mb-1">Répondant</div>
+            {% if capture.getRespondentRoles is empty %}
+                <div class="text-muted">Aucun</div>
+            {% else %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for role in capture.getRespondentRoles %}
+                        <span class="badge bg-light text-dark border">{{ role.name }}
+              <small class="ms-2 text-muted">{{ role.isInternal ? 'interne' : 'externe' }}</small>
+            </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <div class="fw-semibold mb-1">Responsable</div>
+            {% if capture.getResponsibleRoles is empty %}
+                <div class="text-muted">Aucun</div>
+            {% else %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for role in capture.getResponsibleRoles %}
+                        <span class="badge bg-light text-dark border">{{ role.name }}
+              <small class="ms-2 text-muted">{{ role.isInternal ? 'interne' : 'externe' }}</small>
+            </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <div class="fw-semibold mb-1">Validateur</div>
+            {% if capture.getValidatorRoles is empty %}
+                <div class="text-muted">Aucun</div>
+            {% else %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for role in capture.getValidatorRoles %}
+                        <span class="badge bg-light text-dark border">{{ role.name }}
+              <small class="ms-2 text-muted">{{ role.isInternal ? 'interne' : 'externe' }}</small>
+            </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+{% include 'global/components/button/_btn_bar.html.twig' with {
+    buttons: {
+        back: {
+            type: 'link',
+            route: 'app_capture_index',
+            icon: 'bi-arrow-left',
+            label: 'Retour',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        save: {
+            type: 'submit',
+            icon: 'bi-check',
+            label: 'Enregistrer',
+            class: 'btn btn-primary btn-sm'
+        },
+    }
+} %}
+
+
+{% set prototype %}
+    {% include 'capture_element/_capture_element_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
+{% endset %}
+<div
+    data-controller="capture"
+    data-prototype="{{ prototype|e('html_attr') }}"
+>
+    {% for captureElement in form.captureElements %}
+        {% include 'capture_element/_capture_element_prototype.html.twig' with { form: captureElement } %}
+    {% endfor %}
+
+    <a class="btn btn-primary btn-sm"
+       href="{{ path('app_capture_element_index', { capture: capture.id }) }}">
+        Ajouter un élément
+    </a>
+</div>
+{{ form_end(form) }}

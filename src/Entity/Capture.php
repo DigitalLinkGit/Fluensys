@@ -84,4 +84,64 @@ class Capture
 
         return $this;
     }
+
+    /** @return ParticipantRole[] **/
+    public function getRespondentRoles(): array
+    {
+        $u = [];
+        foreach ($this->getCaptureElements() as $el) {
+            /** @var CaptureElement $el */
+            if ($r = $el->getRespondent()) {
+                $u[$r->getId()] = $r;
+            }
+        }
+        return array_values($u);
+    }
+
+    /** @return ParticipantRole[] **/
+    public function getResponsibleRoles(): array
+    {
+        $u = [];
+        foreach ($this->getCaptureElements() as $el) {
+            if ($r = $el->getResponsible()) {
+                $u[$r->getId()] = $r;
+            }
+        }
+        return array_values($u);
+    }
+
+    /** @return ParticipantRole[] **/
+    public function getValidatorRoles(): array
+    {
+        $u = [];
+        foreach ($this->getCaptureElements() as $el) {
+            if ($r = $el->getValidator()) {
+                $u[$r->getId()] = $r;
+            }
+        }
+        return array_values($u);
+    }
+
+    /**
+     * For displaying roles by elements"
+     * @return array<int, array{
+     *   element: CaptureElement,
+     *   respondent: ?ParticipantRole,
+     *   responsible: ?ParticipantRole,
+     *   validator: ?ParticipantRole
+     * }>
+     */
+    public function getCaptureElementsWithTypedRoles(): array
+    {
+        $rows = [];
+        foreach ($this->getCaptureElements() as $element) {
+            $rows[] = [
+                'element'    => $element,
+                'respondent' => $element->getRespondentRole(),
+                'responsible'=> $element->getResponsibleRole(),
+                'validator'  => $element->getValidatorRole(),
+            ];
+        }
+        return $rows;
+    }
 }

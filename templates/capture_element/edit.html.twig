@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit CaptureElement{% endblock %}
+
+{% block body %}
+    <h1>Edit CaptureElement</h1>
+
+    {{ include('capture_element/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_capture_element_index') }}">back to list</a>
+
+    {{ include('capture_element/_delete_form.html.twig') }}
+{% endblock %}

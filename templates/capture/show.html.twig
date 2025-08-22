@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Capture{% endblock %}
+
+{% block body %}
+    <h1>Capture</h1>
+
+    {% include 'global/components/table/_table_show.html.twig' with {
+        object: capture,
+        fields: [
+            { label: 'Nom', field: 'name' },
+            { label: 'Description', field: 'description' },
+        ]
+    } %}
+
+    {% include 'global/components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                route: 'app_capture_index',
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary btn-sm'
+            }
+        }
+    } %}
+{% endblock %}

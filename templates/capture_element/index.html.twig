@@ -6,28 +6,29 @@
     <h1>CaptureElement index</h1>
 
     <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>actions</th>
-            </tr>
-        </thead>
         <tbody>
-        {% for capture_element in capture_elements %}
+        {% for el in capture_elements %}
             <tr>
-                <td>{{ capture_element.id }}</td>
-                <td>{{ capture_element.name }}</td>
-                <td>{{ capture_element.description }}</td>
-                <td>
+                <td>{{ el.name }}</td>
+                <td>{{ el.description }}</td>
+                <td class="text-end">
+                    {% if capture_id %}
+                        <a href="{{ path('app_capture_attach_element', { captureId: capture_id, id: el.id }) }}"
+                           class="btn btn-outline-primary btn-sm">
+                            Sélectionner
+                        </a>
+
+                    {% endif %}
                 </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+
+    {% if capture_id %}
+        <a href="{{ path('app_capture_edit', { id: capture_id }) }}"
+           class="btn btn-outline-primary btn-sm">Retour</a>
+    {% endif %}
+
+
 {% endblock %}
