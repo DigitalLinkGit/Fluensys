@@ -2,15 +2,14 @@
 
 {% for action in actions %}
     {% if action.route is defined %}
-        {# Construire les paramètres depuis param_map #}
-        {% set params = {} %}
+        {# params managment #}
+        {% set params = action.params|default({}) %}
         {% for key, path in action.param_map|default({ id: 'id' }) %}
-            {# Fallback: si attribute_chain(item, path) renvoie null, on prend la valeur littérale 'path' #}
-            {% set candidate = attribute_chain(item, path) %}
-            {% set params = params|merge({ (key): (candidate is not null ? candidate : path) }) %}
+            {% set value = attribute_chain(item, path) %}
+            {% set params = params|merge({ (key): value }) %}
         {% endfor %}
 
-        {# Icône Bootstrap Icons (tolère 'bi-pencil' ou 'bi bi-pencil') #}
+        {# Icon maagment #}
         {% set icon = action.icon|default(null) %}
         {% if icon %}
             {% set icon_class = icon starts with 'bi ' ? icon : 'bi ' ~ (icon starts with 'bi-' ? icon : 'bi-' ~ icon) %}

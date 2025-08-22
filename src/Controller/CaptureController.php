@@ -81,7 +81,7 @@ final class CaptureController extends AbstractController
         return $this->redirectToRoute('app_capture_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/capture/{captureId}/elements/{id}/attach', name: 'app_capture_attach_element', methods: ['GET'])]
+    #[Route('/{captureId}/elements/{id}/attach', name: 'app_capture_attach_element', methods: ['GET'])]
     public function attachElement(#[MapEntity(id: 'captureId')] Capture $capture, CaptureElement $element, EntityManagerInterface $em): Response
     {
         $capture->addCaptureElement($element);

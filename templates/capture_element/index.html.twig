@@ -5,34 +5,29 @@
 {% block body %}
     <h1>CaptureElement index</h1>
 
-    <table class="table">
-        <tbody>
-        {% for el in capture_elements %}
-            <tr>
-                <td>{{ el.name }}</td>
-                <td>{{ el.description }}</td>
-                <td class="text-end">
-                    {% if capture_id %}
-                        <a href="{{ path('app_capture_attach_element', { captureId: capture_id, id: el.id }) }}"
-                           class="btn btn-outline-primary btn-sm">
-                            Sélectionner
-                        </a>
-
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            aucun capture élement à ajouter
-        {% endfor %}
-        </tbody>
-    </table>
+    {% include 'components/table/_table.html.twig' with {
+        items: capture_elements,
+        columns: ['name', 'description'],
+        headers: ['Nom', 'Description'],
+        filter: true,
+        sort: true,
+        actions: [
+            {
+                route: 'app_capture_attach_element',
+                param_map: { id: 'id' },
+                params:{captureId: capture_id},
+                icon: 'bi-arrow-right-circle',
+                label: 'Sélectionner',
+            }
+        ]
+    } %}
 
     {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {
             back: {
                 type: 'link',
-                route: 'app_capture_index',
-                param_map: { id: 'capture.id' },
+                route: 'app_capture_edit',
+                param_map: { id: 'capture_id' },
                 icon: 'bi-arrow-left',
                 label: 'Retour',
                 class: 'btn btn-outline-primary btn-sm'
