@@ -27,9 +27,20 @@ class Capture
     #[ORM\ManyToMany(targetEntity: CaptureElement::class)]
     private Collection $captureElements;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'captures')]
+    private Collection $projects;
+
+    #[ORM\Column]
+    private ?bool $template = null;
+
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
+        $this->projects = new ArrayCollection();
+        $this->template = true;
     }
 
     public function getId(): ?int
@@ -143,5 +154,44 @@ class Capture
             ];
         }
         return $rows;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->addCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            $project->removeCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function isTemplate(): ?bool
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(bool $template): static
+    {
+        $this->template = $template;
+
+        return $this;
     }
 }

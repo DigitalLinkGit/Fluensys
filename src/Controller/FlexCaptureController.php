@@ -91,7 +91,7 @@ final class FlexCaptureController extends AbstractController
     public function externalPreview(FlexCapture $flexCapture): Response
     {
         $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
-        return $this->render('flex_capture/preview.html.twig', [
+        return $this->render('capture_element/preview.html.twig', [
             'flex_capture' => $flexCapture,
             'form'=>$form,
         ]);
@@ -101,7 +101,7 @@ final class FlexCaptureController extends AbstractController
     public function internalPreview(FlexCapture $flexCapture): Response
     {
         $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
-        return $this->render('flex_capture/preview.html.twig', [
+        return $this->render('capture_element/preview.html.twig', [
             'flex_capture' => $flexCapture,
             'form'=>$form,
         ]);

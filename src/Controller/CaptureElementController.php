@@ -15,8 +15,19 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CaptureElementController extends AbstractController
 {
 
-    #[Route(name: 'app_capture_element_index', methods: ['GET'])]
-    public function index(Request $request, EntityManagerInterface $em): Response
+    #[Route(name: 'app_capture_element_template_index', methods: ['GET'])]
+    public function templateIndex(Request $request, EntityManagerInterface $em): Response
+    {
+        $all = $em->getRepository(CaptureElement::class)->findAll();
+        $templates = array_filter($all, fn($el) => $el->isTemplate());
+
+        return $this->render('capture_element/index.html.twig', [
+            'capture_elements' => $templates,
+        ]);
+    }
+
+    #[Route('/select',name: 'app_capture_element_select', methods: ['GET'])]
+    public function select(Request $request, EntityManagerInterface $em): Response
     {
         $captureId = $request->query->getInt('capture');
         $capture   = $em->getRepository(Capture::class)->find($captureId);
@@ -25,9 +36,9 @@ final class CaptureElementController extends AbstractController
         $already = $capture ? $capture->getCaptureElements() : new ArrayCollection();
 
         $alreadyIds = array_map(fn($e) => $e->getId(), $already->toArray());
-        $available = array_filter($all, fn($el) => !in_array($el->getId(), $alreadyIds, true));
+        $available = array_filter($all, fn($el) => $el->isTemplate() && !in_array($el->getId(), $alreadyIds, true));
 
-        return $this->render('capture_element/index.html.twig', [
+        return $this->render('capture_element/select.html.twig', [
             'capture_elements' => $available,
             'capture_id' => $captureId,
         ]);

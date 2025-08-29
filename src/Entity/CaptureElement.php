@@ -55,10 +55,14 @@ abstract class CaptureElement
     #[ORM\JoinColumn(nullable: false)]
     private ?ParticipantRole $validator = null;
 
+    #[ORM\Column]
+    private ?bool $template = null;
+
     public function __construct()
     {
         $this->fields = new ArrayCollection();
         $this->calculatedvariables = new ArrayCollection();
+        $this->template = true;
     }
 
     public function getId(): ?int
@@ -199,6 +203,18 @@ abstract class CaptureElement
     public function setValidator(?ParticipantRole $validator): static
     {
         $this->validator = $validator;
+
+        return $this;
+    }
+
+    public function isTemplate(): ?bool
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(bool $template): static
+    {
+        $this->template = $template;
 
         return $this;
     }

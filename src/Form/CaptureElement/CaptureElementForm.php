@@ -57,7 +57,7 @@ class CaptureElementForm extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'rows' => 3,
+                    'rows' => 4,
                     'placeholder' => 'Description de la capture...',
                 ],
             ])

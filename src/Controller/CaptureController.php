@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Capture;
 use App\Entity\CaptureElement;
-use App\Form\CaptureForm;
+use App\Form\Capture\CaptureForm;
 use App\Repository\CaptureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -18,6 +18,14 @@ final class CaptureController extends AbstractController
 {
     #[Route(name: 'app_capture_index', methods: ['GET'])]
     public function index(CaptureRepository $captureRepository): Response
+    {
+        return $this->render('capture/index.html.twig', [
+            'captures' => $captureRepository->findAll(),
+        ]);
+    }
+
+    #[Route(name: 'app_capture_template_index', methods: ['GET'])]
+    public function templateIndex(CaptureRepository $captureRepository): Response
     {
         return $this->render('capture/index.html.twig', [
             'captures' => $captureRepository->findAll(),
@@ -61,7 +69,7 @@ final class CaptureController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_capture_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_capture_template_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('capture/edit.html.twig', [
@@ -78,7 +86,7 @@ final class CaptureController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_capture_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_capture_template_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{captureId}/elements/{id}/attach', name: 'app_capture_attach_element', methods: ['GET'])]
