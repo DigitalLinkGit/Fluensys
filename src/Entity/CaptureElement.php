@@ -18,6 +18,30 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class CaptureElement
 {
+    public function __clone()
+    {
+        $this->id = null;
+        // fields
+        $newFields = new ArrayCollection();
+        foreach ($this->fields as $f) {
+            $cloned = clone $f;
+            $newFields->add($cloned);
+            $cloned->setCaptureElement($this);
+        }
+        $this->fields = $newFields;
+        // calculated variables
+        $newCvs = new ArrayCollection();
+        foreach ($this->calculatedvariables as $cv) {
+            $clonedCv = (new CalculatedVariable())
+                ->setName((string)$cv->getName())
+                ->setTechnicalName((string)$cv->getTechnicalName())
+                ->setExpression((string)$cv->getExpression())
+                ->setCaptureElement($this);
+            $newCvs->add($clonedCv);
+        }
+        $this->calculatedvariables = $newCvs;
+        $this->template = false;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

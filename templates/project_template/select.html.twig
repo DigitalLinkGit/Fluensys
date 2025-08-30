@@ -6,14 +6,14 @@
     <h1>CaptureElement index</h1>
 
     {% include 'components/table/_table.html.twig' with {
-        items: capture_elements,
+        items: projects,
         columns: ['name', 'description','status'],
         headers: ['Nom', 'Description','Statut'],
         filter: true,
         sort: true,
         actions: [
             {
-                route: 'app_project_clone',
+                route: 'app_project_template_clone',
                 param_map: { id: 'id' },
                 icon: 'bi-arrow-right-circle',
                 label: 'Sélectionner',

@@ -17,6 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class Field
 {
+    public function __clone()
+    {
+        $this->id = null;
+        // captureElement is re-set by parent clone process
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

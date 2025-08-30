@@ -45,7 +45,7 @@ final class ProjectTemplateController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_project_template_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_project_template_show', methods: ['GET'], requirements: ['id' => '\\d+'])]
     public function show(Project $project): Response
     {
         return $this->render('project_template/show.html.twig', [
@@ -53,7 +53,7 @@ final class ProjectTemplateController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_project_template_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_project_template_edit', methods: ['GET', 'POST'], requirements: ['id' => '\\d+'])]
     public function edit(Request $request, Project $project, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ProjectTemplateForm::class, $project);
@@ -71,7 +71,7 @@ final class ProjectTemplateController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_project_template_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_project_template_delete', methods: ['POST'], requirements: ['id' => '\\d+'])]
     public function delete(Request $request, Project $project, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$project->getId(), $request->getPayload()->getString('_token'))) {
@@ -88,28 +88,41 @@ final class ProjectTemplateController extends AbstractController
         $all   = $em->getRepository(Project::class)->findAll();
         $templates = array_filter($all, fn($el) => $el->isTemplate());
 
-        return $this->render('capture/select.html.twig', [
+        return $this->render('project_template/select.html.twig', [
             'projects' => $templates,
         ]);
     }
 
-    #[Route('{id}/clone',name: 'app_project_template_clone', methods: ['GET'])]
-    public function clone(Request $request, EntityManagerInterface $em): Response
+    #[Route('/{id}/clone', name: 'app_project_template_clone', methods: ['GET'], requirements: ['id' => '\\d+'])]
+    public function clone(Project $project, EntityManagerInterface $em): Response
     {
-        $project = new Project();
-        $form = $this->createForm(ProjectTemplateForm::class, $project);
-        $form->handleRequest($request);
+        // Create a new non-template Project cloned from the provided template project
+        $newProject = clone $project;
+        $newProject
+            ->setName('')
+            ->setTemplate(false);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($project);
-            $em->flush();
+        // After cloning the project entity graph via __clone, ensure IS stays the same
+        $newProject->setInformationSystem($project->getInformationSystem());
 
-            return $this->redirectToRoute('app_project_template_index', [], Response::HTTP_SEE_OTHER);
+        // The deep graph has already been cloned (captures, elements, fields, calculated variables)
+        // Persist all new entities explicitly because ManyToMany/OneToMany here do not declare cascade persist.
+        $em->persist($newProject);
+        foreach ($newProject->getCaptures() as $capture) {
+            $em->persist($capture);
+            foreach ($capture->getCaptureElements() as $element) {
+                $em->persist($element);
+                foreach ($element->getFields() as $field) {
+                    $em->persist($field);
+                }
+                foreach ($element->getCalculatedvariables() as $cv) {
+                    $em->persist($cv);
+                }
+            }
         }
+        $em->flush();
 
-        return $this->render('project_template/new.html.twig', [
-            'project' => $project,
-            'form' => $form,
-        ]);
+        // Redirect to the edit page of the cloned (non-template) project
+        return $this->redirectToRoute('app_project_edit', ['id' => $newProject->getId()]);
     }
 }

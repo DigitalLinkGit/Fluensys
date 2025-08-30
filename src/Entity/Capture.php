@@ -10,6 +10,18 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CaptureRepository::class)]
 class Capture
 {
+    public function __clone()
+    {
+        $this->id = null;
+        $newElements = new ArrayCollection();
+        foreach ($this->captureElements as $el) {
+            $cloned = clone $el;
+            $cloned->setTemplate(false);
+            $newElements->add($cloned);
+        }
+        $this->captureElements = $newElements;
+        $this->projects = new ArrayCollection();
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

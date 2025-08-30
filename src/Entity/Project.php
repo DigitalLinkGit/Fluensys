@@ -10,6 +10,19 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
 {
+    public function __clone()
+    {
+        $this->id = null;
+        // keep basic scalars, reset template flag decision left to caller/controller
+        // clone captures as new instances not reusing original associations
+        $newCaptures = new ArrayCollection();
+        foreach ($this->captures as $capture) {
+            $cloned = clone $capture;
+            $cloned->setTemplate(false);
+            $newCaptures->add($cloned);
+        }
+        $this->captures = $newCaptures;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
