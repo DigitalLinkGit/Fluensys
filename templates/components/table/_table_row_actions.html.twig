@@ -2,25 +2,37 @@
 
 {% for action in actions %}
     {% if action.route is defined %}
-        {# params managment #}
+        {# params management #}
         {% set params = action.params|default({}) %}
         {% for key, path in action.param_map|default({ id: 'id' }) %}
             {% set value = attribute_chain(item, path) %}
             {% set params = params|merge({ (key): value }) %}
         {% endfor %}
 
-        {# Icon maagment #}
+        {# Icon management #}
         {% set icon = action.icon|default(null) %}
         {% if icon %}
             {% set icon_class = icon starts with 'bi ' ? icon : 'bi ' ~ (icon starts with 'bi-' ? icon : 'bi-' ~ icon) %}
         {% endif %}
 
-        <a href="{{ path(action.route, params) }}"
-           class="{{ action.class|default(default_btn_class) }}"
-           title="{{ action.label|default('') }}"
-           aria-label="{{ action.label|default('') }}">
-            {% if icon %}<i class="{{ icon_class }}"></i>{% endif %}
-        </a>
+        {% set is_delete = action.method is defined ? action.method|upper in ['POST','DELETE'] : (action.route ends with '_delete') %}
+
+        {% if is_delete %}
+            <form method="post" action="{{ path(action.route, params) }}" class="d-inline"
+                  onsubmit="return confirm('{{ action.confirm|default('Êtes-vous sûr de vouloir supprimer cet élément ?')|e('js') }}');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ (params.id ?? attribute_chain(item, 'id'))) }}">
+                <button class="{{ action.class|default(default_btn_class) }}" title="{{ action.label|default('Supprimer') }}" aria-label="{{ action.label|default('Supprimer') }}">
+                    {% if icon %}<i class="{{ icon_class }}"></i>{% else %}Supprimer{% endif %}
+                </button>
+            </form>
+        {% else %}
+            <a href="{{ path(action.route, params) }}"
+               class="{{ action.class|default(default_btn_class) }}"
+               title="{{ action.label|default('') }}"
+               aria-label="{{ action.label|default('') }}">
+                {% if icon %}<i class="{{ icon_class }}"></i>{% endif %}
+            </a>
+        {% endif %}
 
     {% endif %}
 {% endfor %}

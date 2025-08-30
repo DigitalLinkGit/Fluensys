@@ -68,7 +68,7 @@ final class ParticipantRoleController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_participant_role_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_participant_role_delete', methods: ['POST'])]
     public function delete(Request $request, ParticipantRole $participantRole, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$participantRole->getId(), $request->getPayload()->getString('_token'))) {

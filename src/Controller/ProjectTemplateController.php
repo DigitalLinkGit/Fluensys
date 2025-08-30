@@ -71,7 +71,7 @@ final class ProjectTemplateController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_project_template_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_project_template_delete', methods: ['POST'])]
     public function delete(Request $request, Project $project, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$project->getId(), $request->getPayload()->getString('_token'))) {
@@ -80,5 +80,36 @@ final class ProjectTemplateController extends AbstractController
         }
 
         return $this->redirectToRoute('app_project_template_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/select',name: 'app_project_template_select', methods: ['GET'])]
+    public function select(Request $request, EntityManagerInterface $em): Response
+    {
+        $all   = $em->getRepository(Project::class)->findAll();
+        $templates = array_filter($all, fn($el) => $el->isTemplate());
+
+        return $this->render('capture/select.html.twig', [
+            'projects' => $templates,
+        ]);
+    }
+
+    #[Route('{id}/clone',name: 'app_project_template_clone', methods: ['GET'])]
+    public function clone(Request $request, EntityManagerInterface $em): Response
+    {
+        $project = new Project();
+        $form = $this->createForm(ProjectTemplateForm::class, $project);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($project);
+            $em->flush();
+
+            return $this->redirectToRoute('app_project_template_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('project_template/new.html.twig', [
+            'project' => $project,
+            'form' => $form,
+        ]);
     }
 }

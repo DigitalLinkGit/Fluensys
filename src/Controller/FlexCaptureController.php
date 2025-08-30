@@ -76,7 +76,7 @@ final class FlexCaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_flex_capture_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_flex_capture_delete', methods: ['POST'])]
     public function delete(Request $request, FlexCapture $flexCapture, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$flexCapture->getId(), $request->getPayload()->getString('_token'))) {

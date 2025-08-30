@@ -26,6 +26,14 @@ final class CaptureElementController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'app_capture_element_show', methods: ['GET'])]
+    public function show(CaptureElement $captureElement): Response
+    {
+        return $this->render('capture_element/show.html.twig', [
+            'capture_element' => $captureElement,
+        ]);
+    }
+
     #[Route('/select',name: 'app_capture_element_select', methods: ['GET'])]
     public function select(Request $request, EntityManagerInterface $em): Response
     {
@@ -41,15 +49,6 @@ final class CaptureElementController extends AbstractController
         return $this->render('capture_element/select.html.twig', [
             'capture_elements' => $available,
             'capture_id' => $captureId,
-        ]);
-    }
-
-
-    #[Route('/{id}', name: 'app_capture_element_show', methods: ['GET'])]
-    public function show(CaptureElement $captureElement): Response
-    {
-        return $this->render('capture_element/show.html.twig', [
-            'capture_element' => $captureElement,
         ]);
     }
 }

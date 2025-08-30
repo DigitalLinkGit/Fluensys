@@ -31,6 +31,18 @@
             ]
         } %}
 
+        {% include 'components/partials/_sidebar_section.html.twig' with {
+            icon: '',
+            title: 'Capture',
+            groups: [
+                {
+                    links: [
+                    { label: 'Mes projets', route: 'app_project_index' }
+                ]
+                }
+            ]
+        } %}
+
     </div>
 
 </div>

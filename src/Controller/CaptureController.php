@@ -26,24 +26,6 @@ final class CaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/select',name: 'app_capture_select', methods: ['GET'])]
-    public function select(Request $request, EntityManagerInterface $em): Response
-    {
-        $projectId = $request->query->getInt('project');
-        $project   = $em->getRepository(Project::class)->find($projectId);
-
-        $all = $em->getRepository(Capture::class)->findAll();
-        $already = $project ? $project->getCaptures() : new ArrayCollection();
-
-        $alreadyIds = array_map(fn($e) => $e->getId(), $already->toArray());
-        $available = array_filter($all, fn($el) => $el->isTemplate() && !in_array($el->getId(), $alreadyIds, true));
-
-        return $this->render('capture/select.html.twig', [
-            'captures' => $available,
-            'project_id' => $projectId,
-        ]);
-    }
-
     #[Route('/new', name: 'app_capture_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -90,7 +72,7 @@ final class CaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_capture_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_capture_delete', methods: ['POST'])]
     public function delete(Request $request, Capture $capture, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$capture->getId(), $request->getPayload()->getString('_token'))) {
@@ -99,6 +81,24 @@ final class CaptureController extends AbstractController
         }
 
         return $this->redirectToRoute('app_capture_template_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/select',name: 'app_capture_select', methods: ['GET'])]
+    public function select(Request $request, EntityManagerInterface $em): Response
+    {
+        $projectId = $request->query->getInt('project');
+        $project   = $em->getRepository(Project::class)->find($projectId);
+
+        $all = $em->getRepository(Capture::class)->findAll();
+        $already = $project ? $project->getCaptures() : new ArrayCollection();
+
+        $alreadyIds = array_map(fn($e) => $e->getId(), $already->toArray());
+        $available = array_filter($all, fn($el) => $el->isTemplate() && !in_array($el->getId(), $alreadyIds, true));
+
+        return $this->render('capture/select.html.twig', [
+            'captures' => $available,
+            'project_id' => $projectId,
+        ]);
     }
 
     #[Route('/{captureId}/elements/{id}/attach', name: 'app_capture_attach_element', methods: ['GET'])]
