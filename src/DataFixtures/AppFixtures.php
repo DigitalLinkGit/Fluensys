@@ -173,15 +173,17 @@ class AppFixtures extends Fixture
             ->setTemplate(true);
         $manager->persist($capture);
 
-        $is = $this->createInformationSystem("Système d'information");
-        $manager->persist($is);
+        $is1 = $this->createInformationSystem("Compte avec SI 1");
+        $manager->persist($is1);
+        $is2 = $this->createInformationSystem("Compte avec SI 2");
+        $manager->persist($is2);
 
         $pro = $this->createProject(
             "Premier projet",
             "Projet avec capture des informations de base sur le compte",
             "draft",
             true,
-            $is,
+            null,
             $capture
         );
 
@@ -196,7 +198,7 @@ class AppFixtures extends Fixture
         return (new InformationSystem())
             ->setName($name);
     }
-    private function createProject(string $name, string $description, string $status, bool $isTemplate, InformationSystem $is, Capture $capture): Project
+    private function createProject(string $name, string $description, string $status, bool $isTemplate, ?InformationSystem $is, Capture $capture): Project
     {
         return (new Project())
             ->setName($name)

@@ -16,7 +16,7 @@ final class CaptureElementController extends AbstractController
 {
 
     #[Route(name: 'app_capture_element_template_index', methods: ['GET'])]
-    public function templateIndex(Request $request, EntityManagerInterface $em): Response
+    public function index(Request $request, EntityManagerInterface $em): Response
     {
         $all = $em->getRepository(CaptureElement::class)->findAll();
         $templates = array_filter($all, fn($el) => $el->isTemplate());

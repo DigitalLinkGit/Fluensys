@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Capture;
+use App\Entity\CaptureElement;
 use App\Entity\Project;
 use App\Form\ProjectForm;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,15 +20,19 @@ final class ProjectController extends AbstractController
     #[Route(name: 'app_project_index', methods: ['GET'])]
     public function index(ProjectRepository $projectRepository): Response
     {
+        $all = $projectRepository->findAll();
+        $templates = array_filter($all, fn($el) => !$el->isTemplate());
+
         return $this->render('project/index.html.twig', [
-            'projects' => $projectRepository->findAll(),
+            'projects' => $templates,
         ]);
     }
 
     #[Route('/new', name: 'app_project_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $project = new Project();
+        $project = (new Project())
+        ->setTemplate(false);
         $form = $this->createForm(ProjectForm::class, $project);
         $form->handleRequest($request);
 
@@ -77,5 +84,14 @@ final class ProjectController extends AbstractController
         }
 
         return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{projectId}/capture/{id}/attach', name: 'app_project_attach_capture', methods: ['GET'])]
+    public function attachCapture(#[MapEntity(id: 'projectId')] Project $project, Capture $capture, EntityManagerInterface $em): Response
+    {
+        $project->addCapture($capture);
+        $em->flush();
+
+        return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 }

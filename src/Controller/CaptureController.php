@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Capture;
 use App\Entity\CaptureElement;
+use App\Entity\Project;
 use App\Form\Capture\CaptureForm;
 use App\Repository\CaptureRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,11 +26,21 @@ final class CaptureController extends AbstractController
         ]);
     }
 
-    #[Route(name: 'app_capture_template_index', methods: ['GET'])]
-    public function templateIndex(CaptureRepository $captureRepository): Response
+    #[Route('/select',name: 'app_capture_select', methods: ['GET'])]
+    public function select(Request $request, EntityManagerInterface $em): Response
     {
-        return $this->render('capture/index.html.twig', [
-            'captures' => $captureRepository->findAll(),
+        $projectId = $request->query->getInt('project');
+        $project   = $em->getRepository(Project::class)->find($projectId);
+
+        $all = $em->getRepository(Capture::class)->findAll();
+        $already = $project ? $project->getCaptures() : new ArrayCollection();
+
+        $alreadyIds = array_map(fn($e) => $e->getId(), $already->toArray());
+        $available = array_filter($all, fn($el) => $el->isTemplate() && !in_array($el->getId(), $alreadyIds, true));
+
+        return $this->render('capture/select.html.twig', [
+            'captures' => $available,
+            'project_id' => $projectId,
         ]);
     }
 

@@ -4,9 +4,6 @@
         {{ form_row(form.name) }}
     </div>
     <div class="col-md-4">
-        {{ form_row(form.informationSystem) }}
-    </div>
-    <div class="col-md-4">
         {{ form_row(form.status) }}
     </div>
 </div>
@@ -17,7 +14,7 @@
         buttons: {
             back: {
                 type: 'link',
-                route: 'app_project_index',
+                route: 'app_project_template_index',
                 icon: 'bi-arrow-left',
                 label: 'Retour',
                 class: 'btn btn-outline-primary btn-sm'
@@ -43,7 +40,7 @@
     {% endfor %}
 
     <a class="btn btn-primary btn-sm"
-       href="{{ path('app_capture_select', { project: project.id }) }}">
+       href="{{ path('app_capture_index', { project: project.id }) }}">
         Ajouter un élément
     </a>
 </div>

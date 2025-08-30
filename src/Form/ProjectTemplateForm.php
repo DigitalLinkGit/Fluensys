@@ -16,7 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProjectForm extends AbstractType
+class ProjectTemplateForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -42,25 +42,14 @@ class ProjectForm extends AbstractType
                 'label' => 'Statut',
                 'choices' => [
                     'Draft' => 'draft',
-                    'En cours' => 'inProgress',
-                    'En pause' => 'paused',
-                    'Terminé' => 'finished',
-                ],
-            ])
-            ->add('informationSystem', EntityType::class, [
-                'class' => InformationSystem::class,
-                'choice_label' => 'name',
-                'placeholder' => 'Sélectionnez un système d\'information',
-                'required' => false,
-                'label' => 'Système d\'information',
-                'attr' => [
-                    'class' => 'form-select'
+                    'Validé' => 'validate',
+                    'Obsolète' => 'deprecated',
                 ],
             ])
             ->add('captures', CollectionType::class, [
                 'entry_type' => CaptureMinimalForm::class,
                 'allow_add' => true,
-                'allow_delete' => false,
+                'allow_delete' => true,
                 'label' => false,
                 'by_reference' => false,
                 'prototype' => true,

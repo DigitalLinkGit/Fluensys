@@ -34,6 +34,7 @@ class Project
     private ?bool $template = null;
 
     #[ORM\ManyToOne(inversedBy: 'projects')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?InformationSystem $informationSystem = null;
 
     public function __construct()
