@@ -33,6 +33,9 @@ class Project
     #[ORM\Column]
     private ?bool $template = null;
 
+    #[ORM\ManyToOne(inversedBy: 'projects')]
+    private ?InformationSystem $informationSystem = null;
+
     public function __construct()
     {
         $this->captures = new ArrayCollection();
@@ -112,6 +115,18 @@ class Project
     public function setTemplate(bool $template): static
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function getInformationSystem(): ?InformationSystem
+    {
+        return $this->informationSystem;
+    }
+
+    public function setInformationSystem(?InformationSystem $informationSystem): static
+    {
+        $this->informationSystem = $informationSystem;
 
         return $this;
     }
