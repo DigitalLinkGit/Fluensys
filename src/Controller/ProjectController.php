@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Capture;
 use App\Entity\CaptureElement;
 use App\Entity\Project;
+use App\Form\CaptureElement\CaptureElementInternalForm;
 use App\Form\ProjectForm;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -68,7 +69,7 @@ final class ProjectController extends AbstractController
 
             return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
         }
-
+        //dd($form);
         return $this->render('project/edit.html.twig', [
             'project' => $project,
             'form' => $form,

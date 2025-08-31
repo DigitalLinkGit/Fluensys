@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Capture;
 use App\Entity\Project;
 use App\Entity\InformationSystem;
+use App\Form\Capture\CaptureInternalForm;
 use App\Form\Capture\CaptureMinimalForm;
 use App\Form\CaptureElement\CaptureElementMinimalForm;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -58,7 +59,7 @@ class ProjectForm extends AbstractType
                 ],
             ])
             ->add('captures', CollectionType::class, [
-                'entry_type' => CaptureMinimalForm::class,
+                'entry_type' => CaptureInternalForm::class,
                 'allow_add' => true,
                 'allow_delete' => false,
                 'label' => false,

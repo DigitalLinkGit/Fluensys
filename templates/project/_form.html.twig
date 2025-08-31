@@ -31,20 +31,37 @@
         }
     } %}
 
-{% set prototype %}
-    {% include 'capture/_capture_prototype.html.twig' with { form: form.captures.vars.prototype } %}
-{% endset %}
-<div
-    data-controller="project"
-    data-prototype="{{ prototype|e('html_attr') }}"
->
-    {% for capture in form.captures %}
-        {% include 'capture/_capture_prototype.html.twig' with { form: capture } %}
-    {% endfor %}
+<ul class="tabs tabs--primary my-3 nav" role="tablist">
+    <li class="tab nav-item" role="presentation">
+        <a class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab" aria-controls="capture" aria-selected="false">Captures</a>
+    </li>
+    <li class="tab nav-item" role="presentation">
+        <a class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab" aria-controls="roles" aria-selected="true">Rôles</a>
+    </li>
+</ul>
 
-    <a class="btn btn-primary btn-sm"
-       href="{{ path('app_capture_select', { project: project.id }) }}">
-        Ajouter un élément
-    </a>
+{% set prototype %}
+    {% include 'capture/_capture_internal_prototype.html.twig' with { form: form.captures.vars.prototype } %}
+{% endset %}
+
+<div class="tab-content">
+    <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
+        <div
+            data-controller="project"
+            data-prototype="{{ prototype|e('html_attr') }}"
+        >
+            {% include 'capture/_capture_internal_prototype.html.twig' with { captures: form.captures } %}
+            <a class="btn btn-primary btn-sm mt-3"
+               href="{{ path('app_capture_select', { project: project.id }) }}">
+                Ajouter un élément
+            </a>
+        </div>
+    </div>
+    <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+
+    </div>
 </div>
+
+
+{% do form.captures.setRendered() %}
 {{ form_end(form) }}

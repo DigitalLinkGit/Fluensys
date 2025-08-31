@@ -1,0 +1,40 @@
+{# Contex: { elements: form.captureElements } #}
+{% if elements is defined %}
+    {% for el in elements %}
+        {% set name = (el.name is defined and el.name.vars is defined) ? (el.name.vars.data ?? '') : '' %}
+        {% set collapseId = (el.vars is defined and el.vars.id is defined) ? (el.vars.id ~ '_fields') : ('el_' ~ loop.index ~ '_fields') %}
+        <div class="card h-100 mb-3">
+            <div class="card-body py-2 d-flex align-items-center">
+                <h6 class="card-title mb-0">{{ name is not empty ? name : 'Élément ' ~ loop.index }}</h6>
+                <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
+                    <button class="btn btn-outline-primary btn-sm"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ collapseId }}"
+                            aria-expanded="false"
+                            aria-controls="{{ collapseId }}"
+                            title="Ouvrir">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="{{ collapseId }}" class="collapse">
+                <div class="card-body pt-2">
+                    {% if el.fields is defined %}
+                        {% for field in el.fields %}
+                            {{ form_row(field) }}
+                        {% else %}
+                            <div class="text-muted small">Aucun champ</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-muted small">Aucun champ</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col">
+            <div class="alert alert-secondary mb-0">Aucun élément</div>
+        </div>
+    {% endfor %}
+{% endif %}

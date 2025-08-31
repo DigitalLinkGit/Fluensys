@@ -73,6 +73,7 @@ a:hover {
     color: var(--easy-text-soft);
 }
 
+
 /* ===================== TITLES ===================== */
 .section-title {
     padding-bottom: 6px;
@@ -494,5 +495,76 @@ input[name$="[url]"]:hover {
     color: var(--easy-bg-light);
     border-radius: var(--easy-min-radius);
 
+}
+
+/* ===================== TABS ===================== */
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    padding-left: 0;
+    margin: 0 0 0.75rem 0;
+    list-style: none;
+}
+.tabs--primary{
+    border-bottom: 2px solid var(--easy-primary);
+}
+
+    /* Base elements (scoped under .tabs only) */
+.tabs .tab { margin: 0; }
+.tabs .tab__link {
+    display: inline-block;
+    padding: 0.4rem 0.75rem;
+    font-weight: 500;
+    color: var(--easy-text);
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-top-left-radius: var(--easy-min-radius);
+    border-top-right-radius: var(--easy-min-radius);
+    position: relative;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Secondary tabs: underline style */
+.tabs.tabs--secondary .tab__link.is-active,
+.tabs.tabs--secondary .tab__link.active {
+    color: var(--easy-primary);
+}
+
+.tabs.tabs--secondary .tab__link.is-active::after,
+.tabs.tabs--secondary .tab__link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 3px;
+    background-color: var(--easy-primary);
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.tabs.tabs--secondary .tab__link:hover {
+    color: var(--easy-primary-accent-dark);
+}
+
+/* Primary tabs: pill style (previously secondary) */
+.tabs.tabs--primary .tab__link {
+    border: 2px solid var(--easy-primary);
+    border-bottom: none;
+    background-color: var(--easy-bg-light);
+    color: var(--easy-primary);
+}
+
+.tabs.tabs--primary .tab__link:hover {
+    border-color: var(--easy-primary-accent-dark);
+    color: var(--easy-bg-light);
+    background-color: var(--easy-primary-accent-dark);
+}
+
+.tabs.tabs--primary .tab__link.is-active,
+.tabs.tabs--primary .tab__link.active {
+    background-color: var(--easy-primary);
+    color: var(--easy-bg-light);
+    border-color: var(--easy-primary);
 }
 

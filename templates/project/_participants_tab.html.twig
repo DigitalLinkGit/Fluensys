@@ -1,0 +1,85 @@
+<div class="form-block">
+	<h5 class="mb-3">Affectation des rôles</h5>
+
+	<div class="row">
+		<div class="col-md-6">
+			<h6 class="mb-3">Rôles internes</h6>
+			{% for form in form.participantAssignments %}
+				{% set role = form.vars.data.getRole() %}
+				{% if role.isInternal %}
+					<div class="border rounded p-2 mb-3">
+						<div class="d-flex justify-content-between align-items-center">
+							<div>
+								<strong>{{ role.name }}</strong><br>
+								{% if form.vars.data.getInternalUser() %}
+									<small>{{ form.vars.data.getInternalUser().getFullName() }}</small>
+								{% else %}
+									<small class="text-danger">Aucun participant</small>
+								{% endif %}
+							</div>
+							<div class="d-flex align-items-center gap-2">
+								<span class="badge">Interne</span>
+								<i class="bi bi-chevron-down toggle-icon" role="button" data-target="#role-fields-{{ loop.index }}"></i>
+							</div>
+						</div>
+						<div id="role-fields-{{ loop.index }}" class="mt-2 d-none">
+							{{ form_row(form.internalUser) }}
+						</div>
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+
+		<div class="col-md-6">
+			<h6 class="mb-3">Rôles externes</h6>
+			{% for form in form.participantAssignments %}
+				{% set role = form.vars.data.getRole() %}
+				{% if not role.isInternal %}
+					<div class="border rounded p-2 mb-3">
+						<div class="d-flex justify-content-between align-items-center">
+							<div>
+								<strong>{{ role.name }}</strong><br>
+								{% if form.vars.data.getExternalLastName() %}
+									<small>{{ form.vars.data.getExternalFirstName() }}
+										{{ form.vars.data.getExternalLastName() }}</small>
+								{% else %}
+									<small class="text-danger">Aucun participant</small>
+								{% endif %}
+							</div>
+							<div class="d-flex align-items-center gap-2">
+								<span class="badge">Externe</span>
+								<i class="bi bi-chevron-down toggle-icon" role="button" data-target="#role-fields-{{ loop.index }}"></i>
+							</div>
+						</div>
+						<div id="role-fields-{{ loop.index }}" class="mt-2 d-none">
+							<div class="row">
+								<div class="col-md-6">
+									{{ form_row(form.externalLastName) }}
+								</div>
+								<div class="col-md-6">
+									{{ form_row(form.externalFirstName) }}
+								</div>
+							</div>
+							{{ form_row(form.externalEmail) }}
+							{{ form_row(form.externalFunction) }}
+						</div>
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+<script>
+	document.querySelectorAll('.toggle-icon').forEach(icon => {
+icon.addEventListener('click', () => {
+const target = document.querySelector(icon.dataset.target);
+if (target) {
+const isOpen = ! target.classList.contains('d-none');
+target.classList.toggle('d-none');
+icon.classList.toggle('bi-chevron-down', isOpen);
+icon.classList.toggle('bi-chevron-up', ! isOpen);
+}
+});
+});
+</script>

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\ParticipantAssignment;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -49,6 +50,9 @@ class Project
     #[ORM\ManyToOne(inversedBy: 'projects')]
     #[ORM\JoinColumn(nullable: true)]
     private ?InformationSystem $informationSystem = null;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ParticipantAssignment::class, cascade: ['persist'], orphanRemoval: true)]
+    private Collection $participantAssignments;
 
     public function __construct()
     {
