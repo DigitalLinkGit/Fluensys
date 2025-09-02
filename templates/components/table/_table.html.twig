@@ -27,7 +27,11 @@
 
 
 {# Header #}
-<table class="table table-hover align-middle" id="{{ table_id }}">
+<table
+    class="table table-hover align-middle"
+    id="{{ table_id }}"
+    data-controller="table-filters"
+>
     <thead class="table-light">
     <tr>
         {% for header in headers %}
@@ -85,15 +89,15 @@
             {% endfor %}
 
             {# Action buttons #}
-                {% if has_row_actions %}
-                    <td class="text-nowrap btn-fixed-width">
-                        {% include 'components/table/_table_row_actions.html.twig' with {
-                            actions: row_actions,
-                            item: item,
-                            default_btn_class: 'btn btn-outline-primary btn-sm'
-                        } %}
-                    </td>
-                {% endif %}
+            {% if has_row_actions %}
+                <td class="text-nowrap btn-fixed-width">
+                    {% include 'components/table/_table_row_actions.html.twig' with {
+                        actions: row_actions,
+                        item: item,
+                        default_btn_class: 'btn btn-outline-primary btn-sm'
+                    } %}
+                </td>
+            {% endif %}
         </tr>
     {% else %}
         <tr>
