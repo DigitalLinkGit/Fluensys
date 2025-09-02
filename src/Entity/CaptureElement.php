@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
-    'flex' => FlexCapture::class,
+    'flex' => FlexCaptureElement::class,
 ])]
 abstract class CaptureElement
 {

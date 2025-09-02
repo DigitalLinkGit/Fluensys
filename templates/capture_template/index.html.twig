@@ -1,32 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Project index{% endblock %}
+{% block title %}Capture index{% endblock %}
 
 {% block body %}
-    <h1>Project index</h1>
+    <h1>Capture index</h1>
 
     {% include 'components/table/_table.html.twig' with {
-        items: projects,
-        columns: ['name', 'description','status'],
-        headers: ['Nom', 'Description','Statut'],
+        items: captures,
+        columns: ['name', 'description'],
+        headers: ['Nom', 'Description'],
         filter: true,
         sort: true,
-        add: {route: 'app_project_template_new'},
+        add: {route: 'app_capture_template_new'},
         actions: [
             {
-                route: 'app_project_template_show',
+                route: 'app_capture_template_show',
                 param_map: { id: 'id' },
                 icon: 'bi-eye',
                 label: 'Voir',
             },
             {
-                route: 'app_project_template_edit',
+                route: 'app_capture_template_edit',
                 param_map: { id: 'id' },
                 icon: 'bi-pencil',
                 label: 'Éditer',
             },
             {
-                route: 'app_project_template_delete',
+                route: 'app_capture_template_delete',
                 param_map: { id: 'id' },
                 icon: 'bi-trash',
                 label: 'Supprimer',

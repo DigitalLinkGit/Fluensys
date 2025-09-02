@@ -3,13 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Field\Field;
-use App\Entity\FlexCapture;
+use App\Entity\FlexCaptureElement;
 use App\Factory\FieldFactory;
 use App\Form\CaptureElement\CaptureElementConfigForm;
 use App\Form\CaptureElement\CaptureElementExternalForm;
 use App\Form\CaptureElement\CaptureElementInternalForm;
 use App\Form\Field\ExternalFieldForm;
-use App\Repository\FlexCaptureRepository;
+use App\Repository\FlexCaptureElementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,20 +17,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/flex-capture')]
-final class FlexCaptureController extends AbstractController
+final class FlexCaptureElementController extends AbstractController
 {
-    #[Route(name: 'app_flex_capture_index', methods: ['GET'])]
-    public function index(FlexCaptureRepository $flexCaptureRepository): Response
+    #[Route(name: 'app_flex_capture_element_index', methods: ['GET'])]
+    public function index(FlexCaptureElementRepository $flexCaptureRepository): Response
     {
-        return $this->render('flex_capture/index.html.twig', [
-            'flex_captures' => $flexCaptureRepository->findAll(),
+        $all = $flexCaptureRepository->findAll();
+        $templates = array_filter($all, fn($el) => $el->isTemplate());
+        return $this->render('flex_capture_element/index.html.twig', [
+            'flex_captures' => $templates,
         ]);
     }
 
-    #[Route('/new', name: 'app_flex_capture_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_flex_capture_element_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $flexCapture = new FlexCapture();
+        $flexCapture = new FlexCaptureElement();
         $form = $this->createForm(CaptureElementConfigForm::class, $flexCapture);
         $form->handleRequest($request);
 
@@ -38,27 +40,27 @@ final class FlexCaptureController extends AbstractController
             $this->processFields($form, $flexCapture, $entityManager);
             $this->persistFlexCapture($flexCapture,$entityManager);
 
-            return $this->redirectToRoute('app_flex_capture_edit', [
+            return $this->redirectToRoute('app_flex_capture_element_edit', [
                 'id' => $flexCapture->getId(),
             ]);
         }
 
-        return $this->render('flex_capture/new.html.twig', [
+        return $this->render('flex_capture_element/new.html.twig', [
             'flex_capture' => $flexCapture,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_flex_capture_show', methods: ['GET'])]
-    public function show(FlexCapture $flexCapture): Response
+    #[Route('/{id}/show', name: 'app_flex_capture_element_show', methods: ['GET'])]
+    public function show(FlexCaptureElement $flexCapture): Response
     {
-        return $this->render('flex_capture/show.html.twig', [
+        return $this->render('flex_capture_element/show.html.twig', [
             'flex_capture' => $flexCapture,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_flex_capture_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, FlexCapture $flexCapture, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit', name: 'app_flex_capture_element_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CaptureElementConfigForm::class, $flexCapture);
         $form->handleRequest($request);
@@ -67,28 +69,28 @@ final class FlexCaptureController extends AbstractController
             $this->processFields($form, $flexCapture, $entityManager);
             $this->persistFlexCapture($flexCapture,$entityManager);
 
-            return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('flex_capture/edit.html.twig', [
+        return $this->render('flex_capture_element/edit.html.twig', [
             'flex_capture' => $flexCapture,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_flex_capture_delete', methods: ['POST'])]
-    public function delete(Request $request, FlexCapture $flexCapture, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/delete', name: 'app_flex_capture_element_delete', methods: ['POST'])]
+    public function delete(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$flexCapture->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($flexCapture);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_flex_capture_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/external-preview', name: 'app_flex_capture_external_preview', methods: ['GET'])]
-    public function externalPreview(FlexCapture $flexCapture): Response
+    #[Route('/{id}/external-preview', name: 'app_flex_capture_element_external_preview', methods: ['GET'])]
+    public function externalPreview(FlexCaptureElement $flexCapture): Response
     {
         $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
         return $this->render('capture_element/preview.html.twig', [
@@ -97,8 +99,8 @@ final class FlexCaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/internal-preview', name: 'app_flex_capture_internal_preview', methods: ['GET'])]
-    public function internalPreview(FlexCapture $flexCapture): Response
+    #[Route('/{id}/internal-preview', name: 'app_flex_capture_element_internal_preview', methods: ['GET'])]
+    public function internalPreview(FlexCaptureElement $flexCapture): Response
     {
         $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
         return $this->render('capture_element/preview.html.twig', [
@@ -109,11 +111,11 @@ final class FlexCaptureController extends AbstractController
 
     /**
      * @param \Symfony\Component\Form\FormInterface $form
-     * @param FlexCapture $flexCapture
+     * @param FlexCaptureElement $flexCapture
      * @param EntityManagerInterface $entityManager
      * @return void
      */
-    public function processFields(\Symfony\Component\Form\FormInterface $form, FlexCapture $flexCapture, EntityManagerInterface $entityManager): void
+    public function processFields(\Symfony\Component\Form\FormInterface $form, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): void
     {
         foreach ($form->get('fields') as $index => $fieldForm) {
             $type = $fieldForm->get('type')->getData();
@@ -129,7 +131,7 @@ final class FlexCaptureController extends AbstractController
         }
     }
 
-    public function persistFlexCapture(FlexCapture $flexCapture, EntityManagerInterface $em): void
+    public function persistFlexCapture(FlexCaptureElement $flexCapture, EntityManagerInterface $em): void
     {
         $fields = $flexCapture->getFields();
 

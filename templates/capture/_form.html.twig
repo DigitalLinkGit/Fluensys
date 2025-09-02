@@ -2,11 +2,11 @@
 <div class="row">
     <div class="col-md-6">
         {{ form_row(form.name) }}
-        {{ form_row(form.description) }}
     </div>
 
     <div class="col-md-6">
-        {% include 'participant_role/_required_participant_roles.html.twig' %}
+        {{ form_row(form.description) }}
+
     </div>
 </div>
 
@@ -30,20 +30,40 @@
 } %}
 
 
-{% set prototype %}
-    {% include 'capture_element/_capture_element_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
-{% endset %}
-<div
-    data-controller="capture"
-    data-prototype="{{ prototype|e('html_attr') }}"
->
-    {% for captureElement in form.captureElements %}
-        {% include 'capture_element/_capture_element_prototype.html.twig' with { form: captureElement } %}
-    {% endfor %}
+<ul class="tabs tabs--primary my-3 nav" role="tablist">
+    <li class="tab nav-item" role="presentation">
+        <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab" aria-controls="capture"
+           aria-selected="false">Capture</a>
+    </li>
+    <li class="tab nav-item" role="presentation">
+        <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab" aria-controls="roles"
+           aria-selected="true">Rôles</a>
+    </li>
+</ul>
 
-    <a class="btn btn-primary btn-sm"
-       href="{{ path('app_capture_element_select', { capture: capture.id }) }}">
-        Ajouter un élément
-    </a>
+<div class="tab-content">
+    <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
+        <div class="mx-2">
+            {% if form.captureElements is defined %}
+                {% for element in form.captureElements %}
+                    <div class="mb-3 row">
+                        {% include 'capture_element/_cards.html.twig' with { element: element } %}
+                    </div>
+                {% else %}
+                    <div class="text-muted small">Aucun élément</div>
+                {% endfor %}
+            {% else %}
+                <div class="text-muted small">Aucun élément</div>
+            {% endif %}
+        </div>
+    </div>
+    <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+        {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
+    </div>
 </div>
+
+
+
+
+{% do form.captureElements.setRendered() %}
 {{ form_end(form) }}

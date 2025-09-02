@@ -13,14 +13,18 @@ class Capture
     public function __clone()
     {
         $this->id = null;
+
+        $originals = $this->captureElements instanceof \Doctrine\Common\Collections\Collection
+            ? $this->captureElements->toArray() // snapshot
+            : (array) $this->captureElements;
+
         $newElements = new ArrayCollection();
-        foreach ($this->captureElements as $el) {
+        foreach ($originals as $el) {
             $cloned = clone $el;
             $cloned->setTemplate(false);
             $newElements->add($cloned);
         }
         $this->captureElements = $newElements;
-        $this->projects = new ArrayCollection();
     }
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -39,11 +43,6 @@ class Capture
     #[ORM\ManyToMany(targetEntity: CaptureElement::class)]
     private Collection $captureElements;
 
-    /**
-     * @var Collection<int, Project>
-     */
-    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'captures')]
-    private Collection $projects;
 
     #[ORM\Column]
     private ?bool $template = null;
@@ -51,7 +50,6 @@ class Capture
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
-        $this->projects = new ArrayCollection();
         $this->template = true;
     }
 
@@ -168,32 +166,6 @@ class Capture
         return $rows;
     }
 
-    /**
-     * @return Collection<int, Project>
-     */
-    public function getProjects(): Collection
-    {
-        return $this->projects;
-    }
-
-    public function addProject(Project $project): static
-    {
-        if (!$this->projects->contains($project)) {
-            $this->projects->add($project);
-            $project->addCapture($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProject(Project $project): static
-    {
-        if ($this->projects->removeElement($project)) {
-            $project->removeCapture($this);
-        }
-
-        return $this;
-    }
 
     public function isTemplate(): ?bool
     {

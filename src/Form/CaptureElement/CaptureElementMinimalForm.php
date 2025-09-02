@@ -19,9 +19,9 @@ class CaptureElementMinimalForm extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Nom de l\'élémént...',
+                    'readonly' => true
                 ],
                 'required' => true,
-                'disabled' => true,
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
@@ -30,8 +30,8 @@ class CaptureElementMinimalForm extends AbstractType
                     'class' => 'form-control',
                     'rows' => 1,
                     'placeholder' => 'Description de la capture...',
+                    'readonly' => true
                 ],
-                'disabled' => true,
             ])
         ;
     }

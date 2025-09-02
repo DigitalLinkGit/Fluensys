@@ -13,9 +13,8 @@
         sort: true,
         actions: [
             {
-                route: 'app_project_attach_capture',
+                route: 'app_capture_clone',
                 param_map: { id: 'id' },
-                params:{projectId: project_id},
                 icon: 'bi-arrow-right-circle',
                 label: 'Sélectionner',
             }
@@ -26,8 +25,7 @@
         buttons: {
             back: {
                 type: 'link',
-                route: 'app_project_edit',
-                param_map: { id: 'project_id' },
+                route: 'app_capture_index',
                 icon: 'bi-arrow-left',
                 label: 'Retour',
                 class: 'btn btn-outline-primary btn-sm'

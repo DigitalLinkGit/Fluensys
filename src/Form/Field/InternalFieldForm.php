@@ -28,7 +28,7 @@ class InternalFieldForm extends AbstractType
             $event->getForm()->add('value', $formFieldType, [
                 'data' => $field->getValue(),
                 'label' => $field->getInternalLabel(),
-                'required' => $field->isRequired(),
+                'required' => false,
             ]);
         });
 

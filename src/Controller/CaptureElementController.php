@@ -26,7 +26,7 @@ final class CaptureElementController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_capture_element_show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'app_capture_element_show', methods: ['GET'])]
     public function show(CaptureElement $captureElement): Response
     {
         return $this->render('capture_element/show.html.twig', [
@@ -37,7 +37,7 @@ final class CaptureElementController extends AbstractController
     #[Route('/select',name: 'app_capture_element_select', methods: ['GET'])]
     public function select(Request $request, EntityManagerInterface $em): Response
     {
-        $captureId = $request->query->getInt('capture');
+        $captureId = $request->query->getInt('capture', $request->query->getInt('capture'));
         $capture   = $em->getRepository(Capture::class)->find($captureId);
 
         $all = $em->getRepository(CaptureElement::class)->findAll();

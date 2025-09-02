@@ -1,10 +1,12 @@
-{# Contex: { elements: form.captureElements } #}
-{% if elements is defined %}
-    {% for el in elements %}
-        {% set name = (el.name is defined and el.name.vars is defined) ? (el.name.vars.data ?? '') : '' %}
-        {% set collapseId = (el.vars is defined and el.vars.id is defined) ? (el.vars.id ~ '_fields') : ('el_' ~ loop.index ~ '_fields') %}
+{% if element is defined %}
+        {% set name = (element.name is defined and element.name.vars is defined) ? (element.name.vars.data ?? '') : '' %}
+        {% set collapseId = (element.vars is defined and element.vars.id is defined) ? (element.vars.id ~ '_fields') : ('el_' ~ loop.index ~ '_fields') %}
         <div class="card h-100 mb-3">
             <div class="card-body py-2 d-flex align-items-center">
+                {# Ensure the element name is submitted even if not visibly edited #}
+                {% if element.name is defined %}
+                    {{ form_widget(element.name, {'type': 'hidden'}) }}
+                {% endif %}
                 <h6 class="card-title mb-0">{{ name is not empty ? name : 'Élément ' ~ loop.index }}</h6>
                 <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
                     <button class="btn btn-outline-primary btn-sm"
@@ -20,8 +22,8 @@
             </div>
             <div id="{{ collapseId }}" class="collapse">
                 <div class="card-body pt-2">
-                    {% if el.fields is defined %}
-                        {% for field in el.fields %}
+                    {% if element.fields is defined %}
+                        {% for field in element.fields %}
                             {{ form_row(field) }}
                         {% else %}
                             <div class="text-muted small">Aucun champ</div>
@@ -36,5 +38,4 @@
         <div class="col">
             <div class="alert alert-secondary mb-0">Aucun élément</div>
         </div>
-    {% endfor %}
 {% endif %}

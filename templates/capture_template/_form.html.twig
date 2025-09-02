@@ -1,0 +1,49 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+    </div>
+
+    <div class="col-md-6">
+        {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
+    </div>
+</div>
+
+
+{% include 'components/button/_btn_bar.html.twig' with {
+    buttons: {
+        back: {
+            type: 'link',
+            route: 'app_capture_template_index',
+            icon: 'bi-arrow-left',
+            label: 'Retour',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        save: {
+            type: 'submit',
+            icon: 'bi-check',
+            label: 'Enregistrer',
+            class: 'btn btn-primary btn-sm'
+        },
+    }
+} %}
+
+
+{% set prototype %}
+    {% include 'capture_element/_capture_element_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
+{% endset %}
+<div
+    data-controller="capture"
+    data-prototype="{{ prototype|e('html_attr') }}"
+>
+    {% for captureElement in form.captureElements %}
+        {% include 'capture_element/_capture_element_prototype.html.twig' with { form: captureElement } %}
+    {% endfor %}
+
+    <a class="btn btn-primary btn-sm"
+       href="{{ path('app_capture_element_select', { capture: form.vars.data.id }) }}">
+        Ajouter un élément
+    </a>
+</div>
+{{ form_end(form) }}

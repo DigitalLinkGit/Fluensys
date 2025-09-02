@@ -9,10 +9,9 @@ use App\Entity\Field\Field;
 use App\Entity\Field\IntegerField;
 use App\Entity\Field\TextAreaField;
 use App\Entity\Field\TextField;
-use App\Entity\FlexCapture;
+use App\Entity\FlexCaptureElement;
 use App\Entity\InformationSystem;
 use App\Entity\ParticipantRole;
-use App\Entity\Project;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -99,7 +98,7 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f5);
 
-        $flex = (new flexCapture())
+        $flex = (new FlexCaptureElement())
             ->setDescription("Flex description")
             ->setName("Flex")
             ->setRespondent($r1)
@@ -153,7 +152,7 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f50);
 
-        $flex2 = (new flexCapture())
+        $flex2 = (new FlexCaptureElement())
             ->setDescription("Recueil des informations classiques sur le compte")
             ->setName("Informations générale")
             ->setRespondent($r1)
@@ -178,18 +177,6 @@ class AppFixtures extends Fixture
         $is2 = $this->createInformationSystem("Compte avec SI 2");
         $manager->persist($is2);
 
-        $pro = $this->createProject(
-            "Premier projet",
-            "Projet avec capture des informations de base sur le compte",
-            "draft",
-            true,
-            null,
-            $capture
-        );
-
-        $manager->persist($pro);
-
-
         $manager->flush();
     }
 
@@ -197,16 +184,6 @@ class AppFixtures extends Fixture
     {
         return (new InformationSystem())
             ->setName($name);
-    }
-    private function createProject(string $name, string $description, string $status, bool $isTemplate, ?InformationSystem $is, Capture $capture): Project
-    {
-        return (new Project())
-            ->setName($name)
-            ->setDescription($description)
-            ->setStatus($status)
-            ->setTemplate($isTemplate)
-            ->setInformationSystem($is)
-            ->addCapture($capture);
     }
     private function createParticipantRole(bool $internal, string $name, string $description): ParticipantRole
     {

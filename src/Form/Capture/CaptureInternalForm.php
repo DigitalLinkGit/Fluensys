@@ -22,7 +22,7 @@ class CaptureInternalForm extends AbstractType
                 'label' => 'Nom',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Nom de la capture...',
+                    'placeholder' => 'Nom de la capture_template...',
                 ],
                 'required' => true,
             ])
@@ -32,7 +32,7 @@ class CaptureInternalForm extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 3,
-                    'placeholder' => 'Description de la capture...',
+                    'placeholder' => 'Description de la capture_template...',
                 ],
             ])
             ->add('captureElements', CollectionType::class, [
@@ -44,7 +44,7 @@ class CaptureInternalForm extends AbstractType
                 'prototype' => true,
                 'entry_options' => ['label' => false],
                 'attr' => [
-                    'data-controller'=> 'capture'
+                    'data-controller'=> 'capture_template'
                 ]
             ])
         ;

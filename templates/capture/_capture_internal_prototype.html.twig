@@ -5,28 +5,19 @@ Context:
 #}
 
 {# CAPTURES TABS #}
-{% if captures is defined %}
-    <ul class="tabs tabs--secondary mb-4" role="tablist">
-        {% for captureForm in captures %}
-            {% set name = (captureForm.name is defined and captureForm.name.vars is defined) ? (captureForm.name.vars.data ?? '') : '' %}
-            <li class="tab" role="presentation">
-                <span class="tab__link{{ loop.first ? ' active is-active' : '' }}" role="tab">{{ name is not empty ? name : 'Capture ' ~ loop.index }}</span>
-            </li>
-        {% else %}
-            <li class="tab" role="presentation">
-                <span class="tab__link disabled" role="tab" aria-disabled="true">Aucune capture</span>
-            </li>
-        {% endfor %}
-    </ul>
+{% if capture is defined %}
 
-    {# CAPTURE ELEMENTS CARDS #}
-    <div class="mx-2">
-    {% for captureForm in captures %}
-        {% if captureForm.captureElements is defined %}
-            <div class="mb-3 row">
-                {% include 'capture_element/_cards.html.twig' with { elements: captureForm.captureElements } %}
-            </div>
-        {% endif %}
-    {% endfor %}
+    <div id="capture{{ capture.vars.value ? capture.vars.value.id : (loop is defined ? loop.index : 'new') }}" class="tab-pane fade" role="tabpanel">
+        {# CAPTURE ELEMENTS CARDS #}
+
+        <div class="mx-2">
+            {% if capture.captureElements is defined %}
+                {% for element in capture.captureElements %}
+                    <div class="mb-3 row">
+                        {% include 'capture_element/_cards.html.twig' with { element: element } %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
 {% endif %}

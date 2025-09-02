@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Project;
+use App\Entity\FlexCaptureElement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Project>
+ * @extends ServiceEntityRepository<FlexCaptureElement>
  */
-class ProjectRepository extends ServiceEntityRepository
+class FlexCaptureElementRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Project::class);
+        parent::__construct($registry, FlexCaptureElement::class);
     }
 
     //    /**
-    //     * @return Project[] Returns an array of Project objects
+    //     * @return FlexCaptureElement[] Returns an array of FlexCaptureElement objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
+    //            ->orderBy('f.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Project
+    //    public function findOneBySomeField($value): ?FlexCaptureElement
     //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

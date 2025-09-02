@@ -11,22 +11,22 @@
         headers: ['Nom', 'Description'],
         filter: true,
         sort: true,
-        add: {route: 'app_flex_capture_new'},
+        add: {route: 'app_flex_capture_element_new'},
         actions: [
             {
-                route: 'app_flex_capture_show',
+                route: 'app_flex_capture_element_show',
                 param_map: { id: 'id' },
                 icon: 'bi-eye',
                 label: 'Voir',
             },
             {
-                route: 'app_flex_capture_edit',
+                route: 'app_flex_capture_element_edit',
                 param_map: { id: 'id' },
                 icon: 'bi-pencil',
                 label: 'Éditer',
             },
             {
-                route: 'app_flex_capture_delete',
+                route: 'app_flex_capture_element_delete',
                 param_map: { id: 'id' },
                 icon: 'bi-trash',
                 label: 'Supprimer',

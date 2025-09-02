@@ -1,22 +1,18 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Capture;
 
 use App\Entity\Capture;
-use App\Entity\Project;
-use App\Entity\InformationSystem;
-use App\Form\Capture\CaptureMinimalForm;
+use App\Form\CaptureElement\CaptureElementForm;
 use App\Form\CaptureElement\CaptureElementMinimalForm;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ProjectTemplateForm extends AbstractType
+class CaptureTemplateForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -25,7 +21,7 @@ class ProjectTemplateForm extends AbstractType
                 'label' => 'Nom',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Nom du projet...',
+                    'placeholder' => 'Nom de la capture...',
                 ],
                 'required' => true,
             ])
@@ -35,19 +31,11 @@ class ProjectTemplateForm extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 3,
-                    'placeholder' => 'Description du projet...',
+                    'placeholder' => 'Description de la capture...',
                 ],
             ])
-            ->add('status', ChoiceType::class, [
-                'label' => 'Statut',
-                'choices' => [
-                    'Draft' => 'draft',
-                    'Validé' => 'validate',
-                    'Obsolète' => 'deprecated',
-                ],
-            ])
-            ->add('captures', CollectionType::class, [
-                'entry_type' => CaptureMinimalForm::class,
+            ->add('captureElements', CollectionType::class, [
+                'entry_type' => CaptureElementMinimalForm::class,
                 'allow_add' => true,
                 'allow_delete' => true,
                 'label' => false,
@@ -55,15 +43,16 @@ class ProjectTemplateForm extends AbstractType
                 'prototype' => true,
                 'entry_options' => ['label' => false],
                 'attr' => [
-                    'data-controller'=> 'project_template'
+                    'data-controller'=> 'capture'
                 ]
-            ]);
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Project::class,
+            'data_class' => Capture::class,
         ]);
     }
 }

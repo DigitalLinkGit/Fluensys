@@ -1,17 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Project{% endblock %}
+{% block title %}Capture{% endblock %}
 
 {% block body %}
-    <h1>Project</h1>
+    <h1>Capture</h1>
 
     {% include 'components/table/_table_show.html.twig' with {
-        object: project,
+        object: capture,
         fields: [
             { label: 'Nom', property: 'name' },
             { label: 'Description', property: 'description' },
-            { label: 'Statut', property: 'status' },
-            { label: 'Template', property: 'template' },
         ]
     } %}
 
@@ -19,7 +17,7 @@
         buttons: {
             back: {
                 type: 'link',
-                route: 'app_project_index',
+                route: 'app_capture_template_index',
                 icon: 'bi-arrow-left',
                 label: 'Retour',
                 class: 'btn btn-outline-primary btn-sm'
