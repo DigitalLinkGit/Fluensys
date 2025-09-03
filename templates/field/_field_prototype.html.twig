@@ -2,7 +2,7 @@
     {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
 
     <div class="field-card__header d-flex align-items-center gap-2 p-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary field-card__toggle" data-action="click->capture-element#toggle">
+        <button type="button" class="btn btn-sm btn-outline-primary field-card__toggle" data-action="click->capture-element#toggle">
             <i class="bi bi-chevron-down"></i>
         </button>
         <div class="flex-grow-1">
@@ -20,7 +20,6 @@
     <div class="field-card__body p-3 border-top">
         <div class="row g-3 align-items-start">
             <div class="col-md-6">
-                {# externalLabel is already rendered in header; do not render again to avoid double-render exception #}
                 {{ form_row(form.internalLabel) }}
             </div>
             <div class="col-md-6">

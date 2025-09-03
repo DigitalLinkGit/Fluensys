@@ -12,12 +12,20 @@
             { label: 'Description', property: 'description' },
         ]
     } %}
+    <h4>Eléments de capture</h4>
+    {% include 'components/table/_table.html.twig' with {
+        items: capture.captureElements,
+        columns: ['name', 'description'],
+        headers: ['Nom', 'Description'],
+        filter: false,
+        sort: false,
+    } %}
 
     {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {
             back: {
                 type: 'link',
-                route: 'app_capture_template_index',
+                route: 'app_capture_index',
                 icon: 'bi-arrow-left',
                 label: 'Retour',
                 class: 'btn btn-outline-primary btn-sm'

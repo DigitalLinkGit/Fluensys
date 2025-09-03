@@ -93,9 +93,14 @@ h6 {
 .border-dashed { border-style: dashed !important; }
 .drop-zone { background-color: var(--main-surface); color: var(--easy-text-soft); }
 
-/* Field card styles */
+/* ===================== FIELD CARD ===================== */
 .field-card { background: #fff; box-shadow: var(--easy-shadow); }
-.field-card__header { background-color: #f8f9fa; border-bottom: 1px solid #e9ecef; }
+.field-card__header {
+    background-color: var(--easy-bg-surface);
+    border-bottom: 1px solid var(--easy-border-strong);
+    color: var(--easy-text);
+    padding: 1rem;
+}
 .field-card.is-collapsed .field-card__body { display: none; }
 .field-card__toggle { width: 2rem; display: inline-flex; align-items: center; justify-content: center; }
 .field-card .form-label { margin-bottom: .25rem; }
@@ -560,7 +565,7 @@ input[name$="[url]"]:hover {
     color: var(--easy-primary-accent-dark);
 }
 
-/* Primary tabs: pill style (previously secondary) */
+/* Primary tabs */
 .tabs.tabs--primary .tab__link {
     border: 2px solid var(--easy-primary);
     border-bottom: none;

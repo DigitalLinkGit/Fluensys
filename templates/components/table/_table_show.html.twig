@@ -2,7 +2,12 @@
 {% set fields = fields is defined ? fields : [] %}
 {% set object = object is defined ? object : null %}
 {% import 'components/table/_table_cell.html.twig' as cell_format %}
-<table class="table table-bordered align-middle" id="{{ table_id }}">
+<table class="table table-hover align-middle" id="{{ table_id }}">
+    <thead class="table-light">
+    <tr>
+        <th>Propriété</th>
+        <th>Valeur</th>
+    </tr>
     <tbody>
     {% for field in fields %}
         {% set value = attribute_chain(object, field.property) %}
