@@ -2,13 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Field\Field;
+use App\Dto\RenderTextDto;
 use App\Entity\FlexCaptureElement;
+use App\Entity\Rendering\ChapterContent;
 use App\Factory\FieldFactory;
 use App\Form\CaptureElement\CaptureElementTemplateForm;
-use App\Form\CaptureElement\CaptureElementExternalForm;
-use App\Form\CaptureElement\CaptureElementInternalForm;
-use App\Form\Field\FieldExternalForm;
 use App\Repository\FlexCaptureElementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -133,6 +131,8 @@ final class FlexCaptureElementController extends AbstractController
 
         $em->persist($flexCapture);
         $em->flush();
-    }
+        }
+
+
 
 }

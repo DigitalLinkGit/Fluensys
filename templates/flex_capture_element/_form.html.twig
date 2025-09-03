@@ -4,6 +4,14 @@
 
 {% include 'components/button/_btn_bar.html.twig' with {
     buttons: {
+        edit_render: {
+            type: 'link',
+            route: 'app_capture_element_render_text_edit',
+            param_map: { id: 'flex_capture.id' },
+            icon: 'bi-pencil',
+            label: 'Editer le rendu',
+            class: 'btn btn-outline-primary btn-sm'
+        },
         preview_internal: {
             type: 'link',
             route: 'app_capture_element_internal_preview',

@@ -12,10 +12,10 @@
 	{# HEADER #}
 	<div class="row mb-3">
 		<div class="col-10">
-			{{ form_row(form.renderTitle) }}
+			{{ form_row(form.title) }}
 		</div>
 		<div class="col-2">
-			{{ form_row(form.renderTitleLevel) }}
+			{{ form_row(form.level) }}
 		</div>
 	</div>
 
@@ -24,7 +24,7 @@
 		class="row">
 		{# EDITOR #}
 		<div class="col-10">
-			{{ form_row(form.renderTemplate) }}
+			{{ form_row(form.templateContent) }}
 		</div>
 
 		{# AVAILABLE VARIABLES NAMES#}
@@ -39,9 +39,6 @@
 			</div>
 		</div>
 	</div>
-
-	{{ form_widget(form.results) }}
-
 
 	<button class="btn btn-primary">Enregistrer</button>
 

@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Entity\Field\Field;
 use App\Entity\Rendering\CalculatedVariable;
-use App\Entity\Rendering\Chapter;
 use App\Entity\Rendering\ChapterRenderInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -65,7 +64,6 @@ abstract class CaptureElement
     #[ORM\OneToMany(targetEntity: CalculatedVariable::class, mappedBy: 'captureElement', orphanRemoval: true)]
     protected Collection $calculatedvariables;
 
-    protected ?ChapterRenderInterface $chapterRenderer = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -81,6 +79,9 @@ abstract class CaptureElement
 
     #[ORM\Column]
     private ?bool $template = null;
+
+    #[ORM\OneToOne(inversedBy: 'captureElement', cascade: ['persist', 'remove'])]
+    private ?Chapter $chapter = null;
 
     public function __construct()
     {
@@ -178,23 +179,6 @@ abstract class CaptureElement
         return $this;
     }
 
-    public function getChapterRenderer(): ?ChapterRenderInterface
-    {
-        return $this->chapterRenderer;
-    }
-
-    public function setChapterRenderer(?ChapterRenderInterface $chapterRenderer): static
-    {
-        $this->chapterRenderer = $chapterRenderer;
-
-        return $this;
-    }
-
-    public function render(): Chapter
-    {
-        return $this->chapterRenderer->render($this);
-    }
-
     public function getRespondent(): ?ParticipantRole
     {
         return $this->respondent;
@@ -239,6 +223,18 @@ abstract class CaptureElement
     public function setTemplate(bool $template): static
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function getChapter(): ?Chapter
+    {
+        return $this->chapter;
+    }
+
+    public function setChapter(?Chapter $chapter): static
+    {
+        $this->chapter = $chapter;
 
         return $this;
     }

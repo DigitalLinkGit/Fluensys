@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Entity\Capture;
 use App\Entity\CaptureElement;
 use App\Entity\FlexCaptureElement;
+use App\Entity\Rendering\TextChapter;
 use App\Form\CaptureElement\CaptureElementExternalForm;
 use App\Form\CaptureElement\CaptureElementInternalForm;
+use App\Form\Rendering\RenderTextEditorForm;
+use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -76,6 +79,45 @@ final class CaptureElementController extends AbstractController
             'flex_capture' => $flexCapture,
             'form'=>$form,
             'title'=>$title,
+        ]);
+    }
+
+    #[Route('/{id}/render-text/edit', name: 'app_capture_element_render_text_edit', methods: ['GET','POST'])]
+    public function editRenderText(Request $request, FlexCaptureElement $flexCapture, TemplateInterpolator $interpolator, EntityManagerInterface $entityManager): Response
+    {
+        // Build available variables from Fields and CalculatedVariables
+        $fieldVars = [];
+        foreach ($flexCapture->getFields() as $f) {
+            $name = $f->getTechnicalName();
+            if ($name) { $fieldVars[] = $name; }
+        }
+        $calcVars = [];
+        foreach ($flexCapture->getCalculatedvariables() as $cv) {
+            $name = $cv->getTechnicalName();
+            if ($name) { $calcVars[] = $name; }
+        }
+        $variables = array_values(array_unique(array_merge($fieldVars, $calcVars)));
+
+        $chapter = $flexCapture->getChapter() ?? new TextChapter();
+        $form = $this->createForm(RenderTextEditorForm::class, $chapter, [
+            'variables' => $variables,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Normalize placeholders to Twig
+            $normalized = $interpolator->normalizeToTwig($chapter->getTemplateContent());
+            // TODO: Persist the normalized template
+            $flexCapture->setChapter($chapter);
+            $entityManager->persist($chapter);
+            $entityManager->flush();
+            $this->addFlash('success', 'Rendu texte enregistré.');
+            return $this->redirectToRoute('app_flex_capture_element_edit', ['id' => $flexCapture->getId()]);
+        }
+
+        return $this->render('capture_element/render_text_editor.html.twig', [
+            'form' => $form,
+            'variables' => $variables,
         ]);
     }
 }

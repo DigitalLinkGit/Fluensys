@@ -1,5 +1,5 @@
 {% set route_return = route_return is defined ? route_return : null %}
 <div class="section-title d-flex justify-content-between align-items-center mb-4">
 	<h2 class="mb-0">{{title}}</h2>
-  {% include '../button/_btn_back.html.twig' with { route_return: route_return } %}
+  {% include 'components/button/_btn_back.html.twig' with { route_return: route_return } %}
 </div>
