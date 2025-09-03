@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Aperçu répondant{% endblock %}
+{% block title %}Aperçu{% endblock %}
 
 {% block body %}
     {{ form_start(form) }}
 
-    {{ include('capture_element/_form_header.html.twig') }}
+    <h1>{{ title }}</h1>
 
     {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {

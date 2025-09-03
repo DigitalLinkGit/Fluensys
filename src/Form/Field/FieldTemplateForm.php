@@ -13,11 +13,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
-use App\Form\Field\ChecklistFieldConfigForm;
+use App\Form\Field\ChecklistFieldTemplateForm;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-class ConfigFieldForm extends AbstractType
+class FieldTemplateForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -48,7 +48,7 @@ class ConfigFieldForm extends AbstractType
 
         // Registry of subtype config forms
         $registry = [
-            'checklist' => ChecklistFieldConfigForm::class,
+            'checklist' => ChecklistFieldTemplateForm::class,
             // 'date' => DateFieldConfigForm::class,
             // 'select' => SelectFieldConfigForm::class,
         ];

@@ -5,10 +5,10 @@ namespace App\Controller;
 use App\Entity\Field\Field;
 use App\Entity\FlexCaptureElement;
 use App\Factory\FieldFactory;
-use App\Form\CaptureElement\CaptureElementConfigForm;
+use App\Form\CaptureElement\CaptureElementTemplateForm;
 use App\Form\CaptureElement\CaptureElementExternalForm;
 use App\Form\CaptureElement\CaptureElementInternalForm;
-use App\Form\Field\ExternalFieldForm;
+use App\Form\Field\FieldExternalForm;
 use App\Repository\FlexCaptureElementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,7 +33,7 @@ final class FlexCaptureElementController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $flexCapture = new FlexCaptureElement();
-        $form = $this->createForm(CaptureElementConfigForm::class, $flexCapture);
+        $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -62,7 +62,7 @@ final class FlexCaptureElementController extends AbstractController
     #[Route('/{id}/edit', name: 'app_flex_capture_element_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(CaptureElementConfigForm::class, $flexCapture);
+        $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -89,25 +89,6 @@ final class FlexCaptureElementController extends AbstractController
         return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/external-preview', name: 'app_flex_capture_element_external_preview', methods: ['GET'])]
-    public function externalPreview(FlexCaptureElement $flexCapture): Response
-    {
-        $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
-        return $this->render('capture_element/preview.html.twig', [
-            'flex_capture' => $flexCapture,
-            'form'=>$form,
-        ]);
-    }
-
-    #[Route('/{id}/internal-preview', name: 'app_flex_capture_element_internal_preview', methods: ['GET'])]
-    public function internalPreview(FlexCaptureElement $flexCapture): Response
-    {
-        $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
-        return $this->render('capture_element/preview.html.twig', [
-            'flex_capture' => $flexCapture,
-            'form'=>$form,
-        ]);
-    }
 
     /**
      * @param \Symfony\Component\Form\FormInterface $form

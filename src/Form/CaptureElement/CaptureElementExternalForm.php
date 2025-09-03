@@ -3,19 +3,19 @@
 namespace App\Form\CaptureElement;
 
 use App\Entity\CaptureElement;
-use App\Form\Field\ExternalFieldForm;
+use App\Form\Field\FieldExternalForm;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CaptureElementExternalForm extends CaptureElementForm
+class CaptureElementExternalForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        parent::buildForm($builder, $options);
         $builder
             ->add('fields', CollectionType::class, [
-                'entry_type' => ExternalFieldForm::class,
+                'entry_type' => FieldExternalForm::class,
                 'label' => false,
                 'entry_options' => ['label' => false],
             ])

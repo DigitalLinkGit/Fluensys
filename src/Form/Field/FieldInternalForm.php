@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class InternalFieldForm extends AbstractType
+class FieldInternalForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

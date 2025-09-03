@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Dedicated config form for ChecklistField. Provides a textarea to edit choices.
  */
-class ChecklistFieldConfigForm extends AbstractType
+class ChecklistFieldTemplateForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

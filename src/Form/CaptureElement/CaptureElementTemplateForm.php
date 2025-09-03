@@ -4,15 +4,17 @@ namespace App\Form\CaptureElement;
 
 use App\Entity\CaptureElement;
 use App\Entity\ParticipantRole;
+use App\Form\Field\FieldTemplateForm;
 use App\Repository\ParticipantRoleRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CaptureElementForm extends AbstractType
+class CaptureElementTemplateForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -60,6 +62,18 @@ class CaptureElementForm extends AbstractType
                     'rows' => 4,
                     'placeholder' => 'Description de la capture...',
                 ],
+            ])
+            ->add('fields', CollectionType::class, [
+                'entry_type' => FieldTemplateForm::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'label' => false,
+                'by_reference' => false,
+                'prototype' => true,
+                'entry_options' => ['label' => false],
+                'attr' => [
+                    'data-controller'=> 'capture-element'
+                ]
             ])
         ;
     }

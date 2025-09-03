@@ -1,13 +1,15 @@
 {% if element is defined %}
-        {% set name = (element.name is defined and element.name.vars is defined) ? (element.name.vars.data ?? '') : '' %}
         {% set collapseId = (element.vars is defined and element.vars.id is defined) ? (element.vars.id ~ '_fields') : ('el_' ~ loop.index ~ '_fields') %}
         <div class="card h-100 mb-3">
             <div class="card-body py-2 d-flex align-items-center">
-                {# Ensure the element name is submitted even if not visibly edited #}
-                {% if element.name is defined %}
-                    {{ form_widget(element.name, {'type': 'hidden'}) }}
-                {% endif %}
-                <h6 class="card-title mb-0">{{ name is not empty ? name : 'Élément ' ~ loop.index }}</h6>
+                {# Display the element name even if it's not an editable field in the form #}
+                <h6 class="card-title mb-0">
+                    {% if element.vars is defined and element.vars.data is defined and element.vars.data.name is defined %}
+                        {{ element.vars.data.name }}
+                    {% else %}
+                        {{ element.name is defined ? element.name : '' }}
+                    {% endif %}
+                </h6>
                 <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
                     <button class="btn btn-outline-primary btn-sm"
                             type="button"

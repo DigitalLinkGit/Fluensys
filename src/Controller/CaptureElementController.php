@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Capture;
 use App\Entity\CaptureElement;
+use App\Entity\FlexCaptureElement;
+use App\Form\CaptureElement\CaptureElementExternalForm;
+use App\Form\CaptureElement\CaptureElementInternalForm;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,6 +52,30 @@ final class CaptureElementController extends AbstractController
         return $this->render('capture_element/select.html.twig', [
             'capture_elements' => $available,
             'capture_id' => $captureId,
+        ]);
+    }
+
+    #[Route('/{id}/external-preview', name: 'app_capture_element_external_preview', methods: ['GET'])]
+    public function externalPreview(FlexCaptureElement $flexCapture): Response
+    {
+        $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
+        $title = 'Aperçu externe : ' . $flexCapture->getName();
+        return $this->render('capture_element/preview.html.twig', [
+            'flex_capture' => $flexCapture,
+            'form'=>$form,
+            'title'=>$title,
+        ]);
+    }
+
+    #[Route('/{id}/internal-preview', name: 'app_capture_element_internal_preview', methods: ['GET'])]
+    public function internalPreview(FlexCaptureElement $flexCapture): Response
+    {
+        $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
+        $title = 'Aperçu interne : ' . $flexCapture->getName();
+        return $this->render('capture_element/preview.html.twig', [
+            'flex_capture' => $flexCapture,
+            'form'=>$form,
+            'title'=>$title,
         ]);
     }
 }
