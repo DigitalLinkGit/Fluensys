@@ -69,7 +69,7 @@ final class FlexCaptureElementController extends AbstractController
             $this->processFields($form, $flexCapture, $entityManager);
             $this->persistFlexCapture($flexCapture,$entityManager);
 
-            return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_flex_capture_element_edit', ['id'=> $flexCapture->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('flex_capture_element/edit.html.twig', [

@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edition du rendu
+{% endblock %}
+
+{% block body %}
+
+	{% include 'components/partials/_page_header.html.twig' with {
+        title: 'Edition du rendu'
+        } %}
+
+	{{ form_start(form) }}
+	{# HEADER #}
+	<div class="row mb-3">
+		<div class="col-10">
+			{{ form_row(form.renderTitle) }}
+		</div>
+		<div class="col-2">
+			{{ form_row(form.renderTitleLevel) }}
+		</div>
+	</div>
+
+
+	<div
+		class="row">
+		{# EDITOR #}
+		<div class="col-10">
+			{{ form_row(form.renderTemplate) }}
+		</div>
+
+		{# AVAILABLE VARIABLES NAMES#}
+		<div class="col-2">
+			<div class="mb-1">Variables disponibles</div>
+			<div>
+				{% for variable in variables %}
+					<code>[{{ variable }}]</code>
+				{% else %}
+					Aucune variable disponible
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+
+	{{ form_widget(form.results) }}
+
+
+	<button class="btn btn-primary">Enregistrer</button>
+
+	{{ form_end(form) }}
+
+{% endblock %}

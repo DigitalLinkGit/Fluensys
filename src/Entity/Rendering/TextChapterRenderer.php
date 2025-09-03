@@ -17,7 +17,6 @@ class TextChapterRenderer implements ChapterRenderInterface
 
     public function buildContent(CaptureElement $element): string
     {
-        // Basique : concatène les valeurs des fields
         $lines = [];
         foreach ($element->getFields() as $field) {
             $lines[] = $field->getExternalLabel() . ' : ______';

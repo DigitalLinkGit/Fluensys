@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use App\Form\Field\ChecklistFieldConfigForm;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
@@ -47,19 +48,42 @@ class ConfigFieldForm extends AbstractType
                 'nombre entier' => 'integer',
                 'nombre décimal' => 'decimal',
                 'date' => 'date',
+                'cases à cocher' => 'checklist',
             ],
             'mapped' => false,
             'required' => true,
             'placeholder' => 'Type de réponse',
         ]);
 
-        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
+        $addSubtypeForm = function (\Symfony\Component\Form\FormInterface $form, ?string $type, ?Field $entity) {
+            // Add/remove dedicated config subform when needed
+            if ($type === 'checklist') {
+                $form->add('subtype', ChecklistFieldConfigForm::class, [
+                    'label' => false,
+                    'mapped' => false,
+                    'data' => $entity,
+                ]);
+            } else {
+                if ($form->has('subtype')) { $form->remove('subtype'); }
+            }
+        };
+
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use ($addSubtypeForm) {
             $form = $event->getForm();
             $data = $event->getData();
 
             if ($data instanceof Field) {
-                $form->get('type')->setData(FieldFactory::getTypeFromInstance($data));
+                $type = FieldFactory::getTypeFromInstance($data);
+                $form->get('type')->setData($type);
+                $addSubtypeForm($form, $type, $data);
             }
+        });
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($addSubtypeForm) {
+            $form = $event->getForm();
+            $submitted = $event->getData() ?? [];
+            $type = $submitted['type'] ?? null;
+            $addSubtypeForm($form, $type, $form->getData());
         });
     }
 

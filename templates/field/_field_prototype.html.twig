@@ -24,6 +24,12 @@
             <div class="mt-auto">
                 {{ form_row(form.internalLabel) }}
             </div>
+
+            {% if form.subtype is defined %}
+                <div class="mt-2">
+                    {{ form_row(form.subtype) }}
+                </div>
+            {% endif %}
         </div>
 
         <!-- TRASH -->

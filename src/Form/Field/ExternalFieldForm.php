@@ -25,11 +25,19 @@ class ExternalFieldForm extends AbstractType
 
             $formFieldType = FieldFactory::getSymfonyTypeFromInstance($field);
 
-            $event->getForm()->add('value', $formFieldType, [
+            $options = [
                 'data' => $field->getValue(),
                 'label' => $field->getExternalLabel(),
                 'required' => $field->isRequired(),
-            ]);
+            ];
+            if ($field instanceof \App\Entity\Field\ChecklistField) {
+                $options = array_replace($options, [
+                    'choices' => $field->toSymfonyChoices(),
+                    'expanded' => true,
+                    'multiple' => true,
+                ]);
+            }
+            $event->getForm()->add('value', $formFieldType, $options);
         });
 
     }

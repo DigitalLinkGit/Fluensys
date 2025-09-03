@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
     'integer' =>IntegerField::class,
     'decimal' =>DecimalField::class,
     'date' =>DateField::class,
+    'checklist' => ChecklistField::class,
 ])]
 abstract class Field
 {
