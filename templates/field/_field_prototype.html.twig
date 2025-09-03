@@ -13,8 +13,9 @@
         <!-- CHAMPS DROITE -->
         <div class="col-md-5 d-flex flex-column justify-content-between">
             <div class="row my-0">
-                <div class="col-md-8">
-                    {{ form_row(form.type) }}
+                <div class="col-md-8 d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary type-badge">Type: —</span>
+                    {{ form_widget(form.type) }}
                 </div>
                 <div class="col-md-4 d-flex align-items-center pt-2">
                     {{ form_widget(form.required) }}
@@ -29,6 +30,11 @@
                 <div class="mt-2">
                     {{ form_row(form.subtype) }}
                 </div>
+            {% else %}
+                {# Placeholder for dynamic subtype options hint #}
+                <div class="">
+                    Les options (cases) seront affichées après sélection et sauvegarde.
+                </div>
             {% endif %}
         </div>
 
@@ -42,5 +48,7 @@
             </button>
         </div>
         {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
+
+
     </div>
 </fieldset>

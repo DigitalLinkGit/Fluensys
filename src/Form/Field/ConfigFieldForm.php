@@ -40,20 +40,10 @@ class ConfigFieldForm extends AbstractType
                 ],
             ])
             ->add('required')
-            ->add('type', ChoiceType::class, [
-                'label' => 'Type de réponse',
-            'choices' => [
-                'texte long' => 'textarea',
-                'texte court' => 'text',
-                'nombre entier' => 'integer',
-                'nombre décimal' => 'decimal',
-                'date' => 'date',
-                'cases à cocher' => 'checklist',
-            ],
-            'mapped' => false,
-            'required' => true,
-            'placeholder' => 'Type de réponse',
-        ]);
+            ->add('type', HiddenType::class, [
+                'mapped' => false,
+                'required' => true,
+            ]);
 
         $addSubtypeForm = function (\Symfony\Component\Form\FormInterface $form, ?string $type, ?Field $entity) {
             // Add/remove dedicated config subform when needed

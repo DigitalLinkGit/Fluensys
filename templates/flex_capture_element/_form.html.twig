@@ -40,17 +40,65 @@
 {% set prototype %}
     {% include 'field/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
 {% endset %}
-<div
-    data-controller="capture-element"
-    data-prototype="{{ prototype|e('html_attr') }}"
->
-    {% for fieldForm in form.fields %}
-        {% include 'field/_field_prototype.html.twig' with { form: fieldForm } %}
-    {% endfor %}
+<div class="row p-3 " data-controller="capture-element">
+    <div class="col-md-9 form-container p-3"
+         data-prototype="{{ prototype|e('html_attr') }}"
+    >
+        <div class="drop-zone"
+             data-action="dragenter->capture-element#dragEnter dragover->capture-element#dragOver drop->capture-element#drop"
+             style="min-height: 80px;">
+            Glissez-déposez des champs ici
+        </div>
 
-    <button type="button" class="btn btn-outline-primary btn-sm mt-2"
-            data-action="capture-element#add"><i class="bi bi-plus"></i> Ajouter
-    </button>
+        {% for fieldForm in form.fields %}
+            {% include 'field/_field_prototype.html.twig' with { form: fieldForm } %}
+        {% endfor %}
+
+
+    </div>
+    <div class="col-md-3 form-container p-3">
+        <div class="">
+            <h5 class="card-header pb-3">Champs disponibles</h5>
+            <div class="list-group list-group-flush p-2" data-controller="">
+                <button class="draggable-element mb-2"
+                        draggable="true"
+                        data-type="textarea"
+                        data-action="dragstart->capture-element#dragStart">
+                    Texte long
+                </button>
+                <button class="draggable-element mb-2"
+                        draggable="true"
+                        data-type="text"
+                        data-action="dragstart->capture-element#dragStart">
+                    Texte court
+                </button>
+                <button class="draggable-element mb-2"
+                        draggable="true"
+                        data-type="integer"
+                        data-action="dragstart->capture-element#dragStart">
+                    Nombre entier
+                </button>
+                <button class="draggable-element mb-2"
+                        draggable="true"
+                        data-type="decimal"
+                        data-action="dragstart->capture-element#dragStart">
+                    Nombre décimal
+                </button>
+                <button class="draggable-element mb-2"
+                        draggable="true"
+                        data-type="date"
+                        data-action="dragstart->capture-element#dragStart">
+                    Date
+                </button>
+                <button class="draggable-element mb-2"
+                        draggable="true"
+                        data-type="checklist"
+                        data-action="dragstart->capture-element#dragStart">
+                    Cases à cocher
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
