@@ -29,7 +29,8 @@ class ConfigFieldForm extends AbstractType
                 'label' => 'Label',
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Label visible par le répondant'
+                    'placeholder' => 'Label visible par le répondant',
+                    'rows' => 1,
                 ],
             ])
             ->add('internalLabel', TextType::class, [
@@ -45,10 +46,17 @@ class ConfigFieldForm extends AbstractType
                 'required' => true,
             ]);
 
-        $addSubtypeForm = function (\Symfony\Component\Form\FormInterface $form, ?string $type, ?Field $entity) {
-            // Add/remove dedicated config subform when needed
-            if ($type === 'checklist') {
-                $form->add('subtype', ChecklistFieldConfigForm::class, [
+        // Registry of subtype config forms
+        $registry = [
+            'checklist' => ChecklistFieldConfigForm::class,
+            // 'date' => DateFieldConfigForm::class,
+            // 'select' => SelectFieldConfigForm::class,
+        ];
+
+        $addSubtypeForm = function (\Symfony\Component\Form\FormInterface $form, ?string $type, ?Field $entity) use ($registry) {
+            $class = $registry[$type] ?? null;
+            if ($class) {
+                $form->add('subtype', $class, [
                     'label' => false,
                     'mapped' => false,
                     'data' => $entity,

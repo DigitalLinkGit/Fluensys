@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Capture;
+use App\Entity\Field\ChecklistField;
 use App\Entity\Field\DateField;
 use App\Entity\Field\DecimalField;
 use App\Entity\Field\Field;
@@ -52,7 +53,7 @@ class AppFixtures extends Fixture
             new TextAreaField(),
             1,
             "Textarea",
-            "Internal Label",
+            "Textarea",
             true,
             "TEXTAREA"
         );
@@ -62,7 +63,7 @@ class AppFixtures extends Fixture
             new IntegerField(),
             2,
             "Integer",
-            "Internal Label",
+            "Integer",
             false,
             "INTEGER"
         );
@@ -72,7 +73,7 @@ class AppFixtures extends Fixture
             new TextField(),
             3,
             "Text",
-            "Internal Label",
+            "Text",
             false,
             "TEXT"
         );
@@ -82,7 +83,7 @@ class AppFixtures extends Fixture
             new DecimalField(),
             4,
             "Decimal",
-            "Internal Label",
+            "Decimal",
             true,
             "DECIMAL"
         );
@@ -92,15 +93,30 @@ class AppFixtures extends Fixture
             new DateField(),
             5,
             "Date",
-            "Internal Label",
+            "Date",
             true,
             "DATE"
         );
         $manager->persist($f5);
 
+        $f6 = $this->createField(
+            new ChecklistField(),
+            5,
+            "Checklist",
+            "Checklist",
+            true,
+            "CHECKLIST",
+            [
+                ['label' => 'Option A', 'value' => 'Option A'],
+                ['label' => 'Option B', 'value' => 'Option B'],
+                ['label' => 'Option C', 'value' => 'Option C'],
+            ]
+        );
+        $manager->persist($f6);
+
         $flex = (new FlexCaptureElement())
-            ->setDescription("Flex description")
-            ->setName("Flex")
+            ->setDescription("Flex capture utilisée pour vérifier que tous les types de fields fonctionnent et s'affichent correctement")
+            ->setName("Flex test fields")
             ->setRespondent($r1)
             ->setResponsible($r2)
             ->setValidator($r3)
@@ -108,7 +124,8 @@ class AppFixtures extends Fixture
             ->addField($f2)
             ->addField($f3)
             ->addField($f4)
-            ->addField($f5);
+            ->addField($f5)
+            ->addField($f6);
         $manager->persist($flex);
 
         //Fields
@@ -152,6 +169,25 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f50);
 
+        $f60 = $this->createField(
+            new ChecklistField(),
+            5,
+            "Cochez les options qui rentrent dans votre activité",
+            "Scope",
+            true,
+            "SCOPE",
+            [
+                ['label' => 'Gestion de projet', 'value' => 'Gestion de projet'],
+                ['label' => 'RH', 'value' => 'RH'],
+                ['label' => 'Facturation', 'value' => 'Facturation'],
+                ['label' => 'Prospection', 'value' => 'Prospection'],
+                ['label' => 'Logistique', 'value' => 'Logistique'],
+                ['label' => 'Production', 'value' => 'Production'],
+                ['label' => 'Achat', 'value' => 'Achat'],
+            ]
+        );
+        $manager->persist($f60);
+
         $flex2 = (new FlexCaptureElement())
             ->setDescription("Recueil des informations classiques sur le compte")
             ->setName("Informations générale")
@@ -161,7 +197,8 @@ class AppFixtures extends Fixture
             ->addField($f10)
             ->addField($f20)
             ->addField($f30)
-            ->addField($f50);
+            ->addField($f50)
+            ->addField($f60);
         $manager->persist($flex2);
 
         $capture = (new Capture())
@@ -193,14 +230,20 @@ class AppFixtures extends Fixture
             ->setDescription($description);
     }
 
-    private function createField(Field $field, int $position, string $externalLabel, string $internalLabel, bool $required, string $technicalName): Field
+    private function createField(Field $field, int $position, string $externalLabel, string $internalLabel, bool $required, string $technicalName, ?array $choices = null): Field
     {
-        return $field
+        $field
             ->setPosition($position)
             ->setExternalLabel($externalLabel)
             ->setInternalLabel($internalLabel)
             ->setRequired($required)
             ->setTechnicalName($technicalName);
+
+        if ($choices !== null && $field instanceof ChecklistField) {
+            $field->setChoices($choices);
+        }
+
+        return $field;
     }
 
 }

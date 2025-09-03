@@ -89,6 +89,19 @@ h6 {
     color: var(--easy-text);
 }
 
+/* Utility helpers for flex capture */
+.border-dashed { border-style: dashed !important; }
+.drop-zone { background-color: var(--main-surface); color: var(--easy-text-soft); }
+
+/* Field card styles */
+.field-card { background: #fff; box-shadow: var(--easy-shadow); }
+.field-card__header { background-color: #f8f9fa; border-bottom: 1px solid #e9ecef; }
+.field-card.is-collapsed .field-card__body { display: none; }
+.field-card__toggle { width: 2rem; display: inline-flex; align-items: center; justify-content: center; }
+.field-card .form-label { margin-bottom: .25rem; }
+.field-card .form-check { margin-bottom: 0; }
+.field-card textarea { resize: vertical; }
+
 /* ===================== BUTTONS ===================== */
 .btn-primary {
     background-color: var(--easy-primary);

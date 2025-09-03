@@ -1,54 +1,51 @@
-<fieldset class="mb-3 field-entry form-container mt-3 p-2 position-relative border rounded">
-    <div class="row align-items-stretch">
-        <!-- TEXTAREA -->
-        <div class="col-md-6 d-flex flex-column h-100">
+<fieldset class="mb-3 field-entry form-container mt-3 p-0 position-relative border rounded field-card" data-controller="">
+    {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
+
+    <div class="field-card__header d-flex align-items-center gap-2 p-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary field-card__toggle" data-action="click->capture-element#toggle">
+            <i class="bi bi-chevron-down"></i>
+        </button>
+        <div class="flex-grow-1">
             {{ form_row(form.externalLabel, {
-                attr: {
-                    rows: 4,
-                    style: 'flex: 1 1 auto; height: 100%;'
-                }
+                row_attr: { class: 'mb-0' },
+                attr: { rows: 1, style: 'resize: vertical; min-height: 2.2rem;' }
             }) }}
         </div>
+        <span class="badge bg-secondary ms-2 me-1 type-badge">Type: —</span>
+        <button type="button" class="btn btn-outline-danger btn-sm ms-1" data-action="click->capture-element#remove" title="Supprimer ce champ">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
 
-        <!-- CHAMPS DROITE -->
-        <div class="col-md-5 d-flex flex-column justify-content-between">
-            <div class="row my-0">
-                <div class="col-md-8 d-flex align-items-center gap-2">
-                    <span class="badge bg-secondary type-badge">Type: —</span>
-                    {{ form_widget(form.type) }}
-                </div>
-                <div class="col-md-4 d-flex align-items-center pt-2">
-                    {{ form_widget(form.required) }}
-                </div>
-            </div>
-
-            <div class="mt-auto">
+    <div class="field-card__body p-3 border-top">
+        <div class="row g-3 align-items-start">
+            <div class="col-md-6">
+                {# externalLabel is already rendered in header; do not render again to avoid double-render exception #}
                 {{ form_row(form.internalLabel) }}
             </div>
-
-            {% if form.subtype is defined %}
-                <div class="mt-2">
-                    {{ form_row(form.subtype) }}
+            <div class="col-md-6">
+                <div class="row g-2 align-items-center">
+                    <div class="col-sm-7 d-flex align-items-center gap-2">
+                        {{ form_row(form.type, { row_attr: { class: 'mb-0' }, attr: { 'data-action': 'change->capture-element#typeChanged' } }) }}
+                    </div>
+                    <div class="col-sm-5 d-flex align-items-center">
+                        {{ form_row(form.required, { row_attr: { class: 'mb-0' } }) }}
+                    </div>
                 </div>
-            {% else %}
-                {# Placeholder for dynamic subtype options hint #}
-                <div class="">
-                    Les options (cases) seront affichées après sélection et sauvegarde.
-                </div>
-            {% endif %}
+                {% if form.subtype is defined %}
+                    <div class="mt-2 subtype-config">
+                        {{ form_row(form.subtype) }}
+                    </div>
+                {% else %}
+                    <div class="mt-2 subtype-config">
+                        {# JS will inject a client-side mini-template here based on type #}
+                    </div>
+                    <script type="text/template" data-subtype-template="checklist">
+                      <label class="form-label">liste de choix (1 par ligne)</label>
+                      <textarea class="form-control" rows="6" name="{{ form.vars.full_name }}[subtype][choices_raw]" placeholder="Option A\nOption B\nOption C"></textarea>
+                    </script>
+                {% endif %}
+            </div>
         </div>
-
-        <!-- TRASH -->
-        <div class="col-md-1">
-            <button type="button"
-                    class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-2"
-                    data-action="click->capture-element#remove"
-                    title="Supprimer ce champ">
-                <i class="bi bi-trash"></i>
-            </button>
-        </div>
-        {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
-
-
     </div>
 </fieldset>

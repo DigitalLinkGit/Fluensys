@@ -14,7 +14,9 @@ export default class extends Controller {
             const typeInput = fs.querySelector("select[name$='[type]'], input[name$='[type]']");
             const typeVal = typeInput ? typeInput.value : '';
             this.updateTypeBadge(fs, typeVal);
-            this.toggleOptionsHint(fs);
+            this.renderSubtypeUI(fs, typeVal);
+            // collapse by default
+            this.setCollapsed(fs, true);
         });
     }
 
@@ -99,33 +101,46 @@ export default class extends Controller {
         // Update badge label
         this.updateTypeBadge(fieldset, type);
 
-        // Toggle options hint if checklist
-        this.toggleOptionsHint(fieldset);
+        // Render subtype UI (client-side template) if needed
+        this.renderSubtypeUI(fieldset, type);
 
         // Insert before dropzone if available, else append
-        const dropzone = container.querySelector('.dropzone');
+        const dropzone = container.querySelector('.drop-zone');
         if (dropzone) {
             container.insertBefore(fieldset, dropzone);
         } else {
             container.appendChild(fieldset);
         }
 
+        // collapse by default
+        this.setCollapsed(fieldset, true);
+
         this.index++;
     }
 
     typeChanged(event) {
         const fieldset = event.currentTarget.closest('fieldset');
-        this.toggleOptionsHint(fieldset);
+        const type = event.currentTarget.value;
+        this.renderSubtypeUI(fieldset, type);
     }
 
-    toggleOptionsHint(fieldset) {
-        const typeInput = fieldset.querySelector("select[name$='[type]'], input[name$='[type]']");
-        const hint = fieldset.querySelector('.checklist-options-hint');
-        if (!hint || !typeInput) return;
-        if (typeInput.value === 'checklist') {
-            hint.classList.remove('d-none');
-        } else {
-            hint.classList.add('d-none');
+    renderSubtypeUI(fieldset, type) {
+        const container = fieldset.querySelector('.subtype-config');
+        if (!container) return;
+
+        // If backend already rendered a subtype form, do nothing
+        if (container.querySelector('textarea, input, select, [data-sf-form]')) {
+            // Heuristic: if subtype was rendered server side (editing existing), don't overwrite
+            return;
+        }
+
+        // Clean previous client-side content
+        container.innerHTML = '';
+
+        // Insert matching client-side template if any
+        const tpl = fieldset.querySelector(`script[data-subtype-template="${type}"]`);
+        if (tpl) {
+            container.innerHTML = tpl.innerHTML;
         }
     }
 
@@ -142,6 +157,29 @@ export default class extends Controller {
         };
         const label = labels[type] || type || '—';
         badge.textContent = `Type: ${label}`;
+    }
+
+    toggle(event) {
+        const btn = event.currentTarget;
+        const fieldset = btn.closest('fieldset');
+        if (!fieldset) return;
+        const collapsed = fieldset.classList.contains('is-collapsed');
+        this.setCollapsed(fieldset, !collapsed);
+    }
+
+    setCollapsed(fieldset, collapsed) {
+        const body = fieldset.querySelector('.field-card__body');
+        const icon = fieldset.querySelector('.field-card__toggle i');
+        if (!body) return;
+        if (collapsed) {
+            fieldset.classList.add('is-collapsed');
+            body.style.display = 'none';
+            if (icon) { icon.classList.remove('bi-chevron-up'); icon.classList.add('bi-chevron-down'); }
+        } else {
+            fieldset.classList.remove('is-collapsed');
+            body.style.display = '';
+            if (icon) { icon.classList.remove('bi-chevron-down'); icon.classList.add('bi-chevron-up'); }
+        }
     }
 
     remove(event) {
