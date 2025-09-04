@@ -97,9 +97,9 @@ h6 {
 .field-card { background: #fff; box-shadow: var(--easy-shadow); }
 .field-card__header {
     background-color: var(--easy-bg-surface);
-    border-bottom: 1px solid var(--easy-border-strong);
+    border: 1px solid var(--easy-border-strong);
+    border-radius: var(--easy-max-radius);
     color: var(--easy-text);
-    padding: 1rem;
 }
 .field-card.is-collapsed .field-card__body { display: none; }
 .field-card__toggle { width: 2rem; display: inline-flex; align-items: center; justify-content: center; }

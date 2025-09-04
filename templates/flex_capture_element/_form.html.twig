@@ -65,47 +65,7 @@
 
     </div>
     <div class="col-md-3 p-3">
-        <div class=" text-center">
-            <h5 class="card-header pb-3 text-center">Champs disponibles</h5>
-            <div class="list-group list-group-flush p-2 d-flex flex-column align-items-center" data-controller="">
-                <button class="draggable-element mb-2"
-                        draggable="true"
-                        data-type="textarea"
-                        data-action="dragstart->capture-element#dragStart">
-                    Texte long
-                </button>
-                <button class="draggable-element mb-2"
-                        draggable="true"
-                        data-type="text"
-                        data-action="dragstart->capture-element#dragStart">
-                    Texte court
-                </button>
-                <button class="draggable-element mb-2"
-                        draggable="true"
-                        data-type="integer"
-                        data-action="dragstart->capture-element#dragStart">
-                    Nombre entier
-                </button>
-                <button class="draggable-element mb-2"
-                        draggable="true"
-                        data-type="decimal"
-                        data-action="dragstart->capture-element#dragStart">
-                    Nombre décimal
-                </button>
-                <button class="draggable-element mb-2"
-                        draggable="true"
-                        data-type="date"
-                        data-action="dragstart->capture-element#dragStart">
-                    Date
-                </button>
-                <button class="draggable-element mb-2"
-                        draggable="true"
-                        data-type="checklist"
-                        data-action="dragstart->capture-element#dragStart">
-                    Cases à cocher
-                </button>
-            </div>
-        </div>
+        {% include 'field/_available_fields_type.html.twig' %}
     </div>
 </div>
 
