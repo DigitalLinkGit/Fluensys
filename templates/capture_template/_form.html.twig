@@ -31,14 +31,14 @@
 
 
 {% set prototype %}
-    {% include 'capture_element/_capture_element_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
+    {% include 'capture_element/_minimal_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
 {% endset %}
 <div
     data-controller="capture"
     data-prototype="{{ prototype|e('html_attr') }}"
 >
     {% for captureElement in form.captureElements %}
-        {% include 'capture_element/_capture_element_prototype.html.twig' with { form: captureElement } %}
+        {% include 'capture_element/_minimal_prototype.html.twig' with { form: captureElement } %}
     {% endfor %}
 
     <a class="btn btn-primary btn-sm"
