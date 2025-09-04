@@ -13,6 +13,7 @@ use App\Entity\Field\TextField;
 use App\Entity\FlexCaptureElement;
 use App\Entity\InformationSystem;
 use App\Entity\ParticipantRole;
+use App\Entity\Rendering\TextChapter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -128,6 +129,19 @@ class AppFixtures extends Fixture
             ->addField($f6);
         $manager->persist($flex);
 
+        $chapter = (new TextChapter())
+            ->setTitle("Test du rendu des types de champs")
+            ->setLevel(2)
+            ->setTemplateContent(
+                "Textarea : [TEXTAREA]
+                Integer : [INTEGER]
+                Text : [TEXT]
+                Decimal : [DECIMAL]
+                Date : [DATE]
+                Checklist : [CHECKLIST]");
+        $chapter->setCaptureElement($flex);
+        $manager->persist($chapter);
+
         //Fields
         $f10 = $this->createField(
             new TextAreaField(),
@@ -188,6 +202,7 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f60);
 
+
         $flex2 = (new FlexCaptureElement())
             ->setDescription("Recueil des informations classiques sur le compte")
             ->setName("Informations générale")
@@ -200,6 +215,18 @@ class AppFixtures extends Fixture
             ->addField($f50)
             ->addField($f60);
         $manager->persist($flex2);
+
+        $chapter2 = (new TextChapter())
+            ->setTitle("Activité")
+            ->setLevel(2)
+            ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] qui a démarée son activité le [ACTIVITY_START_DATE].
+            [ACTIVITY]
+
+            Scope :
+            [SCOPE]
+            ");
+        $chapter2->setCaptureElement($flex2);
+        $manager->persist($chapter2);
 
         $capture = (new Capture())
             ->setName("Information du compte")
