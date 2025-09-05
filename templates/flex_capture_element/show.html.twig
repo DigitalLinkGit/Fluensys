@@ -16,6 +16,15 @@
         ]
     } %}
 
+    <h4>Champs :</h4>
+    {% include 'components/table/_table.html.twig' with {
+        items: flex_capture.fields,
+        columns: ['externalLabel','internalLabel','technicalName'],
+        headers: ['Label externe','Label interne','Nom technique'],
+        filter: false,
+        sort: false,
+    } %}
+
     {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {
             back: {
