@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Rendering\CalculatedVariable;
+use App\Entity\CalculatedVariable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

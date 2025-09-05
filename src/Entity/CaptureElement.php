@@ -3,8 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Field\Field;
-use App\Entity\Rendering\CalculatedVariable;
-use App\Entity\Rendering\ChapterRenderInterface;
+use App\Entity\Rendering\Chapter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,6 +19,7 @@ abstract class CaptureElement
     public function __clone()
     {
         $this->id = null;
+
         // fields
         $newFields = new ArrayCollection();
         foreach ($this->fields as $f) {
@@ -28,6 +28,11 @@ abstract class CaptureElement
             $cloned->setCaptureElement($this);
         }
         $this->fields = $newFields;
+
+        // chapter
+        $clonedChapter = clone $this->chapter;
+        $clonedChapter->setCaptureElement($this);
+
         // calculated variables
         $newCvs = new ArrayCollection();
         foreach ($this->calculatedvariables as $cv) {
@@ -39,6 +44,8 @@ abstract class CaptureElement
             $newCvs->add($clonedCv);
         }
         $this->calculatedvariables = $newCvs;
+
+        //template
         $this->template = false;
     }
     #[ORM\Id]

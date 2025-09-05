@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Entity\Rendering;
+namespace App\Entity;
 
-use App\Entity\CaptureElement;
 use App\Repository\CalculatedVariableRepository;
 use Doctrine\ORM\Mapping as ORM;
 

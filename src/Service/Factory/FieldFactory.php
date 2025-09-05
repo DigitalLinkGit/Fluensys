@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Factory;
+namespace App\Service\Factory;
 
 use App\Entity\Field\ChecklistField;
 use App\Entity\Field\DateField;

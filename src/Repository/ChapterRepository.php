@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Chapter;
+use App\Entity\Rendering\Chapter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<\App\Entity\Chapter>
+ * @extends ServiceEntityRepository<\App\Entity\Rendering\Chapter>
  */
 class ChapterRepository extends ServiceEntityRepository
 {

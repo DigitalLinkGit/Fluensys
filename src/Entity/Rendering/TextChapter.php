@@ -3,7 +3,6 @@
 namespace App\Entity\Rendering;
 
 use App\Entity\CaptureElement;
-use App\Entity\Chapter;
 use App\Repository\TextChapterRepository;
 use Doctrine\ORM\Mapping as ORM;
 

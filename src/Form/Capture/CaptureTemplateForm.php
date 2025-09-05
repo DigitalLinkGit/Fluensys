@@ -37,6 +37,7 @@ class CaptureTemplateForm extends AbstractType
             ->add('captureElements', CollectionType::class, [
                 'entry_type' => CaptureElementMinimalForm::class,
                 'allow_add' => true,
+                'disabled' => false,
                 'allow_delete' => true,
                 'label' => false,
                 'by_reference' => false,

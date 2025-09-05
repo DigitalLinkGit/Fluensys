@@ -18,7 +18,7 @@ class ChecklistFieldTemplateForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('choices_raw', TextareaType::class, [
-            'label' => 'Choix (1 par ligne)',
+            'label' => 'Liste de choix (1 par ligne)',
             'mapped' => false,
             'required' => true,
             'attr' => [

@@ -3,7 +3,7 @@
 namespace App\Form\Rendering;
 
 use App\Dto\RenderTextDto;
-use App\Entity\Chapter;
+use App\Entity\Rendering\Chapter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;

@@ -15,6 +15,7 @@ final class TemplateInterpolator
      */
     public function normalizeToTwig(string $raw): string
     {
+        //TODO: getFieldValueByFieldName()
         $result = preg_replace('/\[(\w+)\]/', '{{ $1 }}', $raw);
         return $result ?? $raw;
     }

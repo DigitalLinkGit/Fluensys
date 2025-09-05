@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Rendering;
 
-use App\Entity\Rendering\TextChapter;
+use App\Entity\CaptureElement;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -13,6 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class Chapter
 {
+    public function __clone()
+    {
+        $this->id = null;
+        // captureElement is re-set by parent clone process
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
