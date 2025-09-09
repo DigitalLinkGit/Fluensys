@@ -26,11 +26,41 @@ class TextChapter extends Chapter
     }
 
 
-    public function buildContent(CaptureElement $element): mixed
+    public function getRenderContent(): string
     {
-        // TODO: Implement buildContent() method.
-        return $this->content;
+        $template = (string) $this->getTemplateContent();
+
+        $fields = $this->getCaptureElement()->getFields();
+        $valueMap = [];
+        foreach ($fields as $field) {
+            $name = mb_strtoupper($field->getTechnicalName());
+            $valueMap[$name] = $field->getValue();
+        }
+
+        // Remplace [VAR] par la valeur correspondante si elle existe (insensible à la casse)
+        $rendered = preg_replace_callback('/\[([A-Za-z0-9_]+)\]/u', function (array $m) use ($valueMap) {
+            $key = mb_strtoupper($m[1]);
+            if (!array_key_exists($key, $valueMap)) {
+                return $m[0]; // si inconnu, on laisse tel quel
+            }
+            $v = $valueMap[$key];
+
+            // conversions minimales pour éviter "Array" ou erreur d'objet non convertible
+            if ($v instanceof \DateTimeInterface) {
+                return $v->format('Y-m-d');
+            }
+            if (is_array($v)) {
+                return implode(', ', array_map(fn($x) => is_scalar($x) ? (string) $x : '', $v));
+            }
+            if (is_object($v)) {
+                return method_exists($v, '__toString') ? (string) $v : '';
+            }
+            return (string) $v;
+        }, $template);
+
+        return $rendered ?? $template;
     }
+
 
     public function getFormat(): string
     {

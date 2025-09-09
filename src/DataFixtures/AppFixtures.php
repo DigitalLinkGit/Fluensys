@@ -14,7 +14,7 @@ use App\Entity\FlexCaptureElement;
 use App\Entity\InformationSystem;
 use App\Entity\ParticipantRole;
 use App\Entity\Rendering\TextChapter;
-use App\Entity\Title;
+use App\Entity\Rendering\Title;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -228,7 +228,7 @@ Checklist : [CHECKLIST]");
 
         $chapter2 = (new TextChapter())
             ->setTitle($title)
-            ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] qui a démarée son activité le [ACTIVITY_START_DATE].
+            ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] salariés qui a démarée son activité le [ACTIVITY_START_DATE].
 [ACTIVITY]
 
 Scope :

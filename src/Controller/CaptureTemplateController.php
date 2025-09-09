@@ -105,8 +105,8 @@ final class CaptureTemplateController extends AbstractController
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
     }
 
-    #[Route('/{id}/render-preview', name: 'app_capture_template_render_text_preview', methods: ['GET'])]
-    public function internalPreview(Capture $capture): Response
+    #[Route('/{id}/template-preview', name: 'app_capture_template_render_text_preview', methods: ['GET'])]
+    public function templatePreview(Capture $capture): Response
     {
         return $this->render('capture_template/render_preview.html.twig', [
             'capture' => $capture,

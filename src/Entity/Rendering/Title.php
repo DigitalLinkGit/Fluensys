@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Rendering;
 
 use App\Repository\TitleRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -8,6 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: TitleRepository::class)]
 class Title
 {
+    public function __clone()
+    {
+        $this->id = null;
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

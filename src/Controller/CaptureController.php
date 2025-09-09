@@ -106,4 +106,13 @@ final class CaptureController extends AbstractController
 
         return $this->redirectToRoute('app_capture_edit', ['id' => $newCapture->getId()]);
     }
+
+    #[Route('/{id}/render-preview', name: 'app_capture_render_text_preview', methods: ['GET'])]
+    public function renderPreview(Capture $capture): Response
+    {
+        //dd($capture->getTitle());
+        return $this->render('capture/render_preview.html.twig', [
+            'capture' => $capture,
+        ]);
+    }
 }

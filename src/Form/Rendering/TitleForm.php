@@ -2,7 +2,7 @@
 
 namespace App\Form\Rendering;
 
-use App\Entity\Title;
+use App\Entity\Rendering\Title;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

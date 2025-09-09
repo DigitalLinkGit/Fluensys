@@ -3,7 +3,6 @@
 namespace App\Entity\Rendering;
 
 use App\Entity\CaptureElement;
-use App\Entity\Title;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -17,6 +16,10 @@ abstract class Chapter
     public function __clone()
     {
         $this->id = null;
+        // title
+        $clonedTitle = clone $this->title;
+        //dd('AFTER CLONE',$clonedTitle->getContent());
+        $this->setTitle($clonedTitle);
         // captureElement is re-set by parent clone process
     }
     #[ORM\Id]
@@ -24,7 +27,7 @@ abstract class Chapter
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'],fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Title $title = null;
 
@@ -33,7 +36,7 @@ abstract class Chapter
 
     abstract public function getTemplateContent(): mixed;
 
-    abstract public function buildContent(CaptureElement $element): mixed;
+    abstract public function getRenderContent(): mixed;
 
     abstract public function getFormat(): string;
 

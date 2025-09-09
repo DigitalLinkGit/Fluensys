@@ -13,6 +13,14 @@
 
 {% include 'components/button/_btn_bar.html.twig' with {
     buttons: {
+        preview_render: {
+            type: 'link',
+            route: 'app_capture_render_text_preview',
+            param_map: { id: 'capture.id' },
+            icon: 'bi-pencil',
+            label: 'Aperçu du rendu',
+            class: 'btn btn-outline-primary btn-sm'
+        },
         back: {
             type: 'link',
             route: 'app_capture_index',

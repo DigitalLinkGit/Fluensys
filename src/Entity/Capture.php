@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Rendering\Title;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,6 +26,10 @@ class Capture
             $newElements->add($cloned);
         }
         $this->captureElements = $newElements;
+
+        // title
+        $clonedTitle = clone $this->title;
+        $this->setTitle($clonedTitle);
     }
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -47,7 +52,7 @@ class Capture
     #[ORM\Column]
     private ?bool $template = null;
 
-    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'],fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Title $title = null;
 
