@@ -47,6 +47,10 @@ class Capture
     #[ORM\Column]
     private ?bool $template = null;
 
+    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Title $title = null;
+
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
@@ -175,6 +179,18 @@ class Capture
     public function setTemplate(bool $template): static
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    public function getTitle(): ?Title
+    {
+        return $this->title;
+    }
+
+    public function setTitle(Title $title): static
+    {
+        $this->title = $title;
 
         return $this;
     }

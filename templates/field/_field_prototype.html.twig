@@ -10,7 +10,7 @@
             }) }}
         </div>
         <div class="col-md-2 text-end">
-            <span class="badge bg-secondary type-badge d-inline-block mb-2">{{ form_row(form.type)}}</span><br>
+            <span class="badge bg-secondary type-badge d-inline-block mb-2">{{ form_row(form.type) }}</span><br>
             <button type="button" class="btn btn-sm btn-outline-primary field-card__toggle"
                     data-action="click->capture-element#toggle">
                 <i class="bi bi-chevron-down"></i>
@@ -26,27 +26,23 @@
 
     <div class="field-card__body p-2">
         <div class="row g-3">
-            <!-- Colonne CONFIGURATION -->
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="border rounded-3 p-3 h-100">
-                    <h6 class="mb-3">Configuration</h6>
-
-                    <div class="border rounded-2 p-2 mb-3">
-                        <div class="fw-semibold small text-muted mb-2">Externe</div>
-                        {{ form_row(form.required, { row_attr: { class: 'mb-0' } }) }}
-                    </div>
-
-                    <div class="border rounded-2 p-2">
-                        <div class="fw-semibold small text-muted mb-2">Interne</div>
-                        {{ form_row(form.internalLabel, { row_attr: { class: 'mb-0' } }) }}
-                    </div>
+                    <h6 class="mb-1">Externe</h6>
+                    {{ form_row(form.required, { row_attr: { class: 'mb-0' } }) }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 h-100">
+                    <h6 class="mb-1">Interne</h6>
+                    {{ form_row(form.internalLabel, { row_attr: { class: 'mb-0' } }) }}
                 </div>
             </div>
 
             <!-- Colonne OPTIONS -->
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="border rounded-3 p-3 h-100">
-                    <h6 class="mb-3">Options</h6>
+                    <h6 class="mb-1">Options</h6>
 
                     {# Si un champ "subtype" existe côté FormType #}
                     {% if form.subtype is defined %}

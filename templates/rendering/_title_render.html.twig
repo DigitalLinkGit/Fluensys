@@ -1,0 +1,7 @@
+{% set txt = title.content ?? '' %}
+{% set lvl = title.level|default(1) %}
+{% set lvl = lvl < 1 ? 1 : (lvl > 6 ? 6 : lvl) %}
+{% set tag = 'h' ~ lvl %}
+
+<{{ tag }} class="mt-3">{{ txt }}</{{ tag }}>
+

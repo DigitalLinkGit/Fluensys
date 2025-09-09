@@ -345,7 +345,6 @@ hr {
 .alert {
     border-radius: var(--easy-min-radius);
     font-size: 1rem;
-    font-weight: 600;
     background-color: var(--easy-bg-light);
     font-weight: bold;
     border: 1px solid var(--easy-primary-accent-dark);
@@ -424,7 +423,7 @@ hr {
     z-index: 1;
 }
 
-/* Ligne filtre */
+/* TABLE FILTERS */
 .sticky-filter {
     position: sticky;
     top: 40px;
@@ -584,5 +583,39 @@ input[name$="[url]"]:hover {
     background-color: var(--easy-primary);
     color: var(--easy-bg-light);
     border-color: var(--easy-primary);
+}
+
+/* ===================== DOCUMENT ===================== */
+
+.doc-container{
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.doc-page{
+    background: var(--easy-bg-light);
+    border: 1px solid var(--easy-border-strong);
+    border-radius: var(--easy-min-radius);
+    box-shadow: var(--easy-shadow, 0 10px 30px rgba(0,0,0,.06));
+    padding: 2rem 2.5rem;
+}
+
+.doc-page h1, .doc-page h2, .doc-page h3{
+    margin: 1.25rem 0 .5rem;
+    line-height: 1.25;
+}
+
+.doc-paragraph{
+    white-space: pre-wrap;
+    margin-bottom: 1rem;
+}
+
+/* PRINT */
+@media print {
+    .doc-container{ max-width: none; margin: 0; padding: 0; }
+    .doc-page{ box-shadow: none; border: 0; padding: 0; }
+    .page-break{ page-break-before: always; }
+    @page { size: A4; margin: 20mm; }
 }
 

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Aperçu{% endblock %}
+
+{% block body %}
+
+    <div class="doc-container">
+        <div class="doc-page">
+            {# Title #}
+            {% include 'rendering/_title_render.html.twig' with { title: capture.title } only %}
+
+            {# Chapter #}
+            {% for element in capture.captureElements %}
+                {% include 'rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                <div class="doc-paragraph">{{ element.chapter.templateContent }}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                route: 'app_capture_template_edit',
+                param_map: { id: 'flex_capture.id' },
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary btn-sm'
+            },
+        }
+    } %}
+
+
+{% endblock %}

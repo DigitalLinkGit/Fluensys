@@ -3,6 +3,7 @@
 namespace App\Entity\Rendering;
 
 use App\Entity\CaptureElement;
+use App\Entity\Title;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -23,11 +24,9 @@ abstract class Chapter
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[ORM\Column]
-    private ?int $level = null;
+    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Title $title = null;
 
     #[ORM\OneToOne(mappedBy: 'chapter', cascade: ['persist', 'remove'])]
     private ?CaptureElement $captureElement = null;
@@ -43,26 +42,14 @@ abstract class Chapter
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): ?Title
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(Title $title): static
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getLevel(): ?int
-    {
-        return $this->level;
-    }
-
-    public function setLevel(int $level): static
-    {
-        $this->level = $level;
 
         return $this;
     }

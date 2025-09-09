@@ -5,6 +5,7 @@ namespace App\Form\Capture;
 use App\Entity\Capture;
 use App\Form\CaptureElement\CaptureElementForm;
 use App\Form\CaptureElement\CaptureElementMinimalForm;
+use App\Form\Rendering\TitleForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -33,6 +34,9 @@ class CaptureTemplateForm extends AbstractType
                     'rows' => 3,
                     'placeholder' => 'Description de la capture...',
                 ],
+            ])
+            ->add('title', TitleForm::class, [
+                'label' => false,
             ])
             ->add('captureElements', CollectionType::class, [
                 'entry_type' => CaptureElementMinimalForm::class,

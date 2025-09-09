@@ -9,13 +9,13 @@
         } %}
 
 	{{ form_start(form) }}
-	{# HEADER #}
-	<div class="row mb-3">
+	{# TITLE #}
+	<div class="row">
 		<div class="col-10">
-			{{ form_row(form.title) }}
+			{{ form_row(form.title.content) }}
 		</div>
 		<div class="col-2">
-			{{ form_row(form.level) }}
+			{{ form_row(form.title.level) }}
 		</div>
 	</div>
 
@@ -29,10 +29,10 @@
 
 		{# AVAILABLE VARIABLES NAMES#}
 		<div class="col-2">
-			<div class="mb-1">Variables disponibles</div>
-			<div>
+			<div class="mb-2">Variables disponibles</div>
+			<div class="form-control">
 				{% for variable in variables %}
-					<code>[{{ variable }}]</code>
+					<div><code>[{{ variable }}]</code></div>
 				{% else %}
 					Aucune variable disponible
 				{% endfor %}

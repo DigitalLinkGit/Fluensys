@@ -14,6 +14,7 @@ use App\Entity\FlexCaptureElement;
 use App\Entity\InformationSystem;
 use App\Entity\ParticipantRole;
 use App\Entity\Rendering\TextChapter;
+use App\Entity\Title;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -129,16 +130,20 @@ class AppFixtures extends Fixture
             ->addField($f6);
         $manager->persist($flex);
 
+        $title2 = (new Title())
+            ->setContent("Test du rendu des types de champs")
+            ->setLevel(2);
+        $manager->persist($title2);
+
         $chapter = (new TextChapter())
-            ->setTitle("Test du rendu des types de champs")
-            ->setLevel(2)
+            ->setTitle($title2)
             ->setTemplateContent(
                 "Textarea : [TEXTAREA]
-                Integer : [INTEGER]
-                Text : [TEXT]
-                Decimal : [DECIMAL]
-                Date : [DATE]
-                Checklist : [CHECKLIST]");
+Integer : [INTEGER]
+Text : [TEXT]
+Decimal : [DECIMAL]
+Date : [DATE]
+Checklist : [CHECKLIST]");
         $chapter->setCaptureElement($flex);
         $manager->persist($chapter);
 
@@ -216,23 +221,33 @@ class AppFixtures extends Fixture
             ->addField($f60);
         $manager->persist($flex2);
 
-        $chapter2 = (new TextChapter())
-            ->setTitle("Activité")
-            ->setLevel(2)
-            ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] qui a démarée son activité le [ACTIVITY_START_DATE].
-            [ACTIVITY]
+        $title = (new Title())
+            ->setContent("Activité")
+            ->setLevel(2);
+        $manager->persist($title);
 
-            Scope :
-            [SCOPE]
-            ");
+        $chapter2 = (new TextChapter())
+            ->setTitle($title)
+            ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] qui a démarée son activité le [ACTIVITY_START_DATE].
+[ACTIVITY]
+
+Scope :
+[SCOPE]");
         $chapter2->setCaptureElement($flex2);
         $manager->persist($chapter2);
+
+
+        $CaptureTitle = (new Title())
+            ->setContent("Présentation du compte")
+            ->setLevel(1);
+        $manager->persist($CaptureTitle);
 
         $capture = (new Capture())
             ->setName("Information du compte")
             ->setDescription("Recueil des informations sur le compte")
             ->addCaptureElement($flex)
             ->addCaptureElement($flex2)
+            ->setTitle($CaptureTitle)
             ->setTemplate(true);
         $manager->persist($capture);
 
@@ -249,6 +264,7 @@ class AppFixtures extends Fixture
         return (new InformationSystem())
             ->setName($name);
     }
+
     private function createParticipantRole(bool $internal, string $name, string $description): ParticipantRole
     {
         return (new ParticipantRole())
