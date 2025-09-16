@@ -10,26 +10,31 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: '`condition`')]
 class Condition
 {
+    public function __clone()
+    {
+        $this->id = null;
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: CaptureElement::class)]
-    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'CASCADE'
+    #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT'
 
     )]
     private ?CaptureElement $sourceElement = null;
 
     #[ORM\ManyToOne(targetEntity: Field::class)]
-    #[ORM\JoinColumn(name: 'source_field_id',referencedColumnName: 'id',nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'source_field_id',referencedColumnName: 'id',nullable: false, onDelete: 'RESTRICT')]
     private ?Field $sourceField = null;
 
     #[ORM\Column(length: 255)]
     private ?string $expectedValue = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT')]
     private ?CaptureElement $targetElement = null;
 
     #[ORM\ManyToOne(inversedBy: 'conditions')]
@@ -103,6 +108,6 @@ class Condition
 
     public function __toString()
     {
-        return "Activé si : " . $this->getSourceElement()->getName() . " -> " . $this->getSourceField()->getTechnicalName() . " = " . $this->getExpectedValue();
+        return "(Affiché si : " . $this->getSourceElement()->getName() . " -> " . $this->getSourceField()->getTechnicalName() . " = " . $this->getExpectedValue() . ")";
     }
 }

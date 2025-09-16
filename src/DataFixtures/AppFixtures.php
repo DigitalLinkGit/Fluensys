@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Capture;
+use App\Entity\Condition;
 use App\Entity\Field\ChecklistField;
 use App\Entity\Field\DateField;
 use App\Entity\Field\DecimalField;
@@ -22,7 +23,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        //Roles
+        /*===================================== Roles =====================================*/
         $r1 = $this->createParticipantRole(
             false,
             'Responsable métier',
@@ -50,7 +51,8 @@ class AppFixtures extends Fixture
         );
         $manager->persist($r4);
 
-        //Fields
+        /*===================================== Capture element 1 =====================================*/
+        //fields
         $f1 = $this->createField(
             new TextAreaField(),
             1,
@@ -116,6 +118,7 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f6);
 
+        //capture element
         $flex = (new FlexCaptureElement())
             ->setDescription("Flex capture utilisée pour vérifier que tous les types de fields fonctionnent et s'affichent correctement")
             ->setName("Flex test fields")
@@ -130,11 +133,13 @@ class AppFixtures extends Fixture
             ->addField($f6);
         $manager->persist($flex);
 
+        //title
         $title2 = (new Title())
             ->setContent("Test du rendu des types de champs")
             ->setLevel(2);
         $manager->persist($title2);
 
+        //chapter
         $chapter = (new TextChapter())
             ->setTitle($title2)
             ->setTemplateContent(
@@ -147,6 +152,8 @@ Checklist : [CHECKLIST]");
         $chapter->setCaptureElement($flex);
         $manager->persist($chapter);
 
+
+        /*===================================== Capture element 2 =====================================*/
         //Fields
         $f10 = $this->createField(
             new TextAreaField(),
@@ -207,7 +214,7 @@ Checklist : [CHECKLIST]");
         );
         $manager->persist($f60);
 
-
+        //capture element
         $flex2 = (new FlexCaptureElement())
             ->setDescription("Recueil des informations classiques sur le compte")
             ->setName("Informations générale")
@@ -221,11 +228,13 @@ Checklist : [CHECKLIST]");
             ->addField($f60);
         $manager->persist($flex2);
 
+        //title
         $title = (new Title())
             ->setContent("Activité")
             ->setLevel(2);
         $manager->persist($title);
 
+        //chapter
         $chapter2 = (new TextChapter())
             ->setTitle($title)
             ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] salariés qui a démarée son activité le [ACTIVITY_START_DATE].
@@ -236,21 +245,33 @@ Scope :
         $chapter2->setCaptureElement($flex2);
         $manager->persist($chapter2);
 
-
+        /*===================================== Capture =====================================*/
+        //title
         $CaptureTitle = (new Title())
             ->setContent("Présentation du compte")
             ->setLevel(1);
         $manager->persist($CaptureTitle);
 
+        //condition
+        $condition = (new Condition())
+            ->setTargetElement($flex)
+            ->setSourceElement($flex2)
+            ->setSourceField($f20)
+            ->setExpectedValue(10);
+        $manager->persist($condition);
+
+        //capture
         $capture = (new Capture())
             ->setName("Information du compte")
             ->setDescription("Recueil des informations sur le compte")
             ->addCaptureElement($flex)
             ->addCaptureElement($flex2)
             ->setTitle($CaptureTitle)
-            ->setTemplate(true);
+            ->setTemplate(true)
+            ->addCondition($condition);
         $manager->persist($capture);
 
+        /*===================================== Information system =====================================*/
         $is1 = $this->createInformationSystem("Compte avec SI 1");
         $manager->persist($is1);
         $is2 = $this->createInformationSystem("Compte avec SI 2");

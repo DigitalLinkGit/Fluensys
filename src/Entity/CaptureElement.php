@@ -86,8 +86,8 @@ abstract class CaptureElement
     #[ORM\JoinColumn(nullable: false)]
     private ?ParticipantRole $validator = null;
 
-    #[ORM\Column]
-    private ?bool $template = null;
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private ?bool $template = true;
 
     #[ORM\OneToOne(inversedBy: 'captureElement', cascade: ['persist', 'remove'])]
     private ?Chapter $chapter = null;
@@ -99,7 +99,6 @@ abstract class CaptureElement
     {
         $this->fields = new ArrayCollection();
         $this->calculatedvariables = new ArrayCollection();
-        $this->template = true;
     }
 
     public function getId(): ?int

@@ -12,38 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CaptureRepository::class)]
 class Capture
 {
-    public function __clone()
-    {
-        $this->id = null;
 
-        $originals = $this->captureElements instanceof \Doctrine\Common\Collections\Collection
-            ? $this->captureElements->toArray() // snapshot
-            : (array) $this->captureElements;
-
-        $newElements = new ArrayCollection();
-        foreach ($originals as $el) {
-            $cloned = clone $el;
-            $cloned->setTemplate(false);
-            $newElements->add($cloned);
-        }
-        $this->captureElements = $newElements;
-
-        //conditions
-        $originalConditions = $this->conditions
-            ? $this->conditions->toArray() // snapshot
-            : (array) $this->conditions;
-
-        $newConditions = new ArrayCollection();
-        foreach ($originalConditions as $el) {
-            $cloned = clone $el;
-            $newConditions->add($cloned);
-        }
-        $this->conditions = $newConditions;
-
-        // title
-        $clonedTitle = clone $this->title;
-        $this->setTitle($clonedTitle);
-    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -80,6 +49,60 @@ class Capture
         $this->captureElements = new ArrayCollection();
         $this->template = true;
         $this->conditions = new ArrayCollection();
+    }
+
+    public function __clone()
+    {
+        $this->id = null;
+
+        // 1) Cloner éléments + maps
+        $elementMap = [];
+        $fieldMapByElement = [];
+        $originalElements = $this->captureElements;
+        $this->captureElements = new ArrayCollection();
+
+        foreach ($originalElements as $el) {
+            $cl = clone $el;
+            $cl->setTemplate(false);
+            $this->captureElements->add($cl);
+
+            $elementMap[$el->getId()] = $cl;
+
+            // map fields (en supposant même ordre)
+            $origFields   = $el->getFields()->toArray();
+            $clonedFields = $cl->getFields()->toArray();
+            $fm = [];
+            foreach ($origFields as $i => $of) {
+                $fm[$of->getId()] = $clonedFields[$i]; // sinon mappe par name si besoin
+            }
+            $fieldMapByElement[$el->getId()] = $fm;
+        }
+
+        // 2) Cloner conditions + rewire éléments & fields
+        $originalConditions = $this->conditions;
+        $this->conditions = new ArrayCollection();
+
+        foreach ($originalConditions as $c) {
+            $cl = clone $c;
+            $cl->setCapture($this);
+
+            if ($src = $c->getSourceElement()) {
+                $cl->setSourceElement($elementMap[$src->getId()] ?? null);
+            }
+            if ($tgt = $c->getTargetElement()) {
+                $cl->setTargetElement($elementMap[$tgt->getId()] ?? null);
+            }
+            if ($sf = $c->getSourceField()) {
+                $origElId = $sf->getCaptureElement()->getId();
+                $cl->setSourceField($fieldMapByElement[$origElId][$sf->getId()] ?? null);
+            }
+
+            $this->conditions->add($cl);
+        }
+
+        // title
+        $clonedTitle = clone $this->title;
+        $this->setTitle($clonedTitle);
     }
 
     public function getId(): ?int

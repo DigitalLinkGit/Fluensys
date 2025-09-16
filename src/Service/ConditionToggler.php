@@ -19,7 +19,7 @@ final class ConditionToggler
     }
 
 
-    private function applyOne(Condition $condition): void
+    public function applyOne(Condition $condition): void
     {
         $target = $condition->getTargetElement();
         $field  = $condition->getSourceField();

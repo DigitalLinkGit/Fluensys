@@ -9,6 +9,7 @@ use App\Entity\Rendering\TextChapter;
 use App\Form\CaptureElement\CaptureElementExternalForm;
 use App\Form\CaptureElement\CaptureElementInternalForm;
 use App\Form\Rendering\RenderTextEditorForm;
+use App\Repository\CaptureRepository;
 use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -120,4 +121,27 @@ final class CaptureElementController extends AbstractController
             'variables' => $variables,
         ]);
     }
+
+    #[Route('/{id}/respond/{captureId}', name: 'app_capture_element_respond', methods: ['POST'])]
+    public function save(
+        CaptureElement $el,
+        int $captureId,
+        Request $r,
+        EntityManagerInterface $em,
+        CaptureRepository $captureRepo,
+    ) {
+        $capture = $captureRepo->find($captureId) ?? throw $this->createNotFoundException();
+
+        $form = $this->createForm(CaptureElementExternalForm::class, $el);
+        $form->handleRequest($r);
+
+        if ($form->isSubmitted() && $form->isValid()) { $em->flush(); }
+
+        return $this->redirectToRoute('app_capture_edit', [
+            'id' => $captureId,
+            '_fragment' => 'el-'.$el->getId(),
+            'capture'=>$capture,
+        ]);
+    }
+
 }

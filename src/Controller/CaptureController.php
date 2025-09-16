@@ -6,7 +6,10 @@ use App\Entity\Capture;
 use App\Entity\CaptureElement;
 use App\Form\Capture\CaptureInternalForm;
 use App\Form\Capture\CaptureTemplateForm;
+use App\Form\CaptureElement\CaptureElementExternalForm;
+use App\Form\CaptureElement\CaptureElementInternalForm;
 use App\Repository\CaptureRepository;
+use App\Service\ConditionToggler;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -58,18 +61,27 @@ final class CaptureController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager, ConditionToggler $toggler): Response
     {
-        $form = $this->createForm(CaptureInternalForm::class, $capture);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+        //apply toggle activation from conditions
+        $conditions = $capture->getConditions();
+        $toggler->apply(is_iterable($conditions) ? $conditions : []);
+
+        $forms = [];
+        foreach ($capture->getCaptureElements() as $el) {
+            $forms[$el->getId()] = $this->createForm(CaptureElementInternalForm::class, $el, [
+                'action' => $this->generateUrl('app_capture_element_respond', [
+                    'id' => $el->getId(), 'captureId' => $capture->getId()
+                ]),
+                'method' => 'POST',
+                'disabled' => !($el->isActive()),
+                'attr' => ['id' => $el->getId()],
+            ])->createView();
         }
-
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
-            'form' => $form,
+            'forms' => $forms,
         ]);
     }
 

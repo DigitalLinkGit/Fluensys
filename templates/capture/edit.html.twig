@@ -3,8 +3,8 @@
 {% block title %}Edit Capture{% endblock %}
 
 {% block body %}
-    <h1>Edit Capture</h1>
-
+    <h1>Capture : {{ capture.name }}</h1>
+    <div class="text-muted">{{ capture.description }}</div>
     {{ include('capture/_form.html.twig') }}
 
 {% endblock %}

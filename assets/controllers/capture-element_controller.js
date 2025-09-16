@@ -3,24 +3,20 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
 
     connect() {
-        // container = l'élément qui porte data-prototype (la collection)
         this.container = this.element.querySelector('[data-prototype]') || this.element;
         if (!this.index) {
             this.index = this.container.querySelectorAll('fieldset').length;
         }
         this.draggedType = null;
-        // Met à jour les badges et hints pour les champs déjà présents
         this.container.querySelectorAll('fieldset').forEach((fs) => {
             const typeInput = fs.querySelector("select[name$='[type]'], input[name$='[type]']");
             const typeVal = typeInput ? typeInput.value : '';
             this.updateTypeBadge(fs, typeVal);
             this.renderSubtypeUI(fs, typeVal);
-            // collapse by default
             this.setCollapsed(fs, true);
         });
     }
 
-    // Drag sources
     dragStart(event) {
         const type = event.currentTarget.dataset.type;
         this.draggedType = type;
@@ -37,7 +33,6 @@ export default class extends Controller {
         }
     }
 
-    // Dropzone handlers on the collection container
     dragEnter(event) {
         // Needed for some browsers to allow dropping
         event.preventDefault();
@@ -104,17 +99,8 @@ export default class extends Controller {
         // Render subtype UI (client-side template) if needed
         this.renderSubtypeUI(fieldset, type);
 
-        // Insert before dropzone if available, else append
-        const dropzone = container.querySelector('.drop-zone');
-        if (dropzone) {
-            container.insertBefore(fieldset, dropzone);
-        } else {
-            container.appendChild(fieldset);
-        }
-
-        // collapse by default
+        container.appendChild(fieldset);
         this.setCollapsed(fieldset, true);
-
         this.index++;
     }
 
