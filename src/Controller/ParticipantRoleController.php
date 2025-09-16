@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\ParticipantRole;
+use App\Entity\Participant\ParticipantRole;
 use App\Form\ParticipantRoleForm;
 use App\Repository\ParticipantRoleRepository;
 use Doctrine\ORM\EntityManagerInterface;

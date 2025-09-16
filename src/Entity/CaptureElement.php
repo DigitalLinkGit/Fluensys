@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Field\CalculatedVariable;
 use App\Entity\Field\Field;
+use App\Entity\Participant\ParticipantRole;
 use App\Entity\Rendering\Chapter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -89,6 +91,9 @@ abstract class CaptureElement
 
     #[ORM\OneToOne(inversedBy: 'captureElement', cascade: ['persist', 'remove'])]
     private ?Chapter $chapter = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    protected bool $active = true;
 
     public function __construct()
     {
@@ -245,4 +250,16 @@ abstract class CaptureElement
 
         return $this;
     }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
+        return $this;
+    }
+
 }

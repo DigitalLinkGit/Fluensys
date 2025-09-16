@@ -1,7 +1,7 @@
 <?php
 namespace App\Repository;
 
-use App\Entity\ParticipantAssignment;
+use App\Entity\Participant\ParticipantAssignment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

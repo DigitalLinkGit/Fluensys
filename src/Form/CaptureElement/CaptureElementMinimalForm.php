@@ -4,6 +4,7 @@ namespace App\Form\CaptureElement;
 
 use App\Entity\CaptureElement;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -30,6 +31,18 @@ class CaptureElementMinimalForm extends AbstractType
                     'class' => 'form-control',
                     'rows' => 1,
                     'placeholder' => 'Description de la capture...',
+                    'readonly' => true
+                ],
+            ])
+            ->add('active', CheckboxType::class, [
+                'label'     => 'Activé',
+                'required'  => false,
+                'disabled'  => true, // read-only côté serveur et côté navigateur
+                'row_attr'  => ['class' => 'form-check form-switch'], // Bootstrap 5 switch
+                'label_attr'=> ['class' => 'form-check-label'],
+                'attr'      => [
+                    'class' => 'form-check-input',
+                    'role'  => 'switch', // sémantique ARIA (optionnel)
                     'readonly' => true
                 ],
             ])

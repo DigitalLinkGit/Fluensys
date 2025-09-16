@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Participant\ParticipantRole;
 use App\Entity\Rendering\Title;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,6 +27,18 @@ class Capture
             $newElements->add($cloned);
         }
         $this->captureElements = $newElements;
+
+        //conditions
+        $originalConditions = $this->conditions
+            ? $this->conditions->toArray() // snapshot
+            : (array) $this->conditions;
+
+        $newConditions = new ArrayCollection();
+        foreach ($originalConditions as $el) {
+            $cloned = clone $el;
+            $newConditions->add($cloned);
+        }
+        $this->conditions = $newConditions;
 
         // title
         $clonedTitle = clone $this->title;
@@ -56,10 +69,17 @@ class Capture
     #[ORM\JoinColumn(nullable: true)]
     private ?Title $title = null;
 
+    /**
+     * @var Collection<int, Condition>
+     */
+    #[ORM\OneToMany(targetEntity: Condition::class, mappedBy: 'capture', cascade: ['persist','remove'], orphanRemoval: true)]
+    private Collection $conditions;
+
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
         $this->template = true;
+        $this->conditions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -196,6 +216,35 @@ class Capture
     public function setTitle(Title $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Condition>
+     */
+    public function getConditions(): Collection
+    {
+        return $this->conditions;
+    }
+
+    public function addCondition(Condition $condition): static
+    {
+        if (!$this->conditions->contains($condition)) {
+            $this->conditions->add($condition);
+            $condition->setCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCondition(Condition $condition): static
+    {
+        if ($this->conditions->removeElement($condition)) {
+            if ($condition->getCapture() === $this) {
+                $condition->setCapture(null);
+            }
+        }
 
         return $this;
     }

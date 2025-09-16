@@ -4,10 +4,10 @@
         {{ form_row(form.name) }}
         {{ form_row(form.description) }}
         <div class="row">
-            <div class="col-md-10">
+            <div class="col-md-9">
                 {{ form_row(form.title.content) }}
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 {{ form_row(form.title.level) }}
             </div>
         </div>
@@ -45,21 +45,88 @@
     }
 } %}
 
+<ul class="tabs tabs--primary my-3 nav" role="tablist">
+    <li class="tab nav-item" role="presentation">
+        <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements" role="tab" aria-controls="capture-elements"
+           aria-selected="false">Eléments de capture</a>
+    </li>
+    <li class="tab nav-item" role="presentation">
+        <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab" aria-controls="conditions"
+           aria-selected="true">Conditions</a>
+    </li>
+</ul>
 
-{% set prototype %}
-    {% include 'capture_element/_minimal_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
-{% endset %}
-<div
-    data-controller="capture"
-    data-prototype="{{ prototype|e('html_attr') }}"
->
-    {% for captureElement in form.captureElements %}
-        {% include 'capture_element/_minimal_prototype.html.twig' with { form: captureElement } %}
-    {% endfor %}
+<div class="tab-content">
+    <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
+        <div class="mx-2">
+            {% set prototype %}
+                {% include 'capture_element/_minimal_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
+            {% endset %}
+            <div
+                data-controller="capture"
+                data-prototype="{{ prototype|e('html_attr') }}"
+            >
+                {% for captureElement in form.captureElements %}
+                    {% include 'capture_element/_minimal_prototype.html.twig' with { form: captureElement } %}
+                {% endfor %}
 
-    <a class="btn btn-primary btn-sm"
-       href="{{ path('app_capture_element_select', { capture: form.vars.data.id }) }}">
-        Ajouter un élément
-    </a>
+                <a class="btn btn-outline-primary btn-sm"
+                   href="{{ path('app_capture_element_select', { capture: form.vars.data.id }) }}">
+                    Ajouter un élément
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
+        {% set prototype %}
+            {% include 'condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype }%}
+        {% endset %}
+
+        {# headers #}
+        <div class="row g-3 align-items-end mb-2">
+            <div class="col-md-3">
+                Elément cible
+            </div>
+            <div class="col-md-3">
+                Elément source
+            </div>
+            <div class="col-md-3">
+                Champ source
+            </div>
+            <div class="col-md-2">
+                Valeur attendue
+            </div>
+            <div class="col-auto ms-auto align-self-end">
+                Actions
+            </div>
+        </div>
+
+        <div
+            data-controller="condition"
+            data-prototype="{{ prototype|e('html_attr') }}"
+            data-condition-fields-url-value="{{ path('condition_fields') }}"
+        >
+            <div data-condition-target="list" class="mb-3">
+                {% for condition in form.conditions %}
+                    {% include 'condition/_prototype.html.twig' with { condition: condition } only %}
+                {% endfor %}
+            </div>
+
+            <div class="col-auto ms-auto align-self-end" data-condition-target="add">
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        data-action="click->condition#add"
+                        title="Ajouter une condition">
+                    <i class="bi bi-plus"></i>
+                    Ajouter une condition
+                </button>
+            </div>
+        </div>
+
+    </div>
 </div>
+
+
+
+
 {{ form_end(form) }}

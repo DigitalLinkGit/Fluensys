@@ -12,7 +12,7 @@ use App\Entity\Field\TextAreaField;
 use App\Entity\Field\TextField;
 use App\Entity\FlexCaptureElement;
 use App\Entity\InformationSystem;
-use App\Entity\ParticipantRole;
+use App\Entity\Participant\ParticipantRole;
 use App\Entity\Rendering\TextChapter;
 use App\Entity\Rendering\Title;
 use Doctrine\Bundle\FixturesBundle\Fixture;

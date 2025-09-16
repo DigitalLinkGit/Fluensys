@@ -1,0 +1,25 @@
+<fieldset class="mb-2">
+    <div data-condition-entry class="row g-3 align-items-end">
+        <div class="col-md-3">
+            {{ form_row(condition.targetElement, { row_attr: { class: 'mb-0' } }) }}
+        </div>
+        <div class="col-md-3">
+            {{ form_row(condition.sourceElement, { row_attr: { class: 'mb-0' } }) }}
+        </div>
+        <div class="col-md-3">
+            {{ form_row(condition.sourceField, { row_attr: { class: 'mb-0' } }) }}
+        </div>
+        <div class="col-md-2">
+            {{ form_row(condition.expectedValue, { row_attr: { class: 'mb-0' } }) }}
+        </div>
+
+        <div class="col-auto ms-auto align-self-end">
+            <button type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    data-action="click->condition#remove"
+                    title="Supprimer cette condition">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+</fieldset>

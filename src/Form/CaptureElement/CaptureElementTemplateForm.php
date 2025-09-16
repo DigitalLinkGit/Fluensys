@@ -3,7 +3,7 @@
 namespace App\Form\CaptureElement;
 
 use App\Entity\CaptureElement;
-use App\Entity\ParticipantRole;
+use App\Entity\Participant\ParticipantRole;
 use App\Form\Field\FieldTemplateForm;
 use App\Repository\ParticipantRoleRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

@@ -611,6 +611,10 @@ input[name$="[url]"]:hover {
     margin-bottom: 1rem;
 }
 
+.doc-condition{
+    color: var(--easy-danger);
+}
+
 /* PRINT */
 @media print {
     .doc-container{ max-width: none; margin: 0; padding: 0; }

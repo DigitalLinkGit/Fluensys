@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Participant;
 
-use App\Entity\ParticipantRole;
+use App\Entity\Participant;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -14,7 +14,7 @@ class ParticipantAssignment
     private ?int $id = null;
 
 
-    #[ORM\ManyToOne(targetEntity: ParticipantRole::class)]
+    #[ORM\ManyToOne(targetEntity: Participant\ParticipantRole::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ParticipantRole $role;
 

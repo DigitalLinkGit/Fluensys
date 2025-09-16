@@ -6,7 +6,9 @@ use App\Entity\Capture;
 use App\Entity\CaptureElement;
 use App\Form\Capture\CaptureTemplateForm;
 use App\Repository\CaptureRepository;
+use App\Service\ConditionToggler;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -57,12 +59,17 @@ final class CaptureTemplateController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_capture_template_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager,ConditionToggler $toggler): Response
     {
+        //apply toggle activation from conditions
+        $conditions = $capture->getConditions();
+        $toggler->apply(is_iterable($conditions) ? $conditions : []);
+
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
         }
 

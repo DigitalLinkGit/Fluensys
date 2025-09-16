@@ -27,9 +27,9 @@ class ChecklistFieldConfigTest extends WebTestCase
         ]);
 
         // Required participant roles
-        $resp = (new \App\Entity\ParticipantRole())->setName('Resp')->setDescription('')->setInternal(true);
-        $respnd = (new \App\Entity\ParticipantRole())->setName('Respnd')->setDescription('')->setInternal(false);
-        $valid = (new \App\Entity\ParticipantRole())->setName('Valid')->setDescription('')->setInternal(true);
+        $resp = (new \App\Entity\Participant\ParticipantRole())->setName('Resp')->setDescription('')->setInternal(true);
+        $respnd = (new \App\Entity\Participant\ParticipantRole())->setName('Respnd')->setDescription('')->setInternal(false);
+        $valid = (new \App\Entity\Participant\ParticipantRole())->setName('Valid')->setDescription('')->setInternal(true);
         $em->persist($resp);
         $em->persist($respnd);
         $em->persist($valid);
