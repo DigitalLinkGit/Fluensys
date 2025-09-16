@@ -152,6 +152,21 @@ h6 {
     text-align: center;
 }
 
+.btn-close:hover {
+    background-color: var(--easy-primary-accent-dark);
+    color: var(--easy-bg-light);
+}
+
+.btn-close{
+    width: 20px;
+    padding: 0.375rem 0!important;
+    text-align: center;
+    background-color: var(--easy-bg-light);
+    color: var(--easy-primary);
+    border: 2px solid var(--easy-primary);
+    border-radius: var(--easy-min-radius);
+}
+
 .btn-outline-danger {
     background-color: var(--easy-bg-light);
     color: var(--easy-danger);
@@ -344,7 +359,7 @@ hr {
 /* ===================== ALERTS ===================== */
 .alert {
     border-radius: var(--easy-min-radius);
-    font-size: 1rem;
+    font-size: 0.9rem;
     background-color: var(--easy-bg-light);
     font-weight: bold;
     border: 1px solid var(--easy-primary-accent-dark);

@@ -1,56 +1,45 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>
-			{% block title %}Welcome!
-			{% endblock %}
-		</title>
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}Welcome!
+        {% endblock %}
+    </title>
 
-		<link rel="stylesheet" href="https://bootswatch.com/5/sandstone/bootstrap.min.css">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-		<link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet"/>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-json.min.js"></script>
+    <link rel="stylesheet" href="https://bootswatch.com/5/sandstone/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-json.min.js"></script>
 
-		{% block stylesheets %}{% endblock %}
+    {% block stylesheets %}{% endblock %}
 
-		{% block javascripts %}
-			{% block importmap %}
-				{{ importmap('app') }}
-			{% endblock %}
-		{% endblock %}
+    {% block javascripts %}
+        {% block importmap %}
+            {{ importmap('app') }}
+        {% endblock %}
+    {% endblock %}
+</head>
 
-		{# Inject tutorial data early if available #}
-		{% if tutorial is defined %}
-			<script>
-				window.tutorial = {{ tutorial|json_encode(constant('JSON_PRETTY_PRINT'))|raw }};
-			</script>
-		{% endif %}
-	</head>
+<body class="d-flex flex-column min-vh-100">
+{% include 'components/partials/_navbar.html.twig' %}
+{% include 'components/alert/_alert.html.twig' %}
 
-	<body class="d-flex flex-column min-vh-100">
-		{% include 'components/partials/_navbar.html.twig' %}
 
-		{# Alertes globales fixées en haut à droite #}
-		<div style="position: fixed; top: 1rem; right: 1rem; z-index: 1050;">
-            {% include 'components/alert/_alert.html.twig' %}
-		</div>
+<main class="flex-grow-1" style="padding-top: 70px;">
 
-		<main class="flex-grow-1" style="padding-top: 70px;">
-			<div class="container my-4"> {% block body %}{% endblock %}
-				</div>
-			</main>
+    <div class="container my-4">
 
-			{% include 'components/partials/_footer.html.twig' %}
+        {% block body %}{% endblock %}
+    </div>
+</main>
 
-			{# Modales globales (hors container) #}
-			{% include 'components/modal/_modal_confirm.html.twig' %}
+{% include 'components/partials/_footer.html.twig' %}
 
-			{# Scripts applicatifs
-			<script src="{{ asset('js/app-ui.js') }}"></script>
-			<script src="{{ asset('js/quiz.js') }}"></script>
-            #}
-		</body>
-	</html>
+{# Modales globales (hors container) #}
+{% include 'components/modal/_modal_confirm.html.twig' %}
+
+</body>
+</html>

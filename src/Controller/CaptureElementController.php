@@ -106,9 +106,6 @@ final class CaptureElementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Normalize placeholders to Twig
-            $normalized = $interpolator->normalizeToTwig($chapter->getTemplateContent());
-            // TODO: Persist the normalized template
             $flexCapture->setChapter($chapter);
             $entityManager->persist($chapter);
             $entityManager->flush();
@@ -123,13 +120,7 @@ final class CaptureElementController extends AbstractController
     }
 
     #[Route('/{id}/respond/{captureId}', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function save(
-        CaptureElement $el,
-        int $captureId,
-        Request $r,
-        EntityManagerInterface $em,
-        CaptureRepository $captureRepo,
-    ) {
+    public function save(CaptureElement $el, int $captureId, Request $r, EntityManagerInterface $em, CaptureRepository $captureRepo) {
         $capture = $captureRepo->find($captureId) ?? throw $this->createNotFoundException();
 
         $form = $this->createForm(CaptureElementExternalForm::class, $el);

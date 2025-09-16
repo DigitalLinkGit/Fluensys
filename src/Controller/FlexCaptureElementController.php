@@ -2,20 +2,21 @@
 
 namespace App\Controller;
 
-use App\Dto\RenderTextDto;
 use App\Entity\FlexCaptureElement;
-use App\Entity\Rendering\ChapterContent;
 use App\Form\CaptureElement\CaptureElementTemplateForm;
 use App\Repository\FlexCaptureElementRepository;
 use App\Service\Factory\FieldFactory;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[Route('/flex-capture')]
-final class FlexCaptureElementController extends AbstractController
+final class FlexCaptureElementController extends AbstractAppController
 {
     #[Route(name: 'app_flex_capture_element_index', methods: ['GET'])]
     public function index(FlexCaptureElementRepository $flexCaptureRepository): Response
@@ -34,13 +35,23 @@ final class FlexCaptureElementController extends AbstractController
         $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->processFields($form, $flexCapture, $entityManager);
-            $this->persistFlexCapture($flexCapture,$entityManager);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                try {
+                    $this->processFields($form, $flexCapture, $entityManager);
+                    $this->persistFlexCapture($flexCapture, $entityManager);
 
-            return $this->redirectToRoute('app_flex_capture_element_edit', [
-                'id' => $flexCapture->getId(),
-            ]);
+                    $this->addFlash('success', 'Élément créé avec succès.');
+                    return $this->redirectToRoute('app_flex_capture_element_edit', [
+                        'id' => $flexCapture->getId(),
+                    ]);
+                } catch (\Throwable $e) {
+                    $this->logger->error($e->getMessage(), ['exception' => $e]);
+                    $this->addFlash('danger', 'Une erreur est survenue lors de l’enregistrement.');
+                }
+            } else {
+                $this->addFlash('warning', 'Le formulaire contient des erreurs. Corrigez-les pour continuer.');
+            }
         }
 
         return $this->render('flex_capture_element/new.html.twig', [
@@ -63,11 +74,23 @@ final class FlexCaptureElementController extends AbstractController
         $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->processFields($form, $flexCapture, $entityManager);
-            $this->persistFlexCapture($flexCapture,$entityManager);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                try {
+                    $this->processFields($form, $flexCapture, $entityManager);
+                    $this->persistFlexCapture($flexCapture, $entityManager);
 
-            return $this->redirectToRoute('app_flex_capture_element_edit', ['id'=> $flexCapture->getId()], Response::HTTP_SEE_OTHER);
+                    $this->addFlash('success', 'Élément enregistré avec succès.');
+                    return $this->redirectToRoute('app_flex_capture_element_edit', [
+                        'id' => $flexCapture->getId(),
+                    ]);
+                } catch (\Throwable $e) {
+                    //$this->logger->error($e->getMessage(), ['exception' => $e]);
+                    $this->addFlash('danger', 'Une erreur est survenue lors de l’enregistrement.');
+                }
+            } else {
+                $this->addFlash('warning', 'Le formulaire contient des erreurs. Corrigez-les pour continuer.');
+            }
         }
 
         return $this->render('flex_capture_element/edit.html.twig', [
@@ -79,21 +102,26 @@ final class FlexCaptureElementController extends AbstractController
     #[Route('/{id}/delete', name: 'app_flex_capture_element_delete', methods: ['POST'])]
     public function delete(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$flexCapture->getId(), $request->getPayload()->getString('_token'))) {
+        if (!$this->isCsrfTokenValid('delete' . $flexCapture->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('danger', 'Jeton CSRF invalide. Suppression annulée.');
+            return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        try {
             $entityManager->remove($flexCapture);
             $entityManager->flush();
+
+            $this->addFlash('success', 'L’élément a bien été supprimé.');
+        } catch (ForeignKeyConstraintViolationException $e) {
+            $this->addFlash('warning', 'Impossible de supprimer cet élément car il est utilisé dans au moins une capture.');
+        } catch (\Throwable $e) {
+            $this->logger?->error('Erreur lors de la suppression', ['id' => $flexCapture->getId(), 'exception' => $e]);
+            $this->addFlash('danger', 'Une erreur inattendue est survenue pendant la suppression.');
         }
 
         return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
     }
 
-
-    /**
-     * @param \Symfony\Component\Form\FormInterface $form
-     * @param FlexCaptureElement $flexCapture
-     * @param EntityManagerInterface $entityManager
-     * @return void
-     */
     public function processFields(\Symfony\Component\Form\FormInterface $form, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): void
     {
         foreach ($form->get('fields') as $index => $fieldForm) {
@@ -131,8 +159,7 @@ final class FlexCaptureElementController extends AbstractController
 
         $em->persist($flexCapture);
         $em->flush();
-        }
-
+    }
 
 
 }
