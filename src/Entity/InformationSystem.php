@@ -16,6 +16,8 @@ class InformationSystem
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\OneToOne(inversedBy: 'informationSystem', cascade: ['persist', 'remove'])]
+    private ?Account $account = null;
 
 
     public function getId(): ?int
@@ -31,6 +33,17 @@ class InformationSystem
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+    public function getAccount(): ?Account
+    {
+        return $this->account;
+    }
+
+    public function setAccount(?Account $account): static
+    {
+        $this->account = $account;
 
         return $this;
     }
