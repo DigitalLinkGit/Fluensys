@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Account;
 use App\Entity\Capture;
 use App\Entity\Condition;
+use App\Entity\Contact;
 use App\Entity\Field\ChecklistField;
 use App\Entity\Field\DateField;
 use App\Entity\Field\DecimalField;
@@ -23,6 +25,8 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+
+
         /*===================================== Roles =====================================*/
         $r1 = $this->createParticipantRole(
             false,
@@ -272,12 +276,50 @@ Scope :
         $manager->persist($capture);
 
         /*===================================== Information system =====================================*/
-        $is1 = $this->createInformationSystem("Compte avec SI 1");
+        $is1 = $this->createInformationSystem("SI");
         $manager->persist($is1);
-        $is2 = $this->createInformationSystem("Compte avec SI 2");
-        $manager->persist($is2);
+
+        /*===================================== Contacts =====================================*/
+
+        $contact1 = $this->createContact(
+            "jean Dupont",
+            "j.dupont@gmail.com",
+            "Contact principal"
+        );
+        $manager->persist($contact1);
+        $contact2 = $this->createContact(
+            "Elodie Durand",
+            "e.durand@gmail.com",
+            "Responsable métier"
+        );
+        $manager->persist($contact2);
+        $contact3 = $this->createContact(
+            "Damien Gravier",
+            "d.gravier@gmail.com",
+            "Contact technique"
+        );
+        $manager->persist($contact3);
+
+        /*===================================== Account =====================================*/
+        $account = (new Account())
+            ->setName("Mon client")
+            ->setDescription("Une description de mon client")
+            ->setInformationSystem($is1)
+            ->addContact($contact1)
+            ->addContact($contact2)
+            ->addContact($contact3);
+        $manager->persist($account);
 
         $manager->flush();
+    }
+
+
+    private function createContact(string $name, string $email, string $function): Contact
+    {
+        return (new Contact())
+            ->setName($name)
+            ->setEmail($email)
+            ->setFunction($function);
     }
 
     private function createInformationSystem(string $name): InformationSystem
