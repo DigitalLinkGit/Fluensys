@@ -96,7 +96,7 @@ final class CaptureController extends AbstractController
         return $this->redirectToRoute('app_capture_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/clone', name: 'app_capture_clone', methods: ['GET'], requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/clone', name: 'app_capture_clone', methods: ['GET'])]
     public function clone(Capture $capture, EntityManagerInterface $em): Response
     {
         // Create a new non-template Capture cloned from the provided template capture

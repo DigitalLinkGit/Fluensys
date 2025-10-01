@@ -24,7 +24,7 @@ class Account
     /**
      * @var Collection<int, Contact>
      */
-    #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'account')]
+    #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'account',cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $contacts;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

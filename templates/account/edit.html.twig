@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Account{% endblock %}
+
+{% block body %}
+    <h1>Edit Account</h1>
+
+    {{ include('account/_form.html.twig', {'button_label': 'Update'}) }}
+
+{% endblock %}

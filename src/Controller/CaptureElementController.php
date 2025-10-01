@@ -120,13 +120,16 @@ final class CaptureElementController extends AbstractController
     }
 
     #[Route('/{id}/respond/{captureId}', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function save(CaptureElement $el, int $captureId, Request $r, EntityManagerInterface $em, CaptureRepository $captureRepo) {
+    public function save(CaptureElement $el, int $captureId, Request $r, EntityManagerInterface $em, CaptureRepository $captureRepo): \Symfony\Component\HttpFoundation\RedirectResponse
+    {
         $capture = $captureRepo->find($captureId) ?? throw $this->createNotFoundException();
 
-        $form = $this->createForm(CaptureElementExternalForm::class, $el);
+        $form = $this->createForm(CaptureElementInternalForm::class, $el);
         $form->handleRequest($r);
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        if ($form->isSubmitted() && $form->isValid()) { $em->flush(); }
+            $em->flush();
+        }
 
         return $this->redirectToRoute('app_capture_edit', [
             'id' => $captureId,
