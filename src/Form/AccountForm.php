@@ -7,6 +7,8 @@ use App\Entity\InformationSystem;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,11 +17,25 @@ class AccountForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
-            ->add('description')
-            ->add('informationSystem', EntityType::class, [
-                'class' => InformationSystem::class,
-                'choice_label' => 'id',
+            ->add('name', TextType::class, [
+                'label' => 'Nom',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Nom...',
+                ],
+                'required' => true,
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Description',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 3,
+                    'placeholder' => 'Description...',
+                ],
+            ])
+            ->add('informationSystem', InformationSystemForm::class, [
+                'label' => 'Nom',
             ])
             ->add('contacts', CollectionType::class, [
                 'entry_type' => ContactForm::class,

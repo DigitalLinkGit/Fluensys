@@ -62,8 +62,12 @@
                 <div class="col-md-4">
                     <h5>Email</h5>
                 </div>
-                <div class="col-md-4">Nom</div>
-                <div class="col-md-3">Fonction</div>
+                <div class="col-md-4">
+                    <h5>Nom</h5>
+                </div>
+                <div class="col-md-3">
+                    <h5>Fonction</h5>
+                </div>
             </div>
             <div
                 data-controller="classic-collection"
@@ -71,25 +75,6 @@
             >
                 {{ form_widget(form.contacts) }}
             </div>
-
-
-
-            {#
-            {% set prototype %}
-                {% include 'contact/_prototype.html.twig' with { form: form.contacts.vars.prototype } %}
-            {% endset %}
-            <div class="row p-3 " data-controller="contact">
-
-                <div class="">
-                    <div data-prototype="{{ prototype|e('html_attr') }}">
-                        {% for contact in form.contacts %}
-                            {% include 'contact/_prototype.html.twig' with { form: contact } %}
-                        {% endfor %}
-                    </div>
-
-                </div>
-
-            </div> #}
         </div>
     </div>
 </div>

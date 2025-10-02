@@ -7,7 +7,7 @@ export default class extends Controller {
         this.index = this.element.childElementCount
         const btn = document.createElement('button')
         btn.setAttribute('class','btn btn-outline-primary')
-        btn.innerText = 'ajouter un éléménet'
+        btn.innerText = 'ajouter'
         btn.setAttribute('type', 'button')
         btn.addEventListener('click', this.addElement.bind(this))
 
@@ -38,7 +38,7 @@ export default class extends Controller {
         col.className = 'col-auto d-flex align-items-end'
 
         const btn = document.createElement('button')
-        btn.setAttribute('class','btn btn-icon btn-outline-primary') // ⬅️ corrige "-icon"
+        btn.setAttribute('class','btn btn-icon btn-outline-primary')
         btn.setAttribute('type','button')
         const icon = document.createElement('i')
         icon.className = 'bi bi-trash'
@@ -52,7 +52,6 @@ export default class extends Controller {
 
 
     remove(event) {
-        console.log("CLIC DELETE");
         event.preventDefault()
         const fs = event.currentTarget.closest('fieldset')
         if (fs) fs.remove()
