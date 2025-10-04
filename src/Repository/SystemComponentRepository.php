@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\InformationSystem;
+use App\Entity\SystemComponent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<\App\Entity\InformationSystem>
+ * @extends ServiceEntityRepository<SystemComponent>
  */
-class InformationSystemRepository extends ServiceEntityRepository
+class SystemComponentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, InformationSystem::class);
+        parent::__construct($registry, SystemComponent::class);
     }
 
     //    /**
-    //     * @return InformationSystem[] Returns an array of InformationSystem objects
+    //     * @return SystemComponent[] Returns an array of SystemComponent objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
+    //        return $this->createQueryBuilder('s')
+    //            ->andWhere('s.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('i.id', 'ASC')
+    //            ->orderBy('s.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?InformationSystem
+    //    public function findOneBySomeField($value): ?SystemComponent
     //    {
-    //        return $this->createQueryBuilder('i')
-    //            ->andWhere('i.exampleField = :val')
+    //        return $this->createQueryBuilder('s')
+    //            ->andWhere('s.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

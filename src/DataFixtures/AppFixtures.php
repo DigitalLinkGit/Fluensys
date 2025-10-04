@@ -4,7 +4,6 @@ namespace App\DataFixtures;
 
 use App\Entity\Account\Account;
 use App\Entity\Account\Contact;
-use App\Entity\Account\InformationSystem;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Condition;
@@ -17,6 +16,7 @@ use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Rendering\TextChapter;
 use App\Entity\Capture\Rendering\Title;
+use App\Entity\InformationSystem;
 use App\Entity\Participant\ParticipantRole;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
