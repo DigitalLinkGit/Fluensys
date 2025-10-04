@@ -25,7 +25,7 @@ class InformationSystem
     /**
      * @var Collection<int, SystemComponent>
      */
-    #[ORM\OneToMany(targetEntity: SystemComponent::class, mappedBy: 'informationSystem', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: SystemComponent::class, mappedBy: 'informationSystem', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $systemComponents;
 
     public function __construct()

@@ -18,6 +18,8 @@ use App\Entity\Capture\Rendering\TextChapter;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\InformationSystem;
 use App\Entity\Participant\ParticipantRole;
+use App\Entity\SystemComponent;
+use App\Enum\SystemComponentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -275,8 +277,21 @@ Scope :
             ->addCondition($condition);
         $manager->persist($capture);
 
+        /*===================================== system components =====================================*/
+        $scomp1 = (new SystemComponent())
+            ->setName("Salesforce")
+            ->setType(SystemComponentType::APPLICATION);
+        $scomp2 = (new SystemComponent())
+            ->setName("Make")
+            ->setType(SystemComponentType::APPLICATION);
+        $scomp3 = (new SystemComponent())
+            ->setName("Microsoft Dynamics")
+            ->setType(SystemComponentType::APPLICATION);
         /*===================================== Information system =====================================*/
         $is1 = $this->createInformationSystem("SI");
+        $is1->addSystemComponent($scomp1);
+        $is1->addSystemComponent($scomp2);
+        $is1->addSystemComponent($scomp3);
         $manager->persist($is1);
 
         /*===================================== Contacts =====================================*/
