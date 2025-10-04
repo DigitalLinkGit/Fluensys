@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Condition;
+use App\Entity\Capture\Condition;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Condition>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\Condition>
  */
 class ConditionRepository extends ServiceEntityRepository
 {

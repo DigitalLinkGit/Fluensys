@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Field\CalculatedVariable;
+use App\Entity\Capture\Field\CalculatedVariable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<\App\Entity\Field\CalculatedVariable>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\Field\CalculatedVariable>
  */
 class CalculatedVariableRepository extends ServiceEntityRepository
 {

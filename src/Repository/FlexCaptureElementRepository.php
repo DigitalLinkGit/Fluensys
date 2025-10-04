@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\FlexCaptureElement;
+use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<FlexCaptureElement>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\CaptureElement\FlexCaptureElement>
  */
 class FlexCaptureElementRepository extends ServiceEntityRepository
 {

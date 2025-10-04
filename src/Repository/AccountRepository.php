@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Account;
+use App\Entity\Account\Account;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Account>
+ * @extends ServiceEntityRepository<\App\Entity\Account\Account>
  */
 class AccountRepository extends ServiceEntityRepository
 {

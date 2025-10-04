@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Field\TextAreaField;
+use App\Entity\Capture\Field\TextAreaField;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TextAreaField>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\Field\TextAreaField>
  */
 class TextAreaFieldRepository extends ServiceEntityRepository
 {

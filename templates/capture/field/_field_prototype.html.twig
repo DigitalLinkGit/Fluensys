@@ -1,0 +1,71 @@
+<fieldset class="mb-3 field-entry form-container mt-3 p-0 position-relative border rounded field-card"
+          data-controller="">
+    {{ form_row(form.internalPosition, { attr: { class: 'd-none position-input' } }) }}
+
+    {# CARD HEADER #}
+    <div class="field-card__header row g-2 p-2 align-items-start">
+        <div class="col-md-10">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="col-md-2 text-end">
+            <span class="badge bg-secondary type-badge d-inline-block mb-2">{{ form_row(form.type) }}</span><br>
+            <button type="button" class="btn btn-sm btn-outline-primary field-card__toggle"
+                    data-action="click->capture-element#toggle">
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm ms-1"
+                    data-action="click->capture-element#remove"
+                    title="Supprimer ce champ">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <div class="field-card__body p-2">
+        <div class="row g-3">
+            {# EXTERNAL CONFIG #}
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 h-100">
+                    <h6 class="mb-1">Externe</h6>
+                    {{ form_row(form.externalRequired, { row_attr: { class: 'mb-0' } }) }}
+                    {{ form_row(form.externalLabel, { row_attr: { class: 'mb-0' } }) }}
+                </div>
+            </div>
+
+            {# INTERNAL CONFIG #}
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 h-100">
+                    <h6 class="mb-1">Interne</h6>
+                    {{ form_row(form.internalRequired, { row_attr: { class: 'mb-0' } }) }}
+                    {{ form_row(form.internalLabel, { row_attr: { class: 'mb-0' } }) }}
+                </div>
+            </div>
+
+            {# OPTIONS #}
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 h-100">
+                    <h6 class="mb-1">Options</h6>
+
+                    {% if form.subtype is defined %}
+                        {{ form_row(form.subtype) }}
+                    {% else %}
+                        <div class="subtype-config">
+                            {# minimal template will injected here by stimulus controller #}
+                        </div>
+
+                        {# -------------- Minimal templates ----------------- #}
+                        {# List options #}
+                        <script type="text/template" data-subtype-template="checklist">
+                            <label class="form-label">Liste de choix (1 par ligne)</label>
+                            <textarea class="form-control" rows="6"
+                                      name="{{ form.vars.full_name }}[subtype][choices_raw]"
+                                      placeholder="Option A&#10;Option B&#10;Option C"></textarea>
+                        </script>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</fieldset>

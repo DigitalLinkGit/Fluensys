@@ -7,11 +7,11 @@
     <div class="doc-container">
         <div class="doc-page">
             {# Title #}
-            {% include 'rendering/_title_render.html.twig' with { title: capture.title } only %}
+            {% include 'capture/rendering/_title_render.html.twig' with { title: capture.title } only %}
 
             {# Chapter #}
             {% for element in capture.captureElements %}
-                {% include 'rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
                 <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
             {% endfor %}
         </div>

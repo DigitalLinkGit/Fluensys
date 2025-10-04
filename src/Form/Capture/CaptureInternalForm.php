@@ -2,8 +2,8 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture;
-use App\Form\CaptureElement\CaptureElementInternalForm;
+use App\Entity\Capture\Capture;
+use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;

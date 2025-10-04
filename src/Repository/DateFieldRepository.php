@@ -2,9 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Field\DateField;
-use App\Entity\Field\TextAreaField;
-use App\Entity\Field\TextField;
+use App\Entity\Capture\Field\DateField;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

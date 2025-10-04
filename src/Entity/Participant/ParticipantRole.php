@@ -2,7 +2,7 @@
 
 namespace App\Entity\Participant;
 
-use App\Entity\CaptureElement;
+use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Repository\ParticipantRoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,7 +26,7 @@ class ParticipantRole
     private ?bool $internal = null;
 
     /**
-     * @var Collection<int, CaptureElement>
+     * @var Collection<int, \App\Entity\Capture\CaptureElement\CaptureElement>
      */
     #[ORM\ManyToMany(targetEntity: CaptureElement::class, mappedBy: 'participantRoles')]
     private Collection $captureElements;

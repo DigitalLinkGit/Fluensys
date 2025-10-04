@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Rendering\Title;
+use App\Entity\Capture\Rendering\Title;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

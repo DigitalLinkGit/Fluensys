@@ -2,8 +2,8 @@
 
 namespace App\Tests\Functional;
 
-use App\Entity\Field\ChecklistField;
-use App\Entity\FlexCaptureElement;
+use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\Field\ChecklistField;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -18,8 +18,8 @@ class ChecklistFieldConfigTest extends WebTestCase
         $field = new ChecklistField();
         $field->setExternalLabel('Ext');
         $field->setInternalLabel('Int');
-        $field->setRequired(false);
-        $field->setPosition(0);
+        $field->setInternalRequired(false);
+        $field->setInternalPosition(0);
         $field->setCaptureElement($fc);
         $field->setChoices([
             ['label' => 'Option A', 'value' => 'Option A'],

@@ -2,11 +2,10 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture;
+use App\Entity\Capture\Capture;
 use App\Form\CaptureElement\CaptureElementForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

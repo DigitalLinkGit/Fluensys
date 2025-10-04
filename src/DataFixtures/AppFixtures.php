@@ -2,22 +2,22 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Account;
-use App\Entity\Capture;
-use App\Entity\Condition;
-use App\Entity\Contact;
-use App\Entity\Field\ChecklistField;
-use App\Entity\Field\DateField;
-use App\Entity\Field\DecimalField;
-use App\Entity\Field\Field;
-use App\Entity\Field\IntegerField;
-use App\Entity\Field\TextAreaField;
-use App\Entity\Field\TextField;
-use App\Entity\FlexCaptureElement;
-use App\Entity\InformationSystem;
+use App\Entity\Account\Account;
+use App\Entity\Account\Contact;
+use App\Entity\Account\InformationSystem;
+use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\Condition;
+use App\Entity\Capture\Field\ChecklistField;
+use App\Entity\Capture\Field\DateField;
+use App\Entity\Capture\Field\DecimalField;
+use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\IntegerField;
+use App\Entity\Capture\Field\TextAreaField;
+use App\Entity\Capture\Field\TextField;
+use App\Entity\Capture\Rendering\TextChapter;
+use App\Entity\Capture\Rendering\Title;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\Rendering\TextChapter;
-use App\Entity\Rendering\Title;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -62,8 +62,8 @@ class AppFixtures extends Fixture
             1,
             "Textarea",
             "Textarea",
-            true,
-            "TEXTAREA"
+            "Textarea",
+            true
         );
         $manager->persist($f1);
 
@@ -72,8 +72,8 @@ class AppFixtures extends Fixture
             2,
             "Integer",
             "Integer",
-            false,
-            "INTEGER"
+            "Integer",
+            false
         );
         $manager->persist($f2);
 
@@ -82,8 +82,8 @@ class AppFixtures extends Fixture
             3,
             "Text",
             "Text",
+            "Text",
             false,
-            "TEXT"
         );
         $manager->persist($f3);
 
@@ -92,8 +92,8 @@ class AppFixtures extends Fixture
             4,
             "Decimal",
             "Decimal",
-            true,
-            "DECIMAL"
+            "Decimal",
+            true
         );
         $manager->persist($f4);
 
@@ -102,8 +102,8 @@ class AppFixtures extends Fixture
             5,
             "Date",
             "Date",
-            true,
-            "DATE"
+            "Date",
+            true
         );
         $manager->persist($f5);
 
@@ -112,8 +112,8 @@ class AppFixtures extends Fixture
             5,
             "Checklist",
             "Checklist",
+            "Checklist",
             true,
-            "CHECKLIST",
             [
                 ['label' => 'Option A', 'value' => 'Option A'],
                 ['label' => 'Option B', 'value' => 'Option B'],
@@ -162,50 +162,50 @@ Checklist : [CHECKLIST]");
         $f10 = $this->createField(
             new TextAreaField(),
             2,
+            "Activité",
             "Décrivez votre activité en quelques lignes",
             "Activité",
-            false,
-            "ACTIVITY"
+            false
         );
         $manager->persist($f10);
 
         $f20 = $this->createField(
             new IntegerField(),
             3,
+            "Nombre de salarié",
             "Combien de salariés travail dans votre entreprise ?",
             "Nombre de salarié",
-            true,
-            "NB_EMPLOYEE"
+            true
         );
         $manager->persist($f20);
 
         $f30 = $this->createField(
             new TextField(),
             1,
+            "Nom de la société",
             "Quel est le nom de votre société ?",
             "Nom",
-            true,
-            "NAME"
+            true
         );
         $manager->persist($f30);
 
         $f50 = $this->createField(
             new DateField(),
             4,
+            "Date de début d'activité",
             "Quand avez vous commencez votre activité ?",
             "Date de début d'activité",
-            false,
-            "ACTIVITY_START_DATE"
+            false
         );
         $manager->persist($f50);
 
         $f60 = $this->createField(
             new ChecklistField(),
             5,
+            "Scope",
             "Cochez les options qui rentrent dans votre activité",
             "Scope",
             true,
-            "SCOPE",
             [
                 ['label' => 'Gestion de projet', 'value' => 'Gestion de projet'],
                 ['label' => 'RH', 'value' => 'RH'],
@@ -336,14 +336,15 @@ Scope :
             ->setDescription($description);
     }
 
-    private function createField(Field $field, int $position, string $externalLabel, string $internalLabel, bool $required, string $technicalName, ?array $choices = null): Field
+    private function createField(Field $field, int $position, string $name, string $externalLabel, string $internalLabel, bool $required, ?array $choices = null): Field
     {
         $field
-            ->setPosition($position)
+            ->setInternalPosition($position)
+            ->setName($name)
             ->setExternalLabel($externalLabel)
             ->setInternalLabel($internalLabel)
-            ->setRequired($required)
-            ->setTechnicalName($technicalName);
+            ->setInternalRequired($required)
+            ->setExternalRequired($required);
 
         if ($choices !== null && $field instanceof ChecklistField) {
             $field->setChoices($choices);

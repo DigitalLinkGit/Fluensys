@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Field\DecimalField;
+use App\Entity\Capture\Field\DecimalField;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<DecimalField>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\Field\DecimalField>
  */
 class DecimalFieldRepository extends ServiceEntityRepository
 {

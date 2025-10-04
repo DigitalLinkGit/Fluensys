@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Field\Field;
+use App\Entity\Capture\Field\Field;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Field>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\Field\Field>
  */
 class FieldRepository extends ServiceEntityRepository
 {

@@ -1,0 +1,72 @@
+{{ form_start(form) }}
+
+    {{ include('capture/capture_element/_form_header.html.twig') }}
+
+{% include 'components/button/_btn_bar.html.twig' with {
+    buttons: {
+        edit_render: {
+            type: 'link',
+            route: 'app_capture_element_render_text_edit',
+            param_map: { id: 'flex_capture.id' },
+            icon: 'bi-pencil',
+            label: 'Editer le rendu',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        preview_internal: {
+            type: 'link',
+            route: 'app_capture_element_internal_preview',
+            param_map: { id: 'flex_capture.id' },
+            icon: 'bi-eye',
+            label: 'Aperçu interne',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        preview_external: {
+            type: 'link',
+            route: 'app_capture_element_external_preview',
+            param_map: { id: 'flex_capture.id' },
+            icon: 'bi-eye',
+            label: 'Aperçu répondant',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        back: {
+            type: 'link',
+            route: 'app_flex_capture_element_index',
+            icon: 'bi-arrow-left',
+            label: 'Retour',
+            class: 'btn btn-outline-primary btn-sm'
+        },
+        save: {
+            type: 'submit',
+            icon: 'bi-check',
+            label: 'Enregistrer',
+            class: 'btn btn-primary btn-sm'
+        },
+    }
+} %}
+
+
+{% set prototype %}
+    {% include 'capture/field/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
+{% endset %}
+<div class="row p-3 " data-controller="capture-element">
+
+    <div class="col-md-9 p-3">
+        <div class="drop-zone d-flex align-items-center justify-content-center text-center border border-2 border-dashed rounded-3 p-3"
+             data-action="dragenter->capture-element#dragEnter dragover->capture-element#dragOver drop->capture-element#drop">
+            Glissez-déposez des champs ici
+        </div>
+
+        <div data-prototype="{{ prototype|e('html_attr') }}">
+        {% for fieldForm in form.fields %}
+            {% include 'capture/field/_field_prototype.html.twig' with { form: fieldForm } %}
+        {% endfor %}
+        </div>
+
+    </div>
+    <div class="col-md-3 p-3">
+        {% include 'capture/field/_available_fields_type.html.twig' %}
+    </div>
+</div>
+
+
+{{ form_end(form) }}

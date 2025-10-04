@@ -2,13 +2,13 @@
 
 namespace App\Service\Factory;
 
-use App\Entity\Field\ChecklistField;
-use App\Entity\Field\DateField;
-use App\Entity\Field\DecimalField;
-use App\Entity\Field\Field;
-use App\Entity\Field\IntegerField;
-use App\Entity\Field\TextAreaField;
-use App\Entity\Field\TextField;
+use App\Entity\Capture\Field\ChecklistField;
+use App\Entity\Capture\Field\DateField;
+use App\Entity\Capture\Field\DecimalField;
+use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\IntegerField;
+use App\Entity\Capture\Field\TextAreaField;
+use App\Entity\Capture\Field\TextField;
 
 class FieldFactory
 {
@@ -43,12 +43,12 @@ class FieldFactory
         $typed->setExternalLabel($base->getExternalLabel());
         $typed->setInternalLabel($base->getInternalLabel());
         $typed->setTechnicalName($base->getTechnicalName());
-        $typed->setRequired($base->isRequired());
+        $typed->setInternalRequired($base->isRequired());
 
         $typed->setCaptureElement($base->getCaptureElement());
 
         // Transfer subtype-specific data when both are same subtype
-        if ($base instanceof \App\Entity\Field\ChecklistField && $typed instanceof \App\Entity\Field\ChecklistField) {
+        if ($base instanceof \App\Entity\Capture\Field\ChecklistField && $typed instanceof \App\Entity\Capture\Field\ChecklistField) {
             $typed->setChoices($base->getChoices());
             $typed->setValue($base->getValue());
         }

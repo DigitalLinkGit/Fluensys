@@ -3,13 +3,12 @@
 namespace App\Service;
 
 
-use App\Entity\Field\Field;
-use App\Entity\Condition as Condition;
+use App\Entity\Capture\Condition as Condition;
 
 final class ConditionToggler
 {
     /**
-     * @param iterable<Condition> $conditions
+     * @param iterable<\App\Entity\Capture\Condition> $conditions
      */
     public function apply(iterable $conditions): void
     {

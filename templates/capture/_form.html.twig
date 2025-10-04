@@ -42,7 +42,7 @@
             {% if forms is defined %}
                 {% for element in forms %}
                     <div class="mb-3 row">
-                        {% include 'capture_element/_cards_prototype.html.twig' with { element: element } %}
+                        {% include 'capture/capture_element/_cards_prototype.html.twig' with { element: element } %}
                     </div>
                 {% else %}
                     <div class="text-muted small">Aucun élément</div>

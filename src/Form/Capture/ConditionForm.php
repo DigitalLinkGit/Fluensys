@@ -2,18 +2,18 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Condition;
-use App\Entity\CaptureElement;
-use App\Entity\Field\Field;
+use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\Condition;
+use App\Entity\Capture\Field\Field;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\Event\PostSubmitEvent;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class ConditionForm extends AbstractType
@@ -57,7 +57,7 @@ final class ConditionForm extends AbstractType
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (PostSubmitEvent $event) {
-            /** @var Condition $cond */
+            /** @var \App\Entity\Capture\Condition $cond */
             $cond = $event->getData();
             $form = $event->getForm();
             if (!$cond) return;
@@ -121,7 +121,7 @@ final class ConditionForm extends AbstractType
         });
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            /** @var Condition|null $cond */
+            /** @var \App\Entity\Capture\Condition|null $cond */
             $cond = $event->getData();
             if (!$cond) {
                 return;
