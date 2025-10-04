@@ -36,7 +36,7 @@
     <li class="tab nav-item" role="presentation">
         <a id="tab-information-system" class="tab__link nav-link" data-bs-toggle="tab" href="#information-system"
            role="tab" aria-controls="information-system"
-           aria-selected="false">Systèmes d'information</a>
+           aria-selected="false">Système d'information</a>
     </li>
     <li class="tab nav-item" role="presentation">
         <a id="tab-contacts" class="tab__link nav-link" data-bs-toggle="tab" href="#contacts" role="tab"
@@ -53,7 +53,20 @@
     </div>
     <div id="information-system" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-information-system">
         <div class="mx-2">
-            {{ form_row(form.informationSystem) }}
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Nom</h5>
+                </div>
+                <div class="col-md-4">
+                    <h5>Type</h5>
+                </div>
+            </div>
+            <div
+                data-controller="classic-collection"
+                data-prototype="{{ ('<fieldset class=\"mb-3\">' ~ form_widget(form.informationSystem.systemComponents.vars.prototype) ~ '</fieldset>')|e('html_attr') }}"
+            >
+                {{ form_widget(form.informationSystem.systemComponents) }}
+            </div>
         </div>
     </div>
     <div id="contacts" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-contacts">

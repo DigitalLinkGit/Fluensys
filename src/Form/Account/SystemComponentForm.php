@@ -16,12 +16,13 @@ class SystemComponentForm extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Nom du composant',
+                'label' => false,
                 'required' => true,
                 'row_attr' => ['class' => 'col-md-4'],
+
             ])
             ->add('type', ChoiceType::class, [
-                'label' => 'Type de composant',
+                'label' => false,
                 'choices' => array_combine(
                     array_map(fn($c) => ucfirst($c->name), SystemComponentType::cases()),
                     SystemComponentType::cases()

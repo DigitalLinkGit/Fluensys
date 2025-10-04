@@ -14,15 +14,6 @@ class InformationSystemForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, [
-                'row_attr' => ['class' => 'col-md-4'],
-                'label' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Nom...',
-                ],
-                'required' => true,
-            ])
             ->add('systemComponents', CollectionType::class, [
                 'entry_type' => SystemComponentForm::class,
                 'label' => false,
