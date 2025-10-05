@@ -2,6 +2,7 @@
 
 namespace App\Form\Capture\Field;
 
+use App\Entity\Capture\Field\Field;
 use App\Service\Factory\FieldFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -76,8 +77,8 @@ class FieldTemplateForm extends AbstractType
             $form = $event->getForm();
             $data = $event->getData();
 
-            if ($data instanceof \App\Entity\Capture\Field\Field) {
-                $type = FieldFactory::getTypeFromInstance($data);
+            if ($data instanceof Field) {
+                $type = $data->getType();
                 $form->get('type')->setData($type);
                 $addSubtypeForm($form, $type, $data);
             }
@@ -87,17 +88,24 @@ class FieldTemplateForm extends AbstractType
             $form = $event->getForm();
             $submitted = $event->getData() ?? [];
             $type = $submitted['type'] ?? null;
+
+            if ($type && !$form->getData()) {
+                $form->setData(FieldFactory::newFromType($type));
+            }
+
             $addSubtypeForm($form, $type, $form->getData());
         });
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+
         $resolver->setDefaults([
             'data_class' => \App\Entity\Capture\Field\Field::class,
             'empty_data' => function (FormInterface $form) {
                 $type = $form->get('type')->getData() ?? 'textarea'; // fallback
-                return FieldFactory::createFromType($type);
+                return FieldFactory::newFromType($type);
             },
         ]);
     }

@@ -61,12 +61,11 @@
                     <h5>Type</h5>
                 </div>
             </div>
-            <div
-                data-controller="classic-collection"
-                data-prototype="{{ ('<fieldset class=\"mb-3\">' ~ form_widget(form.informationSystem.systemComponents.vars.prototype) ~ '</fieldset>')|e('html_attr') }}"
-            >
-                {{ form_widget(form.informationSystem.systemComponents) }}
+            <div>
+                {{ form_widget(form.informationSystem) }}
+
             </div>
+
         </div>
     </div>
     <div id="contacts" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-contacts">

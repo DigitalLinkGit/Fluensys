@@ -16,11 +16,8 @@ abstract class Chapter
     public function __clone()
     {
         $this->id = null;
-        // title
         $clonedTitle = clone $this->title;
-        //dd('AFTER CLONE',$clonedTitle->getContent());
         $this->setTitle($clonedTitle);
-        // captureElement is re-set by parent clone process
     }
     #[ORM\Id]
     #[ORM\GeneratedValue]

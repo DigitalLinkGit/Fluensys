@@ -6,8 +6,9 @@ use App\Repository\TextFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TextFieldRepository::class)]
-class TextField extends Field
+final class TextField extends Field
 {
+    public const TYPE = 'text';
     #[ORM\Column(length: 255,nullable:  true)]
     private ?string $value = null;
 

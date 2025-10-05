@@ -4,11 +4,12 @@
 
     {# CARD HEADER #}
     <div class="field-card__header row g-2 p-2 align-items-start">
+        {{ form_widget(form.type) }}
         <div class="col-md-10">
             {{ form_row(form.name) }}
         </div>
         <div class="col-md-2 text-end">
-            <span class="badge bg-secondary type-badge d-inline-block mb-2">{{ form_row(form.type) }}</span><br>
+            <span class="badge bg-secondary type-badge d-inline-block mb-2"></span><br>
             <button type="button" class="btn btn-sm btn-outline-primary field-card__toggle"
                     data-action="click->capture-element#toggle">
                 <i class="bi bi-chevron-down"></i>

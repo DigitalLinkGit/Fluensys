@@ -1,179 +1,155 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-
     connect() {
-        this.container = this.element.querySelector('[data-prototype]') || this.element;
-        if (!this.index) {
-            this.index = this.container.querySelectorAll('fieldset').length;
-        }
+        // cache container (node holding data-prototype) and init index once
+        this.container = this.element.querySelector("[data-prototype]") || this.element;
+        this.index = Number(this.container.dataset.index || this.container.querySelectorAll("fieldset").length || 0);
         this.draggedType = null;
-        this.container.querySelectorAll('fieldset').forEach((fs) => {
-            const typeInput = fs.querySelector("select[name$='[type]'], input[name$='[type]']");
-            const typeVal = typeInput ? typeInput.value : '';
+
+        // init existing fieldsets (badge + subtype UI + collapsed)
+        this.container.querySelectorAll("fieldset").forEach((fs) => {
+            const typeVal = this.getTypeInput(fs)?.value || "";
             this.updateTypeBadge(fs, typeVal);
             this.renderSubtypeUI(fs, typeVal);
             this.setCollapsed(fs, true);
         });
     }
 
+    // ---------- DnD ----------
     dragStart(event) {
         const type = event.currentTarget.dataset.type;
         this.draggedType = type;
-        // Set custom and standard MIME types for broader browser support
-        if (event.dataTransfer) {
-            event.dataTransfer.setData('application/x-field-type', type);
-            try {
-                event.dataTransfer.setData('text/plain', type);
-                event.dataTransfer.setData('text', type);
-            } catch (e) {
-                // some browsers may restrict setData for non-text
-            }
-            event.dataTransfer.effectAllowed = 'copy';
-        }
+        if (!event.dataTransfer) return;
+        event.dataTransfer.setData("application/x-field-type", type);
+        try {
+            event.dataTransfer.setData("text/plain", type);
+            event.dataTransfer.setData("text", type);
+        } catch (_) {}
+        event.dataTransfer.effectAllowed = "copy";
     }
 
     dragEnter(event) {
-        // Needed for some browsers to allow dropping
         event.preventDefault();
-        if (event.dataTransfer) {
-            event.dataTransfer.dropEffect = 'copy';
-        }
+        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
     }
 
     dragOver(event) {
         event.preventDefault();
-        if (event.dataTransfer) {
-            event.dataTransfer.dropEffect = 'copy';
-        }
+        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
     }
 
     drop(event) {
         event.preventDefault();
-        let type = '';
+        let type = "";
         if (event.dataTransfer) {
-            type = event.dataTransfer.getData('application/x-field-type')
-                || event.dataTransfer.getData('text/plain')
-                || event.dataTransfer.getData('text')
-                || '';
+            type =
+                event.dataTransfer.getData("application/x-field-type") ||
+                event.dataTransfer.getData("text/plain") ||
+                event.dataTransfer.getData("text") ||
+                "";
         }
-        if (!type && this.draggedType) {
-            type = this.draggedType;
-        }
-        if (!type) {
-            console.warn('Aucun type trouvé pour le drop');
-            return;
-        }
-        this.addFieldOfType(type, event);
+        if (!type && this.draggedType) type = this.draggedType;
+        if (!type) return console.warn("Aucun type trouvé pour le drop");
+        this.addFieldOfType(type);
         this.draggedType = null;
     }
 
-    addFieldOfType(type, event) {
-        const container = this.container || this.element;
-        const prototype = container.dataset.prototype;
-        if (!prototype) {
-            console.error('data-prototype manquant sur le conteneur');
-            return;
-        }
-        const html = prototype.replace(/__name__/g, this.index);
-        const temp = document.createElement('div');
-        temp.innerHTML = html.trim();
-        let fieldset = temp.firstElementChild;
-        if (!fieldset || fieldset.tagName.toLowerCase() !== 'fieldset') {
-            fieldset = temp.querySelector('fieldset');
-        }
-        if (!fieldset) {
-            console.error('Prototype ne contient pas de fieldset');
-            return;
-        }
+    // ---------- Create item ----------
+    addFieldOfType(type) {
+        const proto = this.container.dataset.prototype;
+        if (!proto) return console.error("data-prototype manquant sur le conteneur");
 
-        // Set the [name$='[type]'] (hidden or select) to desired type
-        const typeInput = fieldset.querySelector("select[name$='[type]'], input[name$='[type]']");
+        const html = proto.replace(/__name__/g, String(this.index));
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = html.trim();
+
+        let fs = wrapper.firstElementChild;
+        if (!fs || fs.tagName.toLowerCase() !== "fieldset") fs = wrapper.querySelector("fieldset");
+        if (!fs) return console.error("Prototype ne contient pas de fieldset");
+
+        // set hidden/select [type] and trigger change so Symfony/Stimulus listeners react
+        const typeInput = this.getTypeInput(fs);
         if (typeInput) {
             typeInput.value = type;
-            typeInput.dispatchEvent(new Event('change', { bubbles: true }));
+            typeInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
-        // Update badge label
-        this.updateTypeBadge(fieldset, type);
 
-        // Render subtype UI (client-side template) if needed
-        this.renderSubtypeUI(fieldset, type);
+        // update badge + client-side subtype UI (if server hasn’t rendered it yet)
+        this.updateTypeBadge(fs, type);
+        this.renderSubtypeUI(fs, type);
 
-        container.appendChild(fieldset);
-        this.setCollapsed(fieldset, true);
+        fs.setAttribute("data-collection-item", "");
+        this.container.appendChild(fs);
+        this.setCollapsed(fs, true);
+
         this.index++;
+        this.container.dataset.index = String(this.index); // persist for next connects
     }
 
+    // ---------- Events ----------
     typeChanged(event) {
-        const fieldset = event.currentTarget.closest('fieldset');
+        const fs = event.currentTarget.closest("fieldset");
         const type = event.currentTarget.value;
-        this.renderSubtypeUI(fieldset, type);
+        this.updateTypeBadge(fs, type);
+        this.renderSubtypeUI(fs, type);
     }
 
+    // ---------- Subtype UI ----------
     renderSubtypeUI(fieldset, type) {
-        const container = fieldset.querySelector('.subtype-config');
-        if (!container) return;
+        const host = fieldset.querySelector(".subtype-config");
+        if (!host) return;
 
-        // If backend already rendered a subtype form, do nothing
-        if (container.querySelector('textarea, input, select, [data-sf-form]')) {
-            // Heuristic: if subtype was rendered server side (editing existing), don't overwrite
-            return;
-        }
+        // do not overwrite server-rendered content (editing case)
+        if (host.querySelector("textarea, input, select, [data-sf-form]")) return;
 
-        // Clean previous client-side content
-        container.innerHTML = '';
-
-        // Insert matching client-side template if any
+        host.innerHTML = "";
         const tpl = fieldset.querySelector(`script[data-subtype-template="${type}"]`);
-        if (tpl) {
-            container.innerHTML = tpl.innerHTML;
-        }
+        if (tpl) host.innerHTML = tpl.innerHTML;
     }
 
+    // ---------- UI helpers ----------
     updateTypeBadge(fieldset, type) {
-        const badge = fieldset.querySelector('.type-badge');
+        const badge = fieldset.querySelector(".type-badge");
         if (!badge) return;
         const labels = {
-            textarea: 'texte long',
-            text: 'texte court',
-            integer: 'nombre entier',
-            decimal: 'nombre décimal',
-            date: 'date',
-            checklist: 'cases à cocher'
+            textarea: "texte long",
+            text: "texte court",
+            integer: "nombre entier",
+            decimal: "nombre décimal",
+            date: "date",
+            checklist: "cases à cocher",
+            system_component_collection: "composants de SI",
         };
-        const label = labels[type] || type || '—';
-        badge.textContent = `Type: ${label}`;
+        badge.textContent = `${labels[type] || type || "—"}`;
     }
 
     toggle(event) {
-        const btn = event.currentTarget;
-        const fieldset = btn.closest('fieldset');
-        if (!fieldset) return;
-        const collapsed = fieldset.classList.contains('is-collapsed');
-        this.setCollapsed(fieldset, !collapsed);
+        const fs = event.currentTarget.closest("fieldset");
+        if (!fs) return;
+        this.setCollapsed(fs, !fs.classList.contains("is-collapsed"));
     }
 
     setCollapsed(fieldset, collapsed) {
-        const body = fieldset.querySelector('.field-card__body');
-        const icon = fieldset.querySelector('.field-card__toggle i');
+        const body = fieldset.querySelector(".field-card__body");
+        const icon = fieldset.querySelector(".field-card__toggle i");
         if (!body) return;
-        if (collapsed) {
-            fieldset.classList.add('is-collapsed');
-            body.style.display = 'none';
-            if (icon) { icon.classList.remove('bi-chevron-up'); icon.classList.add('bi-chevron-down'); }
-        } else {
-            fieldset.classList.remove('is-collapsed');
-            body.style.display = '';
-            if (icon) { icon.classList.remove('bi-chevron-down'); icon.classList.add('bi-chevron-up'); }
+        fieldset.classList.toggle("is-collapsed", collapsed);
+        body.style.display = collapsed ? "none" : "";
+        if (icon) {
+            icon.classList.toggle("bi-chevron-down", collapsed);
+            icon.classList.toggle("bi-chevron-up", !collapsed);
         }
     }
 
     remove(event) {
         event.preventDefault();
-        const btn = event.currentTarget || event.target;
-        const fieldset = btn.closest('fieldset');
-        if (fieldset) {
-            fieldset.remove();
-        }
+        const fs = (event.currentTarget || event.target).closest("fieldset");
+        if (fs) fs.remove();
+    }
+
+    // ---------- utils ----------
+    getTypeInput(scope) {
+        return scope.querySelector("select[name$='[type]'], input[name$='[type]']");
     }
 }

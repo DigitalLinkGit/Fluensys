@@ -12,6 +12,7 @@ use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
+use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Rendering\TextChapter;
@@ -124,6 +125,17 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f6);
 
+        $f7 = $this->createField(
+            new SystemComponentCollectionField(),
+            6,
+            "Composants de SI",
+            "Composants de SI",
+            "Composants de SI",
+            true
+        );
+        $manager->persist($f7);
+
+
         //capture element
         $flex = (new FlexCaptureElement())
             ->setDescription("Flex capture utilisée pour vérifier que tous les types de fields fonctionnent et s'affichent correctement")
@@ -136,7 +148,8 @@ class AppFixtures extends Fixture
             ->addField($f3)
             ->addField($f4)
             ->addField($f5)
-            ->addField($f6);
+            ->addField($f6)
+            ->addField($f7);
         $manager->persist($flex);
 
         //title
@@ -154,7 +167,8 @@ Integer : [INTEGER]
 Text : [TEXT]
 Decimal : [DECIMAL]
 Date : [DATE]
-Checklist : [CHECKLIST]");
+Checklist : [CHECKLIST]
+Composants de SI : [COMPOSANTSDESI]");
         $chapter->setCaptureElement($flex);
         $manager->persist($chapter);
 
@@ -243,8 +257,8 @@ Checklist : [CHECKLIST]");
         //chapter
         $chapter2 = (new TextChapter())
             ->setTitle($title)
-            ->setTemplateContent("[NAME] est une société de [NB_EMPLOYEE] salariés qui a démarée son activité le [ACTIVITY_START_DATE].
-[ACTIVITY]
+            ->setTemplateContent("[NOMDELASOCIETE] est une société de [NOMBREDESALARIE] salariés qui a démarée son activité le [DATEDEDEBUTDACTIVITE].
+[ACTIVITE]
 
 Scope :
 [SCOPE]");

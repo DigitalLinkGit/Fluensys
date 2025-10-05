@@ -2,12 +2,14 @@
 
 namespace App\Entity\Capture\Field;
 
-use App\Entity\Field\IntegerFieldRepository;
+
+use App\Repository\IntegerFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: IntegerFieldRepository::class)]
-class IntegerField extends Field
+final class IntegerField extends Field
 {
+    public const TYPE = 'integer';
     #[ORM\Column(length: 255,nullable:  true)]
     private ?int $value = null;
 

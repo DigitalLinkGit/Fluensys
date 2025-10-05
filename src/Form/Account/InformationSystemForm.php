@@ -23,6 +23,7 @@ class InformationSystemForm extends AbstractType
                 'prototype' => true,
                 'attr' => [
                     'class' => 'system-components-collection',
+                    'data-controller' => 'classic-collection',
                 ],
                 'entry_options' => [
                     'label' => false,

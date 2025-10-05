@@ -6,8 +6,9 @@ use App\Repository\DecimalFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DecimalFieldRepository::class)]
-class DecimalField extends Field
+final class DecimalField extends Field
 {
+    public const TYPE = 'decimal';
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private ?float $value = null;
 

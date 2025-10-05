@@ -9,19 +9,23 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
-    'textarea' =>TextAreaField::class,
-    'text' =>TextField::class,
-    'integer' =>IntegerField::class,
-    'decimal' =>DecimalField::class,
-    'date' =>DateField::class,
+    'textarea' => TextAreaField::class,
+    'text' => TextField::class,
+    'integer' => IntegerField::class,
+    'decimal' => DecimalField::class,
+    'date' => DateField::class,
     'checklist' => ChecklistField::class,
+    'system_component_collection' => SystemComponentCollectionField::class,
 ])]
 abstract class Field
 {
+    public const TYPE = 'base';
+
     public function __clone()
     {
         $this->id = null;
     }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,6 +55,11 @@ abstract class Field
     #[ORM\ManyToOne(inversedBy: 'fields')]
     #[ORM\JoinColumn(nullable: false)]
     protected ?CaptureElement $captureElement = null;
+
+    public function getType(): string
+    {
+        return static::TYPE;
+    }
 
     abstract public function getValue(): mixed;
 
@@ -140,13 +149,11 @@ abstract class Field
     {
         $this->name = $name;
 
-        if (empty($this->technicalName)) {
-            $this->technicalName = strtoupper(
-                preg_replace('/[^A-Z0-9_]/', '_',
-                    transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $name)
-                )
-            );
-        }
+        $this->technicalName = strtoupper(
+            preg_replace('/[^A-Z0-9_]/i', '_',
+                transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $name)
+            )
+        );
 
         return $this;
     }

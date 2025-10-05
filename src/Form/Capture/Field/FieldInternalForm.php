@@ -18,11 +18,9 @@ class FieldInternalForm extends AbstractType
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $field = $event->getData();
 
-            if (!$field instanceof Field) {
-                return;
-            }
+            if (!$field instanceof Field) return;
 
-            $formFieldType = FieldFactory::getSymfonyTypeFromInstance($field);
+            $formFieldType = \App\Service\Factory\FieldFactory::getSymfonyTypeFromInstance($field);
 
             $options = [
                 'data' => $field->getValue(),
@@ -38,17 +36,13 @@ class FieldInternalForm extends AbstractType
             }
             $event->getForm()->add('value', $formFieldType, $options);
         });
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Field::class,
-            'empty_data' => function (FormInterface $form) {
-                $type = $form->get('type')->getData() ?? 'textarea'; // fallback
-                return FieldFactory::createFromType($type);
-            },
         ]);
     }
+
 }

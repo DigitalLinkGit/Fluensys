@@ -5,15 +5,15 @@ namespace App\Entity\Capture\Field;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class ChecklistField extends Field
+final class ChecklistField extends Field
 {
-    // Choices stored as array of ['label' => string, 'value' => string]
+    public const TYPE = 'checklist';
     #[ORM\Column(type: 'json')]
     private array $choices = [];
 
-    // Multiple selected values; for checkboxes it's an array of strings
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $value = null;
+
 
     public function getValue(): ?array
     {

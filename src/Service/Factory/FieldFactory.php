@@ -7,8 +7,11 @@ use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
+use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
+use App\Form\Account\InformationSystemForm;
+use App\Form\Account\SystemComponentForm;
 
 class FieldFactory
 {
@@ -19,9 +22,10 @@ class FieldFactory
         'decimal'  => DecimalField::class,
         'date'  => DateField::class,
         'checklist' => ChecklistField::class,
+        'system_component_collection' => SystemComponentCollectionField::class,
     ];
 
-    public static function createFromType(string $type): Field
+    public static function newFromType(string $type): Field
     {
         $class = self::TYPE_MAP[$type] ?? null;
 
@@ -31,32 +35,6 @@ class FieldFactory
 
         return new $class();
     }
-
-    public static function createTypedField(Field $base, string $type): Field
-    {
-        $typed = self::createFromType($type);
-        return self::fromBase($base, $typed);
-    }
-
-    private static function fromBase(Field $base, Field $typed): Field
-    {
-        $typed->setExternalLabel($base->getExternalLabel());
-        $typed->setInternalLabel($base->getInternalLabel());
-        $typed->setTechnicalName($base->getTechnicalName());
-        $typed->setInternalRequired($base->isRequired());
-
-        $typed->setCaptureElement($base->getCaptureElement());
-
-        // Transfer subtype-specific data when both are same subtype
-        if ($base instanceof \App\Entity\Capture\Field\ChecklistField && $typed instanceof \App\Entity\Capture\Field\ChecklistField) {
-            $typed->setChoices($base->getChoices());
-            $typed->setValue($base->getValue());
-        }
-
-        return $typed;
-    }
-
-
 
     public static function getTypeFromInstance(?Field $field): string
     {
@@ -71,6 +49,7 @@ class FieldFactory
             $field instanceof DecimalField => 'decimal',
             $field instanceof DateField => 'date',
             $field instanceof ChecklistField => 'checklist',
+            $field instanceof SystemComponentCollectionField => 'system_component_collection',
             default => throw new \LogicException('Type de champ non supporté'),
         };
     }
@@ -84,6 +63,7 @@ class FieldFactory
             $field instanceof DecimalField => \Symfony\Component\Form\Extension\Core\Type\NumberType::class,
             $field instanceof DateField => \Symfony\Component\Form\Extension\Core\Type\DateType::class,
             $field instanceof ChecklistField => \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class,
+            $field instanceof SystemComponentCollectionField => InformationSystemForm::class,
             default => throw new \LogicException('Type de champ non supporté pour ' . get_class($field)),
         };
     }

@@ -75,6 +75,7 @@ final class CaptureElementController extends AbstractController
     public function internalPreview(FlexCaptureElement $flexCapture): Response
     {
         $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
+        //dd(array_map(fn($f) => get_class($f), $flexCapture->getFields()->toArray()));
         $title = 'Aperçu interne : ' . $flexCapture->getName();
         return $this->render('capture/capture_element/preview.html.twig', [
             'flex_capture' => $flexCapture,
