@@ -72,19 +72,15 @@
         <div class="mx-2">
             <div class="row">
                 <div class="col-md-4">
-                    <h5>Email</h5>
-                </div>
-                <div class="col-md-4">
                     <h5>Nom</h5>
                 </div>
                 <div class="col-md-3">
                     <h5>Fonction</h5>
                 </div>
+                <div class="col-md-4">
+                    <h5>Email</h5>
+                </div>
             </div>
-            <div
-                data-controller="classic-collection"
-                data-prototype="{{ ('<fieldset class=\"mb-3\">' ~ form_widget(form.contacts.vars.prototype) ~ '</fieldset>')|e('html_attr') }}"
-            >
                 {{ form_widget(form.contacts) }}
             </div>
         </div>

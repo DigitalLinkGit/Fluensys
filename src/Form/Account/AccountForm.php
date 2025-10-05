@@ -47,6 +47,9 @@ class AccountForm extends AbstractType
                     'label' => false,
                     'attr' => ['class' => 'row']
                 ],
+                'attr' => [
+                    'data-controller' => 'classic-collection',
+                ],
 
             ])
         ;

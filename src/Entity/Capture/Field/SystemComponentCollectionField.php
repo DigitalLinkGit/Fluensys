@@ -42,6 +42,6 @@ final class SystemComponentCollectionField extends Field
     public function getValue(): mixed
     {
         // TODO: Implement getValue() method.
-        return null;
+        return "null";
     }
 }
