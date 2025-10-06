@@ -19,7 +19,7 @@ class InformationSystem
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToOne(inversedBy: 'informationSystem', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'informationSystem', cascade: ['persist', 'remove'])]
     private ?Account $account = null;
 
     /**

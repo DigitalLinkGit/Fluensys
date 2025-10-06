@@ -25,15 +25,20 @@ class ParticipantRole
     #[ORM\Column]
     private ?bool $internal = null;
 
-    /**
-     * @var Collection<int, \App\Entity\Capture\CaptureElement\CaptureElement>
-     */
-    #[ORM\ManyToMany(targetEntity: CaptureElement::class, mappedBy: 'participantRoles')]
-    private Collection $captureElements;
+    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'responsible')]
+    private Collection $responsibleCaptureElements;
+
+    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'validator')]
+    private Collection $validatorCaptureElements;
+
+    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'respondent')]
+    private Collection $respondentCaptureElements;
 
     public function __construct()
     {
-        $this->captureElements = new ArrayCollection();
+        $this->responsibleCaptureElements = new ArrayCollection();
+        $this->validatorCaptureElements   = new ArrayCollection();
+        $this->respondentCaptureElements  = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -77,30 +82,8 @@ class ParticipantRole
         return $this;
     }
 
-    /**
-     * @return Collection<int, CaptureElement>
-     */
-    public function getCaptureElements(): Collection
-    {
-        return $this->captureElements;
-    }
+    public function getResponsibleCaptureElements(): Collection { return $this->responsibleCaptureElements; }
+    public function getValidatorCaptureElements():   Collection { return $this->validatorCaptureElements; }
+    public function getRespondentCaptureElements():  Collection { return $this->respondentCaptureElements; }
 
-    public function addCaptureElement(CaptureElement $captureElement): static
-    {
-        if (!$this->captureElements->contains($captureElement)) {
-            $this->captureElements->add($captureElement);
-            $captureElement->addParticipantRole($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCaptureElement(CaptureElement $captureElement): static
-    {
-        if ($this->captureElements->removeElement($captureElement)) {
-            $captureElement->removeParticipantRole($this);
-        }
-
-        return $this;
-    }
 }

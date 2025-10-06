@@ -22,10 +22,12 @@ class Condition
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT'
-
-    )]
+    #[ORM\JoinColumn(name: 'source_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT')]
     private ?CaptureElement $sourceElement = null;
+
+    #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT')]
+    private ?CaptureElement $targetElement = null;
 
     #[ORM\ManyToOne(targetEntity: Field::class)]
     #[ORM\JoinColumn(name: 'source_field_id',referencedColumnName: 'id',nullable: false, onDelete: 'RESTRICT')]
@@ -34,9 +36,7 @@ class Condition
     #[ORM\Column(length: 255)]
     private ?string $expectedValue = null;
 
-    #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT')]
-    private ?CaptureElement $targetElement = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'conditions')]
     #[ORM\JoinColumn(nullable: false)]

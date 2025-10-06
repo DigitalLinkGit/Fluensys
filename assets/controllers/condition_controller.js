@@ -10,8 +10,8 @@ export default class extends Controller {
         }
     }
 
-    // --- TES MÉTHODES ADD/REMOVE, inchangées ---
     add(event) {
+        if (!event || !event.isTrusted) return;
         event.preventDefault();
 
         const html = this.element.dataset.prototype.replace(/__name__/g, this.index);
@@ -31,38 +31,29 @@ export default class extends Controller {
         const fs = event.target.closest("fieldset");
         if (fs) fs.remove();
     }
-    // -------------------------------------------
 
-    // Appelée par Stimulus: change->condition#onTargetChange
     onTargetChange(event) {
-        const targetSelect = event?.target;
-        if (!(targetSelect instanceof Element)) return;
+        if (!event || !event.isTrusted) return;
 
+        const targetSelect = event.target;
         const entry = this.entryOf(targetSelect);
         const sourceSelect = this.qs(entry, 'select[name$="[sourceElement]"]');
-        const fieldSelect  = this.qs(entry, 'select[name$="[sourceField]"]');
         if (!sourceSelect) return;
 
         const targetValue = targetSelect.value;
+        const currentSource = sourceSelect.value;
 
-        // Empêche source == target côté UI
         Array.from(sourceSelect.options).forEach((opt) => {
-            opt.disabled = false;
-            if (targetValue && opt.value === targetValue) opt.disabled = true;
+            opt.disabled = (targetValue && opt.value === targetValue && opt.value !== currentSource);
         });
-
-        // Si c'était déjà la même valeur, on reset source + fields
-        if (sourceSelect.value && sourceSelect.value === targetValue) {
-            sourceSelect.value = "";
-            this.resetFieldsSelect(entry);
-        }
     }
 
-    // Appelée par Stimulus: change->condition#onSourceChange
-    async onSourceChange(event) {
-        const sourceSelect = event?.target;
-        if (!(sourceSelect instanceof Element)) return;
 
+
+    async onSourceChange(event) {
+        if (!event || !event.isTrusted) return;
+
+        const sourceSelect = event.target;
         const entry = this.entryOf(sourceSelect);
         const fieldSelect = this.qs(entry, 'select[name$="[sourceField]"]');
         if (!fieldSelect) return;
@@ -72,6 +63,8 @@ export default class extends Controller {
             this.resetFieldsSelect(entry);
             return;
         }
+
+        const previous = fieldSelect.value;
 
         try {
             const url = new URL(this.fieldsUrlValue, window.location.origin);
@@ -88,14 +81,18 @@ export default class extends Controller {
                 fieldSelect.appendChild(opt);
             });
 
+            if (previous && Array.from(fieldSelect.options).some(o => o.value === previous)) {
+                fieldSelect.value = previous;
+            }
+
             fieldSelect.disabled = (data.fields || []).length === 0;
-            fieldSelect.required = true; // non-nullable
+            fieldSelect.required = true;
         } catch {
             this.resetFieldsSelect(entry);
         }
     }
 
-    // ---- helpers ----
+
     entryOf(el) {
         return el.closest("[data-condition-entry]") || el.closest("fieldset") || this.element;
     }

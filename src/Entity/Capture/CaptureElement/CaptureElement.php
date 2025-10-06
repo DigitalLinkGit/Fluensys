@@ -63,28 +63,22 @@ abstract class CaptureElement
     #[ORM\Column(length: 255)]
     protected ?string $description = null;
 
-    /**
-     * @var Collection<int, \App\Entity\Capture\Field\Field>
-     */
     #[ORM\OneToMany(targetEntity: Field::class, mappedBy: 'captureElement', cascade: ['persist', 'remove'], orphanRemoval: true)]
     protected Collection $fields;
 
-    /**
-     * @var Collection<int, CalculatedVariable>
-     */
     #[ORM\OneToMany(targetEntity: CalculatedVariable::class, mappedBy: 'captureElement', orphanRemoval: true)]
     protected Collection $calculatedvariables;
 
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'respondentCaptureElements')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ParticipantRole $respondent = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'responsibleCaptureElements')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ParticipantRole $responsible = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'validatorCaptureElements')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ParticipantRole $validator = null;
 

@@ -10,8 +10,7 @@ use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
-use App\Form\Account\InformationSystemForm;
-use App\Form\Account\SystemComponentForm;
+use App\Form\Capture\Field\SystemComponentCollectionFieldForm;
 
 class FieldFactory
 {
@@ -63,7 +62,7 @@ class FieldFactory
             $field instanceof DecimalField => \Symfony\Component\Form\Extension\Core\Type\NumberType::class,
             $field instanceof DateField => \Symfony\Component\Form\Extension\Core\Type\DateType::class,
             $field instanceof ChecklistField => \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class,
-            $field instanceof SystemComponentCollectionField => InformationSystemForm::class,
+            $field instanceof SystemComponentCollectionField => SystemComponentCollectionFieldForm::class,
             default => throw new \LogicException('Type de champ non supporté pour ' . get_class($field)),
         };
     }

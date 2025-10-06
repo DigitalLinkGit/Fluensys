@@ -59,16 +59,23 @@ final class CaptureTemplateController extends AbstractController
     #[Route('/{id}/edit', name: 'app_capture_template_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager,ConditionToggler $toggler): Response
     {
-        //apply toggle activation from conditions
-        $conditions = $capture->getConditions();
-        $toggler->apply(is_iterable($conditions) ? $conditions : []);
-
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             $entityManager->flush();
+            $toggler->apply($capture->getConditions()->toArray());
+            $entityManager->flush();
+        }
+// DB
+        foreach ($capture->getConditions() as $c) {
+            dump(['DB' => [$c->getId(), $c->getSourceElement()?->getId(), $c->getTargetElement()?->getId(), $c->getSourceField()?->getId()]]);
+        }
+// FORM (valeurs que le formulaire expose à l'écran)
+        foreach ($form->get('conditions') as $child) {
+            $d = $child->getData();
+            dump(['FORM' => [$d?->getId(), $child->get('sourceElement')->getData()?->getId(), $child->get('targetElement')->getData()?->getId(), $child->get('sourceField')->getData()?->getId()]]);
         }
 
         return $this->render('capture/capture_template/edit.html.twig', [

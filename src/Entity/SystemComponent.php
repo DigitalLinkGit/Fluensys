@@ -21,7 +21,7 @@ class SystemComponent
     private ?SystemComponentType $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'systemComponents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?InformationSystem $informationSystem = null;
 
     public function getId(): ?int

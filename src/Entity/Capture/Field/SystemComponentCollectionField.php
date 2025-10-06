@@ -11,37 +11,39 @@ use Doctrine\ORM\Mapping as ORM;
 final class SystemComponentCollectionField extends Field
 {
     public const TYPE = 'system_component_collection';
+
+    #[ORM\ManyToMany(targetEntity: SystemComponent::class, cascade: ['persist'])]
     private Collection $components;
 
-    public function __construct(iterable $components = [])
+    public function __construct()
     {
         $this->components = new ArrayCollection();
-        foreach ($components as $component) {
-            $this->addComponent($component);
-        }
     }
+
     public function getComponents(): Collection
     {
+        if (!isset($this->components)) {
+            $this->components = new ArrayCollection();
+        }
         return $this->components;
     }
 
-    public function addComponent(SystemComponent $component): self
+    public function addComponent(SystemComponent $c): self
     {
-        if (!$this->components->contains($component)) {
-            $this->components->add($component);
+        if (!$this->components->contains($c)) {
+            $this->components->add($c);
         }
         return $this;
     }
 
-    public function removeComponent(SystemComponent $component): self
+    public function removeComponent(SystemComponent $c): self
     {
-        $this->components->removeElement($component);
+        $this->components->removeElement($c);
         return $this;
     }
 
     public function getValue(): mixed
     {
-        // TODO: Implement getValue() method.
-        return "null";
+        return $this->getComponents();
     }
 }

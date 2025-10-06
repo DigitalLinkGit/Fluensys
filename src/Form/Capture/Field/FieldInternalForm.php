@@ -2,7 +2,9 @@
 
 namespace App\Form\Capture\Field;
 
+use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Service\Factory\FieldFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +22,14 @@ class FieldInternalForm extends AbstractType
 
             if (!$field instanceof Field) return;
 
+            if ($field instanceof SystemComponentCollectionField) {
+                $event->getForm()->add('value', SystemComponentCollectionFieldForm::class, [
+                    'label' => false,
+                    'inherit_data' => true,
+                ]);
+                return;
+            }
+
             $formFieldType = \App\Service\Factory\FieldFactory::getSymfonyTypeFromInstance($field);
 
             $options = [
@@ -27,7 +37,7 @@ class FieldInternalForm extends AbstractType
                 'label' => $field->getInternalLabel(),
                 'required' => false,
             ];
-            if ($field instanceof \App\Entity\Capture\Field\ChecklistField) {
+            if ($field instanceof ChecklistField) {
                 $options = array_replace($options, [
                     'choices' => $field->toSymfonyChoices(),
                     'expanded' => true,

@@ -34,7 +34,11 @@ final class ConditionForm extends AbstractType
             'placeholder' => 'Sélectionner un élément...',
             'label' => false,
             'choices' => $this->buildTargetChoices($elements),
-            'attr' => ['data-action' => 'change->condition#onTargetChange'],
+            'attr' => [
+                'data-action' => 'change->condition#onTargetChange',
+                'autocomplete' => 'off'
+            ],
+
         ]);
 
         $builder->add('sourceElement', EntityType::class, [
@@ -43,7 +47,10 @@ final class ConditionForm extends AbstractType
             'placeholder' => 'Sélectionner un élément...',
             'label' => false,
             'choices' => $this->buildTargetChoices($elements),
-            'attr' => ['data-action' => 'change->condition#onSourceChange'],
+            'attr' => [
+                'data-action' => 'change->condition#onSourceChange',
+                'autocomplete' => 'off'
+            ],
         ]);
 
         $builder->add('sourceField', EntityType::class, [
@@ -52,8 +59,10 @@ final class ConditionForm extends AbstractType
             'placeholder' => 'Sélectionner un champ...',
             'label' => false,
             'choices' => [],
-            'disabled' => true,
             'required' => true,
+            'attr' => [
+                'autocomplete' => 'off'
+            ],
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (PostSubmitEvent $event) {
@@ -120,34 +129,74 @@ final class ConditionForm extends AbstractType
             ]);
         });
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
             /** @var \App\Entity\Capture\Condition|null $cond */
             $cond = $event->getData();
-            if (!$cond) {
-                return;
-            }
+            if (!$cond) return;
+
+            $form = $event->getForm();
+            $elementsAll = $this->getElementsFromOptions($options);
 
             $src = $cond->getSourceElement();
-            $current = $cond->getSourceField();
+            $tgt = $cond->getTargetElement();
+            $currentField = $cond->getSourceField();
 
-            $choices = [];
+            $baseChoices = $this->buildTargetChoices($elementsAll);
+
+            $form->add('sourceElement', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+                'class' => \App\Entity\Capture\CaptureElement\CaptureElement::class,
+                'choice_label' => 'name',
+                'choice_value' => 'id',
+                'placeholder' => 'Sélectionner un élément...',
+                'label' => false,
+                'choices' => $baseChoices,
+                'attr' => ['data-action' => 'change->condition#onSourceChange'],
+                'data' => $src,
+            ]);
+
+            $form->add('targetElement', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+                'class' => \App\Entity\Capture\CaptureElement\CaptureElement::class,
+                'choice_label' => 'name',
+                'choice_value' => 'id',
+                'placeholder' => 'Sélectionner un élément...',
+                'label' => false,
+                'choices' => $baseChoices,
+                'attr' => ['data-action' => 'change->condition#onTargetChange'],
+                'data' => $tgt,
+            ]);
+
+            $fieldChoices = [];
             if ($src && method_exists($src, 'getFields')) {
                 foreach ($src->getFields() as $f) {
-                    $choices[] = $f;
+                    $fieldChoices[] = $f;
                 }
             }
 
-            $event->getForm()->add('sourceField', EntityType::class, [
-                'class' => Field::class,
+            $form->add('sourceField', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
+                'class' => \App\Entity\Capture\Field\Field::class,
                 'choice_label' => 'technicalName',
+                'choice_value' => 'id',
                 'placeholder' => 'Sélectionner un champ...',
                 'label' => false,
-                'choices' => $choices,
-                'disabled' => empty($choices),
+                'choices' => $fieldChoices,
+                'disabled' => empty($fieldChoices),
                 'required' => true,
-                'data' => $current,
+                'data' => $currentField,
             ]);
         });
+    }
+
+    private function ensureIncluded(array $choices, object $value = null): array
+    {
+        if (!$value) return $choices;
+        foreach ($choices as $c) {
+            if ($c === $value) return $choices;
+            if (method_exists($c, 'getId') && method_exists($value, 'getId') && (string)$c->getId() === (string)$value->getId()) {
+                return $choices;
+            }
+        }
+        $choices[] = $value; // inclure la valeur courante même si hors filtre
+        return $choices;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

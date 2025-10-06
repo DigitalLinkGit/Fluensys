@@ -1,13 +1,22 @@
 <fieldset class="mb-2">
     <div data-condition-entry class="row g-3 align-items-end">
         <div class="col-md-3">
-            {{ form_row(condition.targetElement, { row_attr: { class: 'mb-0' } }) }}
+            {{ form_row(condition.targetElement, {
+                attr: { 'data-current': condition.targetElement.vars.data ? condition.targetElement.vars.data.id : '' },
+                row_attr: { class: 'mb-0' }
+            }) }}
         </div>
         <div class="col-md-3">
-            {{ form_row(condition.sourceElement, { row_attr: { class: 'mb-0' } }) }}
+            {{ form_row(condition.sourceElement, {
+                attr: { 'data-current': condition.sourceElement.vars.data ? condition.sourceElement.vars.data.id : '' },
+                row_attr: { class: 'mb-0' }
+            }) }}
         </div>
         <div class="col-md-3">
-            {{ form_row(condition.sourceField, { row_attr: { class: 'mb-0' } }) }}
+            {{ form_row(condition.sourceField, {
+                attr: { 'data-current': condition.sourceField.vars.data ? condition.sourceField.vars.data.id : '' },
+                row_attr: { class: 'mb-0' }
+            }) }}
         </div>
         <div class="col-md-2">
             {{ form_row(condition.expectedValue, { row_attr: { class: 'mb-0' } }) }}
