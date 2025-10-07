@@ -1,11 +1,11 @@
 <?php
 namespace App\Service\Factory;
 
-use App\Entity\Capture\CaptureElement;
+use App\Service\Helper\CaptureElementTypeHelper;
 
-final class CaptureElementFactory
+final readonly class CaptureElementFactory
 {
-    public function __construct(private readonly CaptureElementTypeHelper $typeHelper) {}
+    public function __construct(private CaptureElementTypeHelper $typeHelper) {}
 
     public function createFromForm(string $typeKey, array $data): object
     {

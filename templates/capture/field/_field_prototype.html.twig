@@ -1,5 +1,6 @@
 <fieldset class="mb-3 field-entry form-container mt-3 p-0 position-relative border rounded field-card"
-          data-controller="">
+          data-controller=""
+          data-type-label="{{ form.vars.type_label }}">
     {{ form_row(form.internalPosition, { attr: { class: 'd-none position-input' } }) }}
 
     {# CARD HEADER #}
@@ -9,7 +10,7 @@
             {{ form_row(form.name) }}
         </div>
         <div class="col-md-2 text-end">
-            <span class="badge bg-secondary type-badge d-inline-block mb-2"></span><br>
+            <span class="badge bg-secondary type-badge d-inline-block mb-2">{{ form.vars.type_label }}</span><br>
             <button type="button" class="btn btn-sm btn-outline-primary field-card__toggle"
                     data-action="click->capture-element#toggle">
                 <i class="bi bi-chevron-down"></i>

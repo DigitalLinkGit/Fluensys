@@ -3,7 +3,7 @@
 namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\Field;
-use App\Service\Factory\FieldFactory;
+use App\Service\Factory\FieldFactoryOld;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -22,7 +22,7 @@ class FieldExternalForm extends AbstractType
                 return;
             }
 
-            $formFieldType = FieldFactory::getSymfonyTypeFromInstance($field);
+            $formFieldType = FieldFactoryOld::getSymfonyTypeFromInstance($field);
 
             $options = [
                 'data' => $field->getValue(),
@@ -47,7 +47,7 @@ class FieldExternalForm extends AbstractType
             'data_class' => \App\Entity\Capture\Field\Field::class,
             'empty_data' => function (FormInterface $form) {
                 $type = $form->get('type')->getData() ?? 'textarea'; // fallback
-                return FieldFactory::createFromType($type);
+                return FieldFactoryOld::createFromType($type);
             },
         ]);
     }

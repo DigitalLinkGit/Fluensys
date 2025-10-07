@@ -1,69 +1,49 @@
 <?php
-
+// src/Service/Factory/FieldFactory.php
 namespace App\Service\Factory;
 
-use App\Entity\Capture\Field\ChecklistField;
-use App\Entity\Capture\Field\DateField;
-use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\Field;
-use App\Entity\Capture\Field\IntegerField;
-use App\Entity\Capture\Field\SystemComponentCollectionField;
-use App\Entity\Capture\Field\TextAreaField;
-use App\Entity\Capture\Field\TextField;
-use App\Form\Capture\Field\SystemComponentCollectionFieldForm;
+use App\Service\Helper\FieldTypeHelper;
 
-class FieldFactory
+final readonly class FieldFactory
 {
-    private const TYPE_MAP = [
-        'textarea' => TextAreaField::class,
-        'text'     => TextField::class,
-        'integer'  => IntegerField::class,
-        'decimal'  => DecimalField::class,
-        'date'  => DateField::class,
-        'checklist' => ChecklistField::class,
-        'system_component_collection' => SystemComponentCollectionField::class,
-    ];
+    public function __construct(private FieldTypeHelper $typeHelper) {}
 
-    public static function newFromType(string $type): Field
+    /**
+     * @param string $typeKey  Discriminator (ex: 'text', 'textarea', 'integer', ...)
+     * @param array  $data     form data
+     */
+    public function createFromForm(string $typeKey, array $data): Field
     {
-        $class = self::TYPE_MAP[$type] ?? null;
+        $class = $this->typeHelper->resolveClass($typeKey);
+        /** @var Field $field */
+        $field = new $class();
 
-        if (!$class || !is_subclass_of($class, Field::class)) {
-            throw new \InvalidArgumentException("Type de champ invalide : $type");
-        }
+        $this->setIfCallable($field, 'setInternalLabel', $data['internalLabel'] ?? null);
+        $this->setIfCallable($field, 'setExternalLabel', $data['externalLabel'] ?? null);
+        $this->setIfCallable($field, 'setName', $data['name'] ?? null);
+        $this->setIfCallable($field, 'internalPosition', $data['internalPosition'] ?? null);
+        $this->setIfCallable($field, 'setInternalRequired', $data['internalRequired'] ?? false);
+        $this->setIfCallable($field, 'setExternalRequired', $data['externalRequired'] ?? false);
 
-        return new $class();
+        // Spécifiques selon sous-type (exemples)
+        // if (method_exists($field, 'setChoices') && isset($data['choices'])) {
+        //     $field->setChoices($data['choices']); // tableau normalisé ['key' => 'Label', ...]
+        // }
+
+        // if ($field instanceof \App\Entity\Capture\Field\DecimalField) {
+        //     $this->setIfCallable($field, 'setScale', $data['scale'] ?? null);
+        //     $this->setIfCallable($field, 'setMin', $data['min'] ?? null);
+        //     $this->setIfCallable($field, 'setMax', $data['max'] ?? null);
+        // }
+
+        return $field;
     }
 
-    public static function getTypeFromInstance(?Field $field): string
+    private function setIfCallable(object $obj, string $method, mixed $value): void
     {
-        if (!$field) {
-            return 'text';
+        if ($value !== null && is_callable([$obj, $method])) {
+            $obj->{$method}($value);
         }
-
-        return match (true) {
-            $field instanceof TextAreaField => 'textarea',
-            $field instanceof TextField => 'text',
-            $field instanceof IntegerField => 'integer',
-            $field instanceof DecimalField => 'decimal',
-            $field instanceof DateField => 'date',
-            $field instanceof ChecklistField => 'checklist',
-            $field instanceof SystemComponentCollectionField => 'system_component_collection',
-            default => throw new \LogicException('Type de champ non supporté'),
-        };
-    }
-
-    public static function getSymfonyTypeFromInstance(Field $field): string
-    {
-        return match (true) {
-            $field instanceof TextAreaField => \Symfony\Component\Form\Extension\Core\Type\TextareaType::class,
-            $field instanceof TextField => \Symfony\Component\Form\Extension\Core\Type\TextType::class,
-            $field instanceof IntegerField => \Symfony\Component\Form\Extension\Core\Type\IntegerType::class,
-            $field instanceof DecimalField => \Symfony\Component\Form\Extension\Core\Type\NumberType::class,
-            $field instanceof DateField => \Symfony\Component\Form\Extension\Core\Type\DateType::class,
-            $field instanceof ChecklistField => \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class,
-            $field instanceof SystemComponentCollectionField => SystemComponentCollectionFieldForm::class,
-            default => throw new \LogicException('Type de champ non supporté pour ' . get_class($field)),
-        };
     }
 }

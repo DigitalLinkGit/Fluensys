@@ -19,8 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class Field
 {
-    public const TYPE = 'base';
-
     public function __clone()
     {
         $this->id = null;
@@ -55,11 +53,6 @@ abstract class Field
     #[ORM\ManyToOne(inversedBy: 'fields')]
     #[ORM\JoinColumn(nullable: false)]
     protected ?CaptureElement $captureElement = null;
-
-    public function getType(): string
-    {
-        return static::TYPE;
-    }
 
     abstract public function getValue(): mixed;
 

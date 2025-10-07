@@ -14,7 +14,7 @@ use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Repository\CaptureRepository;
 use App\Service\CaptureElementRouter;
 use App\Service\Factory\CaptureElementFactory;
-use App\Service\Factory\CaptureElementTypeHelper;
+use App\Service\Helper\CaptureElementTypeHelper;
 use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
@@ -147,7 +147,7 @@ final class CaptureElementController extends AbstractAppController
     #[Route('/new', name: 'app_capture_element_new', methods: ['GET','POST'])]
     public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeHelper $typeHelper,CaptureElementFactory $factory, CaptureElementRouter $router): Response {
         $form = $this->createForm(CaptureElementNewForm::class, null, [
-            'type_choices' => $typeHelper->getChoices(), // [label => key]
+            'type_choices' => $typeHelper->getFormChoices(), // [label => key]
         ])->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

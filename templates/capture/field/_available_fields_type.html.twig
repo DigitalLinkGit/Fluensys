@@ -3,52 +3,14 @@
 
     <div class="list-group list-group-flush p-2 d-flex flex-column align-items-stretch mx-auto"
          style="max-width: 320px;">
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="textarea"
-                data-action="dragstart->capture-element#dragStart">
-            Texte long
-        </button>
-
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="text"
-                data-action="dragstart->capture-element#dragStart">
-            Texte court
-        </button>
-
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="integer"
-                data-action="dragstart->capture-element#dragStart">
-            Nombre entier
-        </button>
-
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="decimal"
-                data-action="dragstart->capture-element#dragStart">
-            Nombre décimal
-        </button>
-
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="date"
-                data-action="dragstart->capture-element#dragStart">
-            Date
-        </button>
-
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="checklist"
-                data-action="dragstart->capture-element#dragStart">
-            Cases à cocher
-        </button>
-        <button class="draggable-element mb-2 w-100"
-                draggable="true"
-                data-type="system_component_collection"
-                data-action="dragstart->capture-element#dragStart">
-            Composants de SI
-        </button>
+        {% for item in dragTypes %}
+            <button class="draggable-element mb-2 w-100"
+                    draggable="true"
+                    data-type="{{ item.key }}"
+                    data-label="{{ item.label }}"
+                    data-action="dragstart->capture-element#dragStart">
+                {{ item.label }}
+            </button>
+        {% endfor %}
     </div>
 </div>

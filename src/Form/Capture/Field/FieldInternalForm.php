@@ -5,7 +5,7 @@ namespace App\Form\Capture\Field;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
-use App\Service\Factory\FieldFactory;
+use App\Service\Factory\FieldFactoryOld;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -30,7 +30,7 @@ class FieldInternalForm extends AbstractType
                 return;
             }
 
-            $formFieldType = \App\Service\Factory\FieldFactory::getSymfonyTypeFromInstance($field);
+            $formFieldType = \App\Service\Factory\FieldFactoryOld::getSymfonyTypeFromInstance($field);
 
             $options = [
                 'data' => $field->getValue(),

@@ -1,5 +1,5 @@
 <?php
-namespace App\Service\Factory;
+namespace App\Service\Helper;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +22,7 @@ final class CaptureElementTypeHelper
     }
 
     /** synfony ChoiceType : [label => key] */
-    public function getChoices(): array
+    public function getFormChoices(): array
     {
         $choices = [];
         foreach ($this->getMap() as $key => $class) {
