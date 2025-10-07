@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Account;
 
 use App\Enum\SystemComponentType;
 use App\Repository\SystemComponentRepository;
@@ -62,5 +62,10 @@ class SystemComponent
         $this->informationSystem = $informationSystem;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->name . ' (' . $this->type->value . ')';
     }
 }

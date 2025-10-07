@@ -11,29 +11,27 @@
         headers: ['Nom', 'Description'],
         filter: true,
         sort: true,
+        add: {route: 'app_capture_element_new'},
         actions: [
             {
-                route: 'app_capture_template_attach_element',
+                route: 'app_capture_element_show',
                 param_map: { id: 'id' },
-                params:{captureId: capture_id},
-                icon: 'bi-arrow-right-circle',
-                label: 'Sélectionner',
+                icon: 'bi-eye',
+                label: 'Voir',
+            },
+            {
+                route: 'app_capture_element_edit',
+                param_map: { id: 'id' },
+                icon: 'bi-pencil',
+                label: 'Editer',
+            },
+            {
+                route: 'app_capture_element_delete',
+                param_map: { id: 'id' },
+                icon: 'bi-trash',
+                label: 'Supprimer',
             }
         ]
     } %}
-
-    {% include 'components/button/_btn_bar.html.twig' with {
-        buttons: {
-            back: {
-                type: 'link',
-                route: 'app_capture_template_edit',
-                param_map: { id: 'capture_id' },
-                icon: 'bi-arrow-left',
-                label: 'Retour',
-                class: 'btn btn-outline-primary btn-sm'
-            },
-        }
-    } %}
-
 
 {% endblock %}

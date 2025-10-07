@@ -2,9 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Capture\Rendering\Chapter;
+use App\Entity\Capture\CaptureElement\SystemComponentCaptureElement;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\SystemComponentCaptureElement;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

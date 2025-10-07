@@ -2,11 +2,12 @@
 
 namespace App\Entity\Capture\Field;
 
-use App\Entity\SystemComponent;
+use App\Entity\Account\SystemComponent;
 use App\Repository\SystemComponentCollectionFieldRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+
 #[ORM\Entity(repositoryClass: SystemComponentCollectionFieldRepository::class)]
 final class SystemComponentCollectionField extends Field
 {
@@ -42,8 +43,15 @@ final class SystemComponentCollectionField extends Field
         return $this;
     }
 
-    public function getValue(): mixed
+    public function getValue(): string
     {
-        return $this->getComponents();
+        $components = $this->getComponents() ?? [];
+
+        if ($components instanceof \Traversable) {
+            $components = iterator_to_array($components, false);
+        }
+
+        return implode(PHP_EOL, array_map(static fn($c) => (string) $c, $components));
     }
+
 }

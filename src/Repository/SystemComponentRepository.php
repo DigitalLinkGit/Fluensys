@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\SystemComponent;
+use App\Entity\Account\SystemComponent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<SystemComponent>
+ * @extends ServiceEntityRepository<\App\Entity\Account\SystemComponent>
  */
 class SystemComponentRepository extends ServiceEntityRepository
 {

@@ -2,27 +2,32 @@
 
 namespace App\Controller\Capture;
 
+use App\Controller\AbstractAppController;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Rendering\TextChapter;
 use App\Form\Capture\CaptureElement\CaptureElementExternalForm;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
+use App\Form\Capture\CaptureElement\CaptureElementNewForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Repository\CaptureRepository;
+use App\Service\CaptureElementRouter;
+use App\Service\Factory\CaptureElementFactory;
+use App\Service\Factory\CaptureElementTypeHelper;
 use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/capture-element')]
-final class CaptureElementController extends AbstractController
+final class CaptureElementController extends AbstractAppController
 {
 
-    #[Route(name: 'app_capture_element_template_index', methods: ['GET'])]
+    #[Route(name: 'app_capture_element_index', methods: ['GET'])]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $all = $em->getRepository(CaptureElement::class)->findAll();
@@ -139,4 +144,57 @@ final class CaptureElementController extends AbstractController
         ]);
     }
 
+    #[Route('/new', name: 'app_capture_element_new', methods: ['GET','POST'])]
+    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeHelper $typeHelper,CaptureElementFactory $factory, CaptureElementRouter $router): Response {
+        $form = $this->createForm(CaptureElementNewForm::class, null, [
+            'type_choices' => $typeHelper->getChoices(), // [label => key]
+        ])->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data    = $form->getData();
+            $typeKey = $form->get('type')->getData();
+
+            $element = $factory->createFromForm($typeKey, $data);
+
+            $em->persist($element);
+            $em->flush();
+
+            [$route, $params] = $router->resolveEditRoute($element);
+            return $this->redirectToRoute($route, $params);
+        }
+
+        return $this->render('capture/capture_element/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_capture_element_delete', methods: ['POST'])]
+    public function delete(Request $request, CaptureElement $element, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->isCsrfTokenValid('delete' . $element->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('danger', 'Jeton CSRF invalide. Suppression annulée.');
+            return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        try {
+            $entityManager->remove($element);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L’élément a bien été supprimé.');
+        } catch (ForeignKeyConstraintViolationException $e) {
+            $this->addFlash('warning', 'Impossible de supprimer cet élément car il est utilisé dans au moins une capture.');
+        } catch (\Throwable $e) {
+            $this->logger?->error('Erreur lors de la suppression', ['id' => $element->getId(), 'exception' => $e]);
+            $this->addFlash('danger', 'Une erreur inattendue est survenue pendant la suppression.');
+        }
+
+        return $this->redirectToRoute('app_capture_element_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET','POST'])]
+    public function edit(CaptureElement $element, CaptureElementRouter $router): Response
+    {
+        [$route, $params] = $router->resolveEditRoute($element);
+        return $this->redirectToRoute($route, $params);
+    }
 }

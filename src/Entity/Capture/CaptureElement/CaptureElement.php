@@ -6,7 +6,6 @@ use App\Entity\Capture\Field\CalculatedVariable;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Rendering\Chapter;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\SystemComponentCaptureElement;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
     'flex' => FlexCaptureElement::class,
-    'systemComponent' => SystemComponentCaptureElement::class,
+    'system_components' => SystemComponentCaptureElement::class,
 ])]
 abstract class CaptureElement
 {
@@ -126,9 +125,6 @@ abstract class CaptureElement
         return $this;
     }
 
-    /**
-     * @return Collection<int, \App\Entity\Capture\Field\Field>
-     */
     public function getFields(): Collection
     {
         return $this->fields;
@@ -157,9 +153,6 @@ abstract class CaptureElement
         return $this;
     }
 
-    /**
-     * @return Collection<int, \App\Entity\Capture\Field\CalculatedVariable>
-     */
     public function getCalculatedvariables(): Collection
     {
         return $this->calculatedvariables;

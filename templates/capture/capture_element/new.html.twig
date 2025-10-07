@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel élément de capture{% endblock %}
+
+{% block body %}
+    <h1>Nouvel élément de capture</h1>
+
+    {{ form_start(form) }}
+    <div>{{ form_row(form.type) }}</div>
+
+    {{ include('capture/capture_element/_form_base.html.twig') }}
+
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+
+            cancel: {
+                type: 'link',
+                route: 'app_capture_element_index',
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary btn-sm'
+            },
+            create: {
+                type: 'submit',
+                icon: 'bi-check',
+                label: 'Créer l\'élémént',
+                class: 'btn btn-primary btn-sm'
+            },
+        }
+    } %}
+
+    {{ form_end(form) }}
+
+{% endblock %}

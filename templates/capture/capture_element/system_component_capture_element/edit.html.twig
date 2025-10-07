@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Capture{% endblock %}
+
+{% block body %}
+    <h1>Modifier Capture</h1>
+
+    {{ include('capture/capture_element/system_component_capture_element/_form.html.twig', {'button_label': 'Update'}) }}
+
+{% endblock %}

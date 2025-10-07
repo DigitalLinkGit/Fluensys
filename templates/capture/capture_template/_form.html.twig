@@ -60,14 +60,14 @@
     <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
         <div class="mx-2">
             {% set prototype %}
-                {% include 'capture/capture_element/_minimal_prototype.html.twig' with { form: form.captureElements.vars.prototype } %}
+                {% include 'capture/capture_element/_prototype_minimal.html.twig' with { form: form.captureElements.vars.prototype } %}
             {% endset %}
             <div
                 data-controller="capture"
                 data-prototype="{{ prototype|e('html_attr') }}"
             >
                 {% for captureElement in form.captureElements %}
-                    {% include 'capture/capture_element/_minimal_prototype.html.twig' with { form: captureElement } %}
+                    {% include 'capture/capture_element/_prototype_minimal.html.twig' with { form: captureElement } %}
                 {% endfor %}
 
                 <a class="btn btn-outline-primary btn-sm"

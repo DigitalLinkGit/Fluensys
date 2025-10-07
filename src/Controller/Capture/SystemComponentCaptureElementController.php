@@ -3,33 +3,31 @@
 namespace App\Controller\Capture;
 
 use App\Controller\AbstractAppController;
-use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\CaptureElement\SystemComponentCaptureElement;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
-use App\Repository\FlexCaptureElementRepository;
-use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/flex-capture-element')]
-final class FlexCaptureElementController extends AbstractAppController
+#[Route('/components-capture-element')]
+final class SystemComponentCaptureElementController extends AbstractAppController
 {
-    #[Route('/{id}/edit', name: 'app_flex_capture_element_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit', name: 'app_system_component_capture_element_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, SystemComponentCaptureElement $element, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
+        $form = $this->createForm(CaptureElementTemplateForm::class, $element);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 try {
-                    $this->processFields($form, $flexCapture, $entityManager);
-                    $entityManager->persist($flexCapture);
+                    $this->processFields($form, $element, $entityManager);
+                    $entityManager->persist($element);
                     $entityManager->flush();
                     $this->addFlash('success', 'Élément enregistré avec succès.');
-                    return $this->redirectToRoute('app_flex_capture_element_edit', [
-                        'id' => $flexCapture->getId(),
+                    return $this->redirectToRoute('app_system_component_capture_element_edit', [
+                        'id' => $element->getId(),
                     ]);
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage(), ['exception' => $e]);
@@ -40,13 +38,13 @@ final class FlexCaptureElementController extends AbstractAppController
             }
         }
 
-        return $this->render('capture/capture_element/flex_capture_element/edit.html.twig', [
-            'flex_capture' => $flexCapture,
+        return $this->render('capture/capture_element/system_component_capture_element/edit.html.twig', [
+            'system_component_capture' => $element,
             'form' => $form,
         ]);
     }
 
-    public function processFields(\Symfony\Component\Form\FormInterface $form, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): void
+    public function processFields(\Symfony\Component\Form\FormInterface $form, SystemComponentCaptureElement $element, EntityManagerInterface $entityManager): void
     {
         foreach ($form->get('fields') as $fieldForm) {
             $field = $fieldForm->getData();
@@ -57,8 +55,8 @@ final class FlexCaptureElementController extends AbstractAppController
                 throw new \RuntimeException("Type mismatch: {$submittedType} vs {$field->getType()}");
             }
 
-            $field->setCaptureElement($flexCapture);
-            $flexCapture->addField($field);
+            $field->setCaptureElement($element);
+            $element->addField($field);
             $entityManager->persist($field);
         }
     }
