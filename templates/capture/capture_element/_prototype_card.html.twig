@@ -1,3 +1,4 @@
+
 {% if element is defined %}
     {{ form_start(element) }}
     {% set collapseId = 'el_' ~ (element.vars.data.id ?? loop.index) ~ '_fields' %}
@@ -12,6 +13,13 @@
                 {% endif %}
             </h6>
             <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
+                {% if incomingConditions is defined and incomingConditions|length %}
+                    <div class="text-muted small mb-2">
+                        {% for cond in incomingConditions %}
+                            <div>{{ cond }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 {{ form_row(element.active) }}
                 <button class="btn btn-outline-primary btn-sm"
                         type="button"

@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Capture>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\CaptureTemplate>
  */
-class CaptureRepository extends ServiceEntityRepository
+class CaptureTemplateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Capture::class);
+        parent::__construct($registry, CaptureTemplate::class);
     }
 
     //    /**
-    //     * @return Capture[] Returns an array of Capture objects
+    //     * @return CaptureTemplate[] Returns an array of CaptureTemplate objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class CaptureRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Capture
+    //    public function findOneBySomeField($value): ?CaptureTemplate
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')

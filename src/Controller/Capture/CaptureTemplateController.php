@@ -3,9 +3,10 @@
 namespace App\Controller\Capture;
 
 use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Form\Capture\CaptureTemplateForm;
-use App\Repository\CaptureRepository;
+use App\Repository\CaptureTemplateRepository;
 use App\Service\ConditionToggler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -18,10 +19,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CaptureTemplateController extends AbstractController
 {
     #[Route(name: 'app_capture_template_index', methods: ['GET'])]
-    public function index(CaptureRepository $captureRepository): Response
+    public function index(CaptureTemplateRepository $captureRepository): Response
     {
-        $all = $captureRepository->findAll();
-        $templates = array_filter($all, fn($el) => $el->isTemplate());
+        // Only root templates (exclude child class Capture)
+        $templates = $captureRepository->createQueryBuilder('ct')
+            ->andWhere('ct NOT INSTANCE OF App\Entity\Capture\Capture')
+            ->getQuery()
+            ->getResult();
+
+
 
         return $this->render('capture/capture_template/index.html.twig', [
             'captures' => $templates,
@@ -31,7 +37,7 @@ final class CaptureTemplateController extends AbstractController
     #[Route('/new', name: 'app_capture_template_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $capture = new Capture();
+        $capture = new CaptureTemplate();
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
 
@@ -49,7 +55,7 @@ final class CaptureTemplateController extends AbstractController
     }
 
     #[Route('/{id}/show', name: 'app_capture_template_show', methods: ['GET'])]
-    public function show(Capture $capture): Response
+    public function show(CaptureTemplate $capture): Response
     {
         return $this->render('capture/capture_template/show.html.twig', [
             'capture' => $capture,
@@ -57,7 +63,7 @@ final class CaptureTemplateController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_capture_template_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager,ConditionToggler $toggler): Response
+    public function edit(Request $request, CaptureTemplate $capture, EntityManagerInterface $entityManager, ConditionToggler $toggler): Response
     {
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
@@ -68,11 +74,7 @@ final class CaptureTemplateController extends AbstractController
             $toggler->apply($capture->getConditions()->toArray());
             $entityManager->flush();
         }
-// DB
-        foreach ($capture->getConditions() as $c) {
-            dump(['DB' => [$c->getId(), $c->getSourceElement()?->getId(), $c->getTargetElement()?->getId(), $c->getSourceField()?->getId()]]);
-        }
-// FORM (valeurs que le formulaire expose à l'écran)
+
         foreach ($form->get('conditions') as $child) {
             $d = $child->getData();
             dump(['FORM' => [$d?->getId(), $child->get('sourceElement')->getData()?->getId(), $child->get('targetElement')->getData()?->getId(), $child->get('sourceField')->getData()?->getId()]]);
@@ -85,7 +87,7 @@ final class CaptureTemplateController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_capture_template_delete', methods: ['POST'])]
-    public function delete(Request $request, Capture $capture, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, CaptureTemplate $capture, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$capture->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($capture);
@@ -98,7 +100,7 @@ final class CaptureTemplateController extends AbstractController
     #[Route('/select',name: 'app_capture_template_select', methods: ['GET'])]
     public function select(Request $request, EntityManagerInterface $em): Response
     {
-        $all = $em->getRepository(Capture::class)->findAll();
+        $all = $em->getRepository(CaptureTemplate::class)->findAll();
         $templates = array_filter($all, fn($el) => $el->isTemplate());
 
         return $this->render('capture/capture_template/select.html.twig', [
@@ -106,19 +108,15 @@ final class CaptureTemplateController extends AbstractController
         ]);
     }
     #[Route('/{captureId}/elements/{id}/attach', name: 'app_capture_template_attach_element', methods: ['GET'])]
-    public function attachElement(#[MapEntity(id: 'captureId')] Capture $capture, CaptureElement $element, EntityManagerInterface $em): Response
+    public function attachElement(#[MapEntity(id: 'captureId')] CaptureTemplate $capture, CaptureElement $element, EntityManagerInterface $em): Response
     {
-        dump($capture);
-        dump($element);
         $capture->addCaptureElement($element);
-        dump($capture->getCaptureElements());
         $em->flush();
-
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
     }
 
     #[Route('/{id}/template-preview', name: 'app_capture_template_render_text_preview', methods: ['GET'])]
-    public function templatePreview(Capture $capture): Response
+    public function templatePreview(CaptureTemplate $capture): Response
     {
         return $this->render('capture/capture_template/render_preview.html.twig', [
             'capture' => $capture,

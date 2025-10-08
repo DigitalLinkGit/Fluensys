@@ -20,14 +20,13 @@
 
         {% include 'components/partials/_sidebar_section.html.twig' with {
             icon: '',
-            title: 'Compose',
+            title: 'Administration',
             groups: [
                 {
                     links: [
                     { label: 'Mes éléments de captures', route: 'app_capture_element_index' },
                     { label: 'Mes captures', route: 'app_capture_template_index' },
                     { label: 'Mes rôles', route: 'app_participant_role_index' },
-                    { label: 'Mes comptes', route: 'app_account_index' }
                 ]
                 }
             ]
@@ -35,11 +34,12 @@
 
         {% include 'components/partials/_sidebar_section.html.twig' with {
             icon: '',
-            title: 'Capture',
+            title: 'User',
             groups: [
                 {
                     links: [
-                    { label: 'Mes captures', route: 'app_capture_index' }
+                    { label: 'Mes captures', route: 'app_capture_index' },
+                    { label: 'Mes comptes', route: 'app_account_index' },
                 ]
                 }
             ]

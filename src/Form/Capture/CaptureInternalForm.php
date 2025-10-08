@@ -2,7 +2,7 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -51,7 +51,7 @@ class CaptureInternalForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Capture::class,
+            'data_class' => CaptureTemplate::class,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller\Capture;
 
 use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
 use App\Form\Capture\CaptureInternalForm;
 use App\Repository\CaptureRepository;
@@ -23,7 +24,7 @@ final class CaptureController extends AbstractController
         $templates = array_filter($all, fn($el) => !$el->isTemplate());
 
         return $this->render('capture/index.html.twig', [
-            'captures' => $templates,
+            'captures' => $all,
         ]);
     }
 
@@ -63,6 +64,15 @@ final class CaptureController extends AbstractController
         $conditions = $capture->getConditions();
         $toggler->apply(is_iterable($conditions) ? $conditions : []);
 
+        //make condition map for display condition on CaptureElement
+        $conditionsByTargetId = [];
+        foreach ($capture->getConditions() as $cond) {
+            $tid = $cond->getTargetElement()?->getId();
+            if ($tid !== null) {
+                $conditionsByTargetId[$tid][] = $cond;
+            }
+        }
+
         $forms = [];
         foreach ($capture->getCaptureElements() as $el) {
             $forms[$el->getId()] = $this->createForm(CaptureElementInternalForm::class, $el, [
@@ -77,6 +87,7 @@ final class CaptureController extends AbstractController
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
             'forms' => $forms,
+            'conditionsByTargetId' => $conditionsByTargetId,
         ]);
     }
 
@@ -91,29 +102,6 @@ final class CaptureController extends AbstractController
         return $this->redirectToRoute('app_capture_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/clone', name: 'app_capture_clone', methods: ['GET'])]
-    public function clone(Capture $capture, EntityManagerInterface $em): Response
-    {
-        // Create a new non-template Capture cloned from the provided template capture
-        $newCapture = clone $capture;
-        $newCapture
-            ->setTemplate(false);
-
-        $em->persist($newCapture);
-        foreach ($newCapture->getCaptureElements() as $element) {
-            $em->persist($element);
-            foreach ($element->getFields() as $field) {
-                $em->persist($field);
-            }
-            foreach ($element->getCalculatedvariables() as $cv) {
-                $em->persist($cv);
-            }
-        }
-        $em->flush();
-
-        return $this->redirectToRoute('app_capture_edit', ['id' => $newCapture->getId()]);
-    }
-
     #[Route('/{id}/render-preview', name: 'app_capture_render_text_preview', methods: ['GET'])]
     public function renderPreview(Capture $capture): Response
     {
@@ -121,4 +109,151 @@ final class CaptureController extends AbstractController
             'capture' => $capture,
         ]);
     }
+
+    #[Route('/capture/{id}/clone', name: 'app_capture_clone', methods: ['GET'])]
+    public function cloneFromTemplate(CaptureTemplate $template, EntityManagerInterface $em): Response
+    {
+        // 1) Create child entity (JOINED)
+        $capture = new Capture();
+
+        // Copy scalars (Same Model)
+        $this->copyIf($template, $capture, 'Name');
+        $this->copyIf($template, $capture, 'Description');
+
+        // Persist early to ensure joined rows exist; avoids edge-cases with proxies
+        $em->persist($capture);
+        $em->flush();
+
+        // 2) Clone one-to-one Title (if any)
+        if (method_exists($template, 'getTitle') && $template->getTitle()) {
+            $titleClone = clone $template->getTitle();
+            if (method_exists($titleClone, 'setCapture')) {
+                $titleClone->setCapture($capture);
+            }
+            if (method_exists($capture, 'setTitle')) {
+                $capture->setTitle($titleClone);
+            }
+            $em->persist($titleClone);
+        }
+
+        // 3) First pass: clone elements (once), reuse their already-cloned children
+        $elMap = new \SplObjectStorage();    // original element => cloned element
+        $fieldMap = new \SplObjectStorage(); // original field   => cloned field
+
+        foreach ($template->getCaptureElements() as $tplEl) {
+            // Clone element ONCE
+            $el = clone $tplEl;
+
+            // Re-attach owning side to the new Capture
+            if (method_exists($el, 'setCapture')) {
+                $el->setCapture($capture);
+            }
+            if (method_exists($capture, 'addCaptureElement')) {
+                $capture->addCaptureElement($el);
+            }
+            $em->persist($el);
+
+            // Map original element -> cloned element
+            $elMap[$tplEl] = $el;
+
+            // Pair original fields with cloned fields by iteration order (stable if you already order by position)
+            $origFields = is_iterable($tplEl->getFields()) ? array_values(is_array($tplEl->getFields()) ? $tplEl->getFields() : $tplEl->getFields()->toArray()) : [];
+            $clonedFields = is_iterable($el->getFields()) ? array_values(is_array($el->getFields()) ? $el->getFields() : $el->getFields()->toArray()) : [];
+
+            $count = min(count($origFields), count($clonedFields));
+            for ($i = 0; $i < $count; $i++) {
+                $origField = $origFields[$i];
+                $clonedField = $clonedFields[$i];
+
+                // Ensure owning side points to cloned element
+                if (method_exists($clonedField, 'setElement')) {
+                    $clonedField->setElement($el);
+                }
+                $em->persist($clonedField);
+
+                // Map original field -> cloned field (object identity)
+                $fieldMap[$origField] = $clonedField;
+            }
+
+            // Persist cloned calculated variables (do NOT re-clone from template)
+            if (method_exists($el, 'getCalculatedvariables')) {
+                foreach ($el->getCalculatedvariables() as $cv) {
+                    if (method_exists($cv, 'setElement')) {
+                        $cv->setElement($el);
+                    }
+                    $em->persist($cv);
+                }
+            }
+        }
+
+        // 4) Second pass: clone and remap conditions using object-identity maps
+        if (method_exists($template, 'getConditions')) {
+            foreach ($template->getConditions() as $tplCond) {
+                $cond = clone $tplCond;
+
+                if (method_exists($cond, 'setCapture')) {
+                    $cond->setCapture($capture);
+                }
+
+                // Remap element references via elMap (do not use IDs)
+                if (method_exists($tplCond, 'getSourceElement') && $tplCond->getSourceElement() && isset($elMap[$tplCond->getSourceElement()]) && method_exists($cond, 'setSourceElement')) {
+                    $cond->setSourceElement($elMap[$tplCond->getSourceElement()]);
+                }
+                if (method_exists($tplCond, 'getTargetElement') && $tplCond->getTargetElement() && isset($elMap[$tplCond->getTargetElement()]) && method_exists($cond, 'setTargetElement')) {
+                    $cond->setTargetElement($elMap[$tplCond->getTargetElement()]);
+                }
+                if (method_exists($tplCond, 'getNextElement') && $tplCond->getNextElement() && isset($elMap[$tplCond->getNextElement()]) && method_exists($cond, 'setNextElement')) {
+                    $cond->setNextElement($elMap[$tplCond->getNextElement()]);
+                }
+
+                // Remap field reference via fieldMap
+                if (method_exists($tplCond, 'getSourceField') && $tplCond->getSourceField() && isset($fieldMap[$tplCond->getSourceField()]) && method_exists($cond, 'setSourceField')) {
+                    $cond->setSourceField($fieldMap[$tplCond->getSourceField()]);
+                }
+
+                $em->persist($cond);
+            }
+        }
+
+        // 5) Flush once at the end
+        $em->flush();
+
+        return $this->redirectToRoute('app_capture_edit', ['id' => $capture->getId()]);
+    }
+
+    /** Copy a scalar/relation if matching getters/setters exist (Same Model). */
+    private function copyIf(object $src, object $dst, string $name): void
+    {
+        $get = 'get' . $name;
+        $set = 'set' . $name;
+        if (method_exists($src, $get) && method_exists($dst, $set)) {
+            $dst->{$set}($src->{$get}());
+        }
+    }
+
+    /** Clone and set an object property if both accessors exist. */
+    private function cloneObjectIf(object $src, object $dst, string $name, EntityManagerInterface $em, ?callable $after = null): void
+    {
+        $get = 'get' . $name;
+        $set = 'set' . $name;
+
+        if (!method_exists($src, $get) || !method_exists($dst, $set)) {
+            return;
+        }
+
+        $value = $src->{$get}();
+        if (!$value) {
+            return;
+        }
+
+        $clone = clone $value;
+        if ($after) {
+            $after($clone);
+        }
+
+        $dst->{$set}($clone);
+        $em->persist($clone);
+    }
+
+
 }

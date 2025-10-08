@@ -2,6 +2,7 @@
 
 namespace App\Entity\Account;
 
+use App\Entity\Capture\Capture;
 use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,10 +32,17 @@ class Account
     #[ORM\JoinColumn(name: 'information_system_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?InformationSystem $informationSystem = null;
 
+    /**
+     * @var Collection<int, Capture>
+     */
+    #[ORM\OneToMany(targetEntity: Capture::class, mappedBy: 'account')]
+    private Collection $captures;
+
 
     public function __construct()
     {
         $this->contacts = new ArrayCollection();
+        $this->captures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -104,6 +112,36 @@ class Account
     public function setInformationSystem(?InformationSystem $informationSystem): static
     {
         $this->informationSystem = $informationSystem;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Capture>
+     */
+    public function getCaptures(): Collection
+    {
+        return $this->captures;
+    }
+
+    public function addCapture(Capture $capture): static
+    {
+        if (!$this->captures->contains($capture)) {
+            $this->captures->add($capture);
+            $capture->setAccount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCapture(Capture $capture): static
+    {
+        if ($this->captures->removeElement($capture)) {
+            // set the owning side to null (unless already changed)
+            if ($capture->getAccount() === $this) {
+                $capture->setAccount(null);
+            }
+        }
 
         return $this;
     }

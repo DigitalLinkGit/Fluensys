@@ -40,9 +40,21 @@
     <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
         <div class="mx-2">
             {% if forms is defined %}
+                {% set byTarget = conditionsByTargetId|default({}) %}
+
                 {% for element in forms %}
+                    {# Récupère l'id de l'entité portée par le form #}
+                    {% set elementId = element.vars.data.id ?? null %}
+
+                    {# Liste des conditions qui ciblent cet élément #}
+                    {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
+
                     <div class="mb-3 row">
-                        {% include 'capture/capture_element/_prototype_card.html.twig' with { element: element } %}
+                        {# on passe les conditions au partial #}
+                        {% include 'capture/capture_element/_prototype_card.html.twig' with {
+                            element: element,
+                            incomingConditions: incoming
+                        } %}
                     </div>
                 {% else %}
                     <div class="text-muted small">Aucun élément</div>

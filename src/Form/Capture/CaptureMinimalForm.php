@@ -2,7 +2,7 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use App\Form\CaptureElement\CaptureElementForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -50,7 +50,7 @@ class CaptureMinimalForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Capture::class,
+            'data_class' => CaptureTemplate::class,
         ]);
     }
 }

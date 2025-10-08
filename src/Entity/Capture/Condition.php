@@ -40,7 +40,7 @@ class Condition
 
     #[ORM\ManyToOne(inversedBy: 'conditions')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Capture $capture = null;
+    private ?CaptureTemplate $capture = null;
 
     public function getId(): ?int
     {
@@ -95,12 +95,12 @@ class Condition
         return $this;
     }
 
-    public function getCapture(): ?Capture
+    public function getCapture(): ?CaptureTemplate
     {
         return $this->capture;
     }
 
-    public function setCapture(?Capture $capture): static
+    public function setCapture(?CaptureTemplate $capture): static
     {
         $this->capture = $capture;
 

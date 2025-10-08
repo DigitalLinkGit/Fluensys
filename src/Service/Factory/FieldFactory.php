@@ -31,7 +31,7 @@ final readonly class FieldFactory
         //     $field->setChoices($data['choices']); // tableau normalisé ['key' => 'Label', ...]
         // }
 
-        // if ($field instanceof \App\Entity\Capture\Field\DecimalField) {
+        // if ($field instanceof \App\Entity\CaptureTemplate\Field\DecimalField) {
         //     $this->setIfCallable($field, 'setScale', $data['scale'] ?? null);
         //     $this->setIfCallable($field, 'setMin', $data['min'] ?? null);
         //     $this->setIfCallable($field, 'setMax', $data['max'] ?? null);

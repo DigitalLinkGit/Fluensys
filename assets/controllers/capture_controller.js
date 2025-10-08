@@ -5,7 +5,7 @@ export default class extends Controller {
     static targets = ["container"];
 
     connect() {
-        console.log('Capture controller');
+        console.log('CaptureTemplate controller');
         if (!this.index) {
             this.index = this.element.querySelectorAll('fieldset').length;
         }

@@ -10,7 +10,7 @@ final class CaptureElementTypeHelper
 
     /** Labels (key : discriminator → value : label) */
     private array $labels = [
-        'flex'               => 'Capture libre',
+        'flex'               => 'CaptureTemplate libre',
         'system_components'  => 'Composants du système',
     ];
 

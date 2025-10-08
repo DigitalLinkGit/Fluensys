@@ -3,7 +3,7 @@
 namespace App\Controller\Capture;
 
 use App\Controller\AbstractAppController;
-use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Rendering\TextChapter;
@@ -50,7 +50,7 @@ final class CaptureElementController extends AbstractAppController
     public function select(Request $request, EntityManagerInterface $em): Response
     {
         $captureId = $request->query->getInt('capture', $request->query->getInt('capture'));
-        $capture   = $em->getRepository(Capture::class)->find($captureId);
+        $capture   = $em->getRepository(CaptureTemplate::class)->find($captureId);
 
         $all = $em->getRepository(CaptureElement::class)->findAll();
         $already = $capture ? $capture->getCaptureElements() : new ArrayCollection();

@@ -6,7 +6,7 @@ use App\Entity\Account\Account;
 use App\Entity\Account\Contact;
 use App\Entity\Account\InformationSystem;
 use App\Entity\Account\SystemComponent;
-use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureTemplate;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Condition;
 use App\Entity\Capture\Field\ChecklistField;
@@ -58,7 +58,7 @@ class AppFixtures extends Fixture
         );
         $manager->persist($r4);
 
-        /*===================================== Capture element 1 =====================================*/
+        /*===================================== CaptureTemplate element 1 =====================================*/
         //fields
         $f1 = $this->createField(
             new TextAreaField(),
@@ -173,7 +173,7 @@ Composants de SI : [COMPOSANTSDESI]");
         $manager->persist($chapter);
 
 
-        /*===================================== Capture element 2 =====================================*/
+        /*===================================== CaptureTemplate element 2 =====================================*/
         //Fields
         $f10 = $this->createField(
             new TextAreaField(),
@@ -265,7 +265,7 @@ Scope :
         $chapter2->setCaptureElement($flex2);
         $manager->persist($chapter2);
 
-        /*===================================== Capture =====================================*/
+        /*===================================== CaptureTemplate =====================================*/
         //title
         $CaptureTitle = (new Title())
             ->setContent("Présentation du compte")
@@ -281,7 +281,7 @@ Scope :
         $manager->persist($condition);
 
         //capture
-        $capture = (new Capture())
+        $capture = (new CaptureTemplate())
             ->setName("Information du compte")
             ->setDescription("Recueil des informations sur le compte")
             ->addCaptureElement($flex)
