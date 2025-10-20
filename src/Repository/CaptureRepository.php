@@ -7,7 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Capture>
+ * @extends ServiceEntityRepository<\App\Entity\Capture\Capture>
  */
 class CaptureRepository extends ServiceEntityRepository
 {

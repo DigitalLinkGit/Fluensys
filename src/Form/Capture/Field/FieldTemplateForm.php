@@ -3,10 +3,10 @@
 namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\FieldConfig;
 use App\Service\Helper\FieldTypeHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -17,7 +17,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class FieldTemplateForm extends AbstractType
 {
-    public function __construct(private readonly FieldTypeHelper $typeHelper) {}
+    public function __construct(private readonly FieldTypeHelper $typeHelper)
+    {
+    }
 
     /** @var array<string, class-string> */
     private array $subtypeRegistry = [
@@ -29,53 +31,69 @@ final class FieldTemplateForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('internalPosition', HiddenType::class, ['required' => false])
+            ->add('position', HiddenType::class, ['required' => false])
             ->add('name', TextType::class, [
                 'label' => 'Nom',
                 'required' => true,
                 'attr' => ['placeholder' => 'Nom du champ'],
             ])
-            ->add('externalLabel', TextareaType::class, [
-                'label' => 'Label',
-                'required' => true,
-                'attr' => ['placeholder' => 'Label visible par le répondant', 'rows' => 1],
-            ])
-            ->add('internalLabel', TextareaType::class, [
-                'label' => 'Label',
-                'required' => true,
-                'attr' => ['placeholder' => 'Label visible par les utilisateurs', 'rows' => 1],
-            ])
-            ->add('internalRequired')
-            ->add('externalRequired')
-            // carries the drag-and-drop discriminator; never shown/edited by user
-            ->add('type', HiddenType::class, ['mapped' => false, 'required' => true]);
 
-        // Create the sub type instance just-in-time at submit.
+            // replaced old label/required pairs with embedded configs
+            ->add('externalConfig', FieldConfigForm::class, [
+                'label' => 'Répondant',
+                'by_reference' => false,
+            ])
+            ->add('internalConfig', FieldConfigForm::class, [
+                'label' => 'Utilisateurs internes',
+                'by_reference' => false,
+            ])
+
+            // drag-and-drop discriminator; never shown/edited by user
+            ->add('type', HiddenType::class, ['mapped' => false, 'required' => true])
+        ;
+
+        // instantiate concrete Field on submit based on hidden "type"
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
             $form = $event->getForm();
             if ($form->getData() instanceof Field) {
-                return; // edit case: already concrete
+                return; // edit case
             }
-
             $submitted = $event->getData() ?? [];
             $typeKey = $submitted['type'] ?? null;
             if (!$typeKey) {
                 throw new \LogicException('Missing field "type" for Field creation.');
             }
-
             $class = $this->typeHelper->resolveClass($typeKey);
             /** @var Field $concrete */
             $concrete = new $class();
+
+            // ensure embedded configs exist if submit did not provide them
+            if (null === $concrete->getExternalConfig()) {
+                $concrete->setExternalConfig(new FieldConfig());
+            }
+            if (null === $concrete->getInternalConfig()) {
+                $concrete->setInternalConfig(new FieldConfig());
+            }
+
             $form->setData($concrete);
         });
 
-        // inject subtype options form (edit/new with prototype that includes hidden type).
+        // inject subtype options form
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event): void {
             $form = $event->getForm();
             $data = $event->getData();
             if (!$data instanceof Field) {
                 return;
             }
+
+            // guarantee configs are present for editing/prototype
+            if (null === $data->getExternalConfig()) {
+                $data->setExternalConfig(new FieldConfig());
+            }
+            if (null === $data->getInternalConfig()) {
+                $data->setInternalConfig(new FieldConfig());
+            }
+
             $key = $this->typeHelper->getKeyFor($data);
             if ($form->has('type')) {
                 $form->get('type')->setData($key);
@@ -115,7 +133,6 @@ final class FieldTemplateForm extends AbstractType
                 if ($obj instanceof Field) {
                     return $obj;
                 }
-                //if PRE_SUBMIT did not create the instance, fail explicitly.
                 throw new \LogicException('Concrete Field must be created at PRE_SUBMIT based on hidden "type".');
             },
         ]);

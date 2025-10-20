@@ -32,7 +32,6 @@ class InformationSystem
         $this->systemComponents = new ArrayCollection();
     }
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -49,6 +48,7 @@ class InformationSystem
 
         return $this;
     }
+
     public function getAccount(): ?Account
     {
         return $this->account;

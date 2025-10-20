@@ -2,10 +2,10 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture\CaptureTemplate;
-use App\Form\CaptureElement\CaptureElementForm;
+use App\Entity\Capture\Capture;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -41,7 +41,7 @@ class CaptureMinimalForm extends AbstractType
                 'label_attr' => ['class' => 'form-check-label'],
                 'attr' => [
                     'class' => 'form-check-input',
-                    'role'  => 'switch', // accessibilité
+                    'role' => 'switch', // accessibilité
                 ],
             ])
         ;
@@ -50,7 +50,7 @@ class CaptureMinimalForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => CaptureTemplate::class,
+            'data_class' => Capture::class,
         ]);
     }
 }

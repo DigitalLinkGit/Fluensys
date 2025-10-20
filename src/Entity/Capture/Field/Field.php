@@ -3,6 +3,7 @@
 namespace App\Entity\Capture\Field;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Service\Helper\FieldTypeHelper;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -22,6 +23,14 @@ abstract class Field
     public function __clone()
     {
         $this->id = null;
+
+        $intConfig = clone $this->internalConfig;
+        $this->setInternalConfig($intConfig);
+        $intConfig->setFieldUsedAsInternal($this);
+
+        $extConfig = clone $this->externalConfig;
+        $this->setExternalConfig($extConfig);
+        $extConfig->setFieldUsedAsExternal($this);
     }
 
     #[ORM\Id]
@@ -30,59 +39,31 @@ abstract class Field
     protected ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    protected ?string $externalLabel = null;
-
-    #[ORM\Column(length: 255)]
-    protected ?string $internalLabel = null;
-
-    #[ORM\Column(length: 255)]
     protected ?string $name = null;
 
     #[ORM\Column(length: 255)]
     protected ?string $technicalName = null;
 
     #[ORM\Column]
-    protected ?bool $internalRequired = null;
-
-    #[ORM\Column]
-    protected ?bool $externalRequired = null;
-
-    #[ORM\Column]
-    protected ?int $internalPosition = null;
+    protected ?int $position = null;
 
     #[ORM\ManyToOne(inversedBy: 'fields')]
     #[ORM\JoinColumn(nullable: false)]
     protected ?CaptureElement $captureElement = null;
+
+    #[ORM\OneToOne(targetEntity: FieldConfig::class, inversedBy: 'usedAsExternal', cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'external_config_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?FieldConfig $externalConfig = null;
+
+    #[ORM\OneToOne(targetEntity: FieldConfig::class, inversedBy: 'usedAsInternal', cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'internal_config_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?FieldConfig $internalConfig = null;
 
     abstract public function getValue(): mixed;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getExternalLabel(): ?string
-    {
-        return $this->externalLabel;
-    }
-
-    public function setExternalLabel(string $externalLabel): static
-    {
-        $this->externalLabel = $externalLabel;
-
-        return $this;
-    }
-
-    public function getInternalLabel(): ?string
-    {
-        return $this->internalLabel;
-    }
-
-    public function setInternalLabel(string $internalLabel): static
-    {
-        $this->internalLabel = $internalLabel;
-
-        return $this;
     }
 
     public function getTechnicalName(): ?string
@@ -97,26 +78,14 @@ abstract class Field
         return $this;
     }
 
-    public function isRequired(): ?bool
+    public function getPosition(): ?int
     {
-        return $this->internalRequired;
+        return $this->position;
     }
 
-    public function setInternalRequired(bool $internalRequired): static
+    public function setPosition(int $position): static
     {
-        $this->internalRequired = $internalRequired;
-
-        return $this;
-    }
-
-    public function getInternalPosition(): ?int
-    {
-        return $this->internalPosition;
-    }
-
-    public function setInternalPosition(int $internalPosition): static
-    {
-        $this->internalPosition = $internalPosition;
+        $this->position = $position;
 
         return $this;
     }
@@ -151,20 +120,34 @@ abstract class Field
         return $this;
     }
 
-    public function isInternalRequired(): ?bool
+    public function getInternalConfig(): ?FieldConfig
     {
-        return $this->internalRequired;
+        return $this->internalConfig;
     }
 
-    public function isExternalRequired(): ?bool
+    public function setInternalConfig(?FieldConfig $internalConfig): static
     {
-        return $this->externalRequired;
-    }
-
-    public function setExternalRequired(bool $externalRequired): static
-    {
-        $this->externalRequired = $externalRequired;
+        $this->internalConfig = $internalConfig;
 
         return $this;
+    }
+
+    public function getExternalConfig(): ?FieldConfig
+    {
+        return $this->externalConfig;
+    }
+
+    public function setExternalConfig(?FieldConfig $externalConfig): static
+    {
+        $this->externalConfig = $externalConfig;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        $helper = new FieldTypeHelper();
+
+        return $helper->getLabelFor($this);
     }
 }

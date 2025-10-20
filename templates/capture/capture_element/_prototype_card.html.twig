@@ -1,17 +1,11 @@
-
 {% if element is defined %}
-    {{ form_start(element) }}
-    {% set collapseId = 'el_' ~ (element.vars.data.id ?? loop.index) ~ '_fields' %}
+    {% set collapseId = 'el_' ~ (element.id ?? loop.index) ~ '_fields' %}
     <div class="card h-100 mb-3">
         <div class="card-body py-2 d-flex align-items-center">
             {# Display the element name even if it's not an editable field in the form #}
-            <h6 class="card-title mb-0">
-                {% if element.vars is defined and element.vars.data is defined and element.vars.data.name is defined %}
-                    {{ element.vars.data.name }}
-                {% else %}
-                    {{ element.name is defined ? element.name : '' }}
-                {% endif %}
-            </h6>
+            <h5 class="card-title mb-0">
+                {{ element.name }}
+            </h5>
             <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
                 {% if incomingConditions is defined and incomingConditions|length %}
                     <div class="text-muted small mb-2">
@@ -20,7 +14,23 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                {{ form_row(element.active) }}
+                <div>{{ element.active?'On':'Off' }}</div>
+                <a href="{{ path('app_capture_element_respond', {
+                    id: element.id,
+                    captureId: capture.id,
+                }) }}"
+                   class="btn btn-outline-primary btn-sm"
+                   title="Répondre" aria-label="Répondre">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{{ path('app_capture_element_show', {
+                    id: element.id,
+                }) }}"
+                   class="btn btn-outline-primary btn-sm"
+                   title="Aperçu" aria-label="Aperçu">
+                    <i class="bi bi-eye"></i>
+                </a>
+
                 <button class="btn btn-outline-primary btn-sm"
                         type="button"
                         data-bs-toggle="collapse"
@@ -35,32 +45,39 @@
         <div id="{{ collapseId }}" class="collapse">
             <div class="card-body pt-2">
                 {% if element.fields is defined %}
+
                     {% for field in element.fields %}
-                        {{ form_row(field) }}
-                    {% else %}
-                        <div class="text-muted small">Aucun champ</div>
+                        <div class="row mb-3 form-container">
+                            <div class="col-md-12">
+                                Non : {{ field.name }}
+                            </div>
+                            <div class="col-md-12">
+                                Type : {{ field.type }}
+                            </div>
+                            <h6 class="mt-2">Interne</h6>
+                            <div class="col-md-12">
+                                Label : {{ field.internalConfig.label }}
+                            </div>
+                            <div class="col-md-12">
+                                Obligatoire : {{ field.internalConfig.required }}
+                            </div>
+                            <h6 class="mt-2">Externe</h6>
+                            <div class="col-md-12">
+                                Label externe : {{ field.externalConfig.label }}
+                            </div>
+                            <div class="col-md-12">
+                                Obligatoire : {{ field.externalConfig.required }}
+                            </div>
+                        </div>
                     {% endfor %}
+
                 {% else %}
                     <div class="text-muted small">Aucun champ</div>
                 {% endif %}
             </div>
-            <div class="mx-2 mb-2">
-                {% include 'components/button/_btn_bar.html.twig' with {
-                    buttons: {
-                        save: {
-                            type: 'submit',
-                            icon: 'bi-check',
-                            label: 'Enregistrer',
-                            class: 'btn btn-primary btn-sm'
-                        },
-                    }
-                } %}
-            </div>
-
         </div>
     </div>
 
-    {{ form_end(element) }}
 {% else %}
     <div class="col">
         <div class="alert alert-secondary mb-0">Aucun élément</div>

@@ -2,7 +2,9 @@
 
 namespace App\Entity\Capture\CaptureElement;
 
+use App\Entity\Capture\Field\FieldConfig;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
+use App\Entity\Capture\Rendering\Title;
 use App\Repository\SystemComponentCaptureElementRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,14 +19,20 @@ class SystemComponentCaptureElement extends CaptureElement
 
     private function init()
     {
+        $intConfig = (new FieldConfig())
+            ->setLabel('Composants su SI')
+            ->setRequired(true);
+        $extConfig = (new FieldConfig())
+            ->setLabel('Listez / Vérifiez les composants de votre SI')
+            ->setRequired(true);
+        $title = (new Title())
+            ->setContent('Composants de SI')
+            ->setLevel(2);
         $field = (new SystemComponentCollectionField())
             ->setName('components')
-            ->setInternalPosition(1)
-            ->setInternalRequired(true)
-            ->setExternalRequired(true)
-            ->setExternalLabel('Composants su SI')
-            ->setInternalLabel('Composants su SI');
+            ->setPosition(1)
+            ->setInternalConfig($intConfig)
+            ->setExternalConfig($extConfig);
         $this->addField($field);
     }
-
 }

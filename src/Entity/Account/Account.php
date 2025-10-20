@@ -25,7 +25,7 @@ class Account
     /**
      * @var Collection<int, Contact>
      */
-    #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'account',cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'account', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $contacts;
 
     #[ORM\OneToOne(inversedBy: 'account', cascade: ['persist'])]
@@ -37,7 +37,6 @@ class Account
      */
     #[ORM\OneToMany(targetEntity: Capture::class, mappedBy: 'account')]
     private Collection $captures;
-
 
     public function __construct()
     {

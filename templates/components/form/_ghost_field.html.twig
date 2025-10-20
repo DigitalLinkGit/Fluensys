@@ -1,0 +1,9 @@
+<div class="ghost-field" data-controller="ghost-field">
+    {{ form_widget(field, {
+        attr: (attrs|default({}))|merge({
+            class: ('ghost-input ' ~ (class|default('')))|trim,
+            placeholder: placeholder|default(''),
+            'data-ghost-field-target': 'input'
+        })
+    }) }}
+</div>

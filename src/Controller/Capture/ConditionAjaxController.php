@@ -27,9 +27,9 @@ final class ConditionAjaxController extends AbstractController
         }
 
         $fields = $element->getFields();
-        $array  = [];
+        $array = [];
         foreach (is_iterable($fields) ? $fields : [] as $f) {
-            /** @var Field $f */
+            /* @var Field $f */
             $array[] = ['id' => $f->getId(), 'label' => $f->getTechnicalName()];
         }
 

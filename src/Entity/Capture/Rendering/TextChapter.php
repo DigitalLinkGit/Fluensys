@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: TextChapterRepository::class)]
 class TextChapter extends Chapter
 {
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $content = null;
 
@@ -23,7 +22,6 @@ class TextChapter extends Chapter
 
         return $this;
     }
-
 
     public function getRenderContent(): string
     {
@@ -49,17 +47,17 @@ class TextChapter extends Chapter
                 return $v->format('Y-m-d');
             }
             if (is_array($v)) {
-                return implode(', ', array_map(fn($x) => is_scalar($x) ? (string) $x : '', $v));
+                return implode(', ', array_map(fn ($x) => is_scalar($x) ? (string) $x : '', $v));
             }
             if (is_object($v)) {
                 return method_exists($v, '__toString') ? (string) $v : '';
             }
+
             return (string) $v;
         }, $template);
 
         return $rendered ?? $template;
     }
-
 
     public function getFormat(): string
     {

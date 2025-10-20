@@ -11,8 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SystemComponentCollectionFieldRepository::class)]
 final class SystemComponentCollectionField extends Field
 {
-    public const TYPE = 'system_component_collection';
-
     #[ORM\ManyToMany(targetEntity: SystemComponent::class, cascade: ['persist'])]
     private Collection $components;
 
@@ -23,9 +21,6 @@ final class SystemComponentCollectionField extends Field
 
     public function getComponents(): Collection
     {
-        if (!isset($this->components)) {
-            $this->components = new ArrayCollection();
-        }
         return $this->components;
     }
 
@@ -34,12 +29,14 @@ final class SystemComponentCollectionField extends Field
         if (!$this->components->contains($c)) {
             $this->components->add($c);
         }
+
         return $this;
     }
 
     public function removeComponent(SystemComponent $c): self
     {
         $this->components->removeElement($c);
+
         return $this;
     }
 
@@ -51,7 +48,6 @@ final class SystemComponentCollectionField extends Field
             $components = iterator_to_array($components, false);
         }
 
-        return implode(PHP_EOL, array_map(static fn($c) => (string) $c, $components));
+        return implode(PHP_EOL, array_map(static fn ($c) => (string) $c, $components));
     }
-
 }

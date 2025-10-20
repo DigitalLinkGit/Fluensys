@@ -16,6 +16,8 @@ final class SystemComponentCaptureElementController extends AbstractAppControlle
     #[Route('/{id}/edit', name: 'app_system_component_capture_element_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, SystemComponentCaptureElement $element, EntityManagerInterface $entityManager): Response
     {
+        $captureId = $request->query->getInt('capture');
+
         $form = $this->createForm(CaptureElementTemplateForm::class, $element);
         $form->handleRequest($request);
 
@@ -26,8 +28,10 @@ final class SystemComponentCaptureElementController extends AbstractAppControlle
                     $entityManager->persist($element);
                     $entityManager->flush();
                     $this->addFlash('success', 'Élément enregistré avec succès.');
+
                     return $this->redirectToRoute('app_system_component_capture_element_edit', [
                         'id' => $element->getId(),
+                        'capture' => $captureId,
                     ]);
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage(), ['exception' => $e]);
@@ -39,16 +43,20 @@ final class SystemComponentCaptureElementController extends AbstractAppControlle
         }
 
         return $this->render('capture/capture_element/system_component_capture_element/edit.html.twig', [
-            'system_component_capture' => $element,
+            'element' => $element,
             'form' => $form,
+            'captureId' => $captureId,
         ]);
     }
+
 
     public function processFields(\Symfony\Component\Form\FormInterface $form, SystemComponentCaptureElement $element, EntityManagerInterface $entityManager): void
     {
         foreach ($form->get('fields') as $fieldForm) {
             $field = $fieldForm->getData();
-            if (!$field) continue;
+            if (!$field) {
+                continue;
+            }
 
             $submittedType = (string) $fieldForm->get('type')->getData();
             if ($submittedType && $submittedType !== $field->getType()) {
@@ -60,5 +68,4 @@ final class SystemComponentCaptureElementController extends AbstractAppControlle
             $entityManager->persist($field);
         }
     }
-
 }

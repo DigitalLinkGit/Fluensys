@@ -8,7 +8,7 @@ use App\Repository\ConditionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ConditionRepository::class)]
-#[ORM\Table(name: '`condition`')]
+#[ORM\Table(name: 'capture_condition')]
 class Condition
 {
     public function __clone()
@@ -21,26 +21,24 @@ class Condition
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'source_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT')]
+    #[ORM\ManyToOne(targetEntity: CaptureElement::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'source_element_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private ?CaptureElement $sourceElement = null;
 
-    #[ORM\ManyToOne(targetEntity: CaptureElement::class,cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'target_element_id',referencedColumnName: 'id',nullable: false,onDelete: 'RESTRICT')]
+    #[ORM\ManyToOne(targetEntity: CaptureElement::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'target_element_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private ?CaptureElement $targetElement = null;
 
     #[ORM\ManyToOne(targetEntity: Field::class)]
-    #[ORM\JoinColumn(name: 'source_field_id',referencedColumnName: 'id',nullable: false, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(name: 'source_field_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private ?Field $sourceField = null;
 
     #[ORM\Column(length: 255)]
     private ?string $expectedValue = null;
 
-
-
     #[ORM\ManyToOne(inversedBy: 'conditions')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?CaptureTemplate $capture = null;
+    private ?Capture $capture = null;
 
     public function getId(): ?int
     {
@@ -95,12 +93,12 @@ class Condition
         return $this;
     }
 
-    public function getCapture(): ?CaptureTemplate
+    public function getCapture(): ?Capture
     {
         return $this->capture;
     }
 
-    public function setCapture(?CaptureTemplate $capture): static
+    public function setCapture(?Capture $capture): static
     {
         $this->capture = $capture;
 
@@ -109,6 +107,6 @@ class Condition
 
     public function __toString()
     {
-        return "(Affiché si : " . $this->getSourceElement()->getName() . " -> " . $this->getSourceField()->getTechnicalName() . " = " . $this->getExpectedValue() . ")";
+        return '(Affiché si : '.$this->getSourceElement()->getName().' -> '.$this->getSourceField()->getTechnicalName().' = '.$this->getExpectedValue().')';
     }
 }

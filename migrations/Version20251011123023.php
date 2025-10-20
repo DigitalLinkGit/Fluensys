@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251007154633 extends AbstractMigration
+final class Version20251011123023 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -27,25 +27,22 @@ final class Version20251007154633 extends AbstractMigration
             CREATE TABLE calculated_variable (id INT AUTO_INCREMENT NOT NULL, capture_element_id INT NOT NULL, name VARCHAR(255) NOT NULL, technical_name VARCHAR(255) NOT NULL, expression VARCHAR(255) NOT NULL, INDEX IDX_76EE2621DE152EAB (capture_element_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE capture (id INT NOT NULL, account_id INT DEFAULT NULL, INDEX IDX_8BFEA6E59B6B5FBA (account_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE capture (id INT AUTO_INCREMENT NOT NULL, title_id INT DEFAULT NULL, account_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, template TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_8BFEA6E5A9F87BD (title_id), INDEX IDX_8BFEA6E59B6B5FBA (account_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE capture_capture_element (capture_id INT NOT NULL, capture_element_id INT NOT NULL, INDEX IDX_504F58326B301384 (capture_id), INDEX IDX_504F5832DE152EAB (capture_element_id), PRIMARY KEY(capture_id, capture_element_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE capture_condition (id INT AUTO_INCREMENT NOT NULL, source_element_id INT NOT NULL, target_element_id INT NOT NULL, source_field_id INT NOT NULL, capture_id INT NOT NULL, expected_value VARCHAR(255) NOT NULL, INDEX IDX_D6CFAC7D63AB5B00 (source_element_id), INDEX IDX_D6CFAC7D2DF3F2B5 (target_element_id), INDEX IDX_D6CFAC7D7173162 (source_field_id), INDEX IDX_D6CFAC7D6B301384 (capture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE capture_element (id INT AUTO_INCREMENT NOT NULL, respondent_id INT NOT NULL, responsible_id INT NOT NULL, validator_id INT NOT NULL, chapter_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, template TINYINT(1) DEFAULT 1 NOT NULL, active TINYINT(1) DEFAULT 1 NOT NULL, type VARCHAR(255) NOT NULL, INDEX IDX_33ED8BFFCE80CD19 (respondent_id), INDEX IDX_33ED8BFF602AD315 (responsible_id), INDEX IDX_33ED8BFFB0644AEC (validator_id), UNIQUE INDEX UNIQ_33ED8BFF579F4768 (chapter_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE capture_template (id INT AUTO_INCREMENT NOT NULL, title_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, template TINYINT(1) NOT NULL, dtype VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_E515D5D3A9F87BD (title_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE capture_template_capture_element (capture_template_id INT NOT NULL, capture_element_id INT NOT NULL, INDEX IDX_51644928781C9B0D (capture_template_id), INDEX IDX_51644928DE152EAB (capture_element_id), PRIMARY KEY(capture_template_id, capture_element_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE chapter (id INT AUTO_INCREMENT NOT NULL, title_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_F981B52EA9F87BD (title_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE checklist_field (id INT NOT NULL, choices JSON NOT NULL COMMENT '(DC2Type:json)', value JSON DEFAULT NULL COMMENT '(DC2Type:json)', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE `condition` (id INT AUTO_INCREMENT NOT NULL, source_element_id INT NOT NULL, target_element_id INT NOT NULL, source_field_id INT NOT NULL, capture_id INT NOT NULL, expected_value VARCHAR(255) NOT NULL, INDEX IDX_BDD6884363AB5B00 (source_element_id), INDEX IDX_BDD688432DF3F2B5 (target_element_id), INDEX IDX_BDD688437173162 (source_field_id), INDEX IDX_BDD688436B301384 (capture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE contact (id INT AUTO_INCREMENT NOT NULL, account_id INT DEFAULT NULL, email VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, function VARCHAR(255) NOT NULL, INDEX IDX_4C62E6389B6B5FBA (account_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -57,7 +54,10 @@ final class Version20251007154633 extends AbstractMigration
             CREATE TABLE decimal_field (id INT NOT NULL, value NUMERIC(14, 4) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE field (id INT AUTO_INCREMENT NOT NULL, capture_element_id INT NOT NULL, external_label VARCHAR(255) NOT NULL, internal_label VARCHAR(255) NOT NULL, name VARCHAR(255) NOT NULL, technical_name VARCHAR(255) NOT NULL, internal_required TINYINT(1) NOT NULL, external_required TINYINT(1) NOT NULL, internal_position INT NOT NULL, type VARCHAR(255) NOT NULL, INDEX IDX_5BF54558DE152EAB (capture_element_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE field (id INT AUTO_INCREMENT NOT NULL, capture_element_id INT NOT NULL, external_config_id INT DEFAULT NULL, internal_config_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, technical_name VARCHAR(255) NOT NULL, position INT NOT NULL, type VARCHAR(255) NOT NULL, INDEX IDX_5BF54558DE152EAB (capture_element_id), UNIQUE INDEX UNIQ_5BF5455880A997 (external_config_id), UNIQUE INDEX UNIQ_5BF54558AC1CFEE8 (internal_config_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE field_config (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) NOT NULL, help VARCHAR(255) DEFAULT NULL, required TINYINT(1) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE flex_capture_element (id INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -108,10 +108,28 @@ final class Version20251007154633 extends AbstractMigration
             ALTER TABLE calculated_variable ADD CONSTRAINT FK_76EE2621DE152EAB FOREIGN KEY (capture_element_id) REFERENCES capture_element (id)
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE capture ADD CONSTRAINT FK_8BFEA6E5A9F87BD FOREIGN KEY (title_id) REFERENCES title (id)
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE capture ADD CONSTRAINT FK_8BFEA6E59B6B5FBA FOREIGN KEY (account_id) REFERENCES account (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE capture ADD CONSTRAINT FK_8BFEA6E5BF396750 FOREIGN KEY (id) REFERENCES capture_template (id) ON DELETE CASCADE
+            ALTER TABLE capture_capture_element ADD CONSTRAINT FK_504F58326B301384 FOREIGN KEY (capture_id) REFERENCES capture (id) ON DELETE CASCADE
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_capture_element ADD CONSTRAINT FK_504F5832DE152EAB FOREIGN KEY (capture_element_id) REFERENCES capture_element (id) ON DELETE CASCADE
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition ADD CONSTRAINT FK_D6CFAC7D63AB5B00 FOREIGN KEY (source_element_id) REFERENCES capture_element (id) ON DELETE RESTRICT
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition ADD CONSTRAINT FK_D6CFAC7D2DF3F2B5 FOREIGN KEY (target_element_id) REFERENCES capture_element (id) ON DELETE RESTRICT
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition ADD CONSTRAINT FK_D6CFAC7D7173162 FOREIGN KEY (source_field_id) REFERENCES field (id) ON DELETE RESTRICT
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition ADD CONSTRAINT FK_D6CFAC7D6B301384 FOREIGN KEY (capture_id) REFERENCES capture (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE capture_element ADD CONSTRAINT FK_33ED8BFFCE80CD19 FOREIGN KEY (respondent_id) REFERENCES participant_role (id)
@@ -126,31 +144,10 @@ final class Version20251007154633 extends AbstractMigration
             ALTER TABLE capture_element ADD CONSTRAINT FK_33ED8BFF579F4768 FOREIGN KEY (chapter_id) REFERENCES chapter (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE capture_template ADD CONSTRAINT FK_E515D5D3A9F87BD FOREIGN KEY (title_id) REFERENCES title (id)
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE capture_template_capture_element ADD CONSTRAINT FK_51644928781C9B0D FOREIGN KEY (capture_template_id) REFERENCES capture_template (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE capture_template_capture_element ADD CONSTRAINT FK_51644928DE152EAB FOREIGN KEY (capture_element_id) REFERENCES capture_element (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE chapter ADD CONSTRAINT FK_F981B52EA9F87BD FOREIGN KEY (title_id) REFERENCES title (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE checklist_field ADD CONSTRAINT FK_651DC286BF396750 FOREIGN KEY (id) REFERENCES field (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` ADD CONSTRAINT FK_BDD6884363AB5B00 FOREIGN KEY (source_element_id) REFERENCES capture_element (id) ON DELETE RESTRICT
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` ADD CONSTRAINT FK_BDD688432DF3F2B5 FOREIGN KEY (target_element_id) REFERENCES capture_element (id) ON DELETE RESTRICT
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` ADD CONSTRAINT FK_BDD688437173162 FOREIGN KEY (source_field_id) REFERENCES field (id) ON DELETE RESTRICT
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` ADD CONSTRAINT FK_BDD688436B301384 FOREIGN KEY (capture_id) REFERENCES capture_template (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE contact ADD CONSTRAINT FK_4C62E6389B6B5FBA FOREIGN KEY (account_id) REFERENCES account (id)
@@ -163,6 +160,12 @@ final class Version20251007154633 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE field ADD CONSTRAINT FK_5BF54558DE152EAB FOREIGN KEY (capture_element_id) REFERENCES capture_element (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE field ADD CONSTRAINT FK_5BF5455880A997 FOREIGN KEY (external_config_id) REFERENCES field_config (id) ON DELETE SET NULL
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE field ADD CONSTRAINT FK_5BF54558AC1CFEE8 FOREIGN KEY (internal_config_id) REFERENCES field_config (id) ON DELETE SET NULL
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE flex_capture_element ADD CONSTRAINT FK_CAF7302BF396750 FOREIGN KEY (id) REFERENCES capture_element (id) ON DELETE CASCADE
@@ -209,10 +212,28 @@ final class Version20251007154633 extends AbstractMigration
             ALTER TABLE calculated_variable DROP FOREIGN KEY FK_76EE2621DE152EAB
         SQL);
         $this->addSql(<<<'SQL'
+            ALTER TABLE capture DROP FOREIGN KEY FK_8BFEA6E5A9F87BD
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE capture DROP FOREIGN KEY FK_8BFEA6E59B6B5FBA
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE capture DROP FOREIGN KEY FK_8BFEA6E5BF396750
+            ALTER TABLE capture_capture_element DROP FOREIGN KEY FK_504F58326B301384
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_capture_element DROP FOREIGN KEY FK_504F5832DE152EAB
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition DROP FOREIGN KEY FK_D6CFAC7D63AB5B00
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition DROP FOREIGN KEY FK_D6CFAC7D2DF3F2B5
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition DROP FOREIGN KEY FK_D6CFAC7D7173162
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_condition DROP FOREIGN KEY FK_D6CFAC7D6B301384
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE capture_element DROP FOREIGN KEY FK_33ED8BFFCE80CD19
@@ -227,31 +248,10 @@ final class Version20251007154633 extends AbstractMigration
             ALTER TABLE capture_element DROP FOREIGN KEY FK_33ED8BFF579F4768
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE capture_template DROP FOREIGN KEY FK_E515D5D3A9F87BD
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE capture_template_capture_element DROP FOREIGN KEY FK_51644928781C9B0D
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE capture_template_capture_element DROP FOREIGN KEY FK_51644928DE152EAB
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE chapter DROP FOREIGN KEY FK_F981B52EA9F87BD
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE checklist_field DROP FOREIGN KEY FK_651DC286BF396750
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` DROP FOREIGN KEY FK_BDD6884363AB5B00
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` DROP FOREIGN KEY FK_BDD688432DF3F2B5
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` DROP FOREIGN KEY FK_BDD688437173162
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE `condition` DROP FOREIGN KEY FK_BDD688436B301384
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE contact DROP FOREIGN KEY FK_4C62E6389B6B5FBA
@@ -264,6 +264,12 @@ final class Version20251007154633 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE field DROP FOREIGN KEY FK_5BF54558DE152EAB
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE field DROP FOREIGN KEY FK_5BF5455880A997
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE field DROP FOREIGN KEY FK_5BF54558AC1CFEE8
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE flex_capture_element DROP FOREIGN KEY FK_CAF7302BF396750
@@ -308,22 +314,19 @@ final class Version20251007154633 extends AbstractMigration
             DROP TABLE capture
         SQL);
         $this->addSql(<<<'SQL'
+            DROP TABLE capture_capture_element
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE capture_condition
+        SQL);
+        $this->addSql(<<<'SQL'
             DROP TABLE capture_element
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE capture_template
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE capture_template_capture_element
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE chapter
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE checklist_field
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE `condition`
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE contact
@@ -336,6 +339,9 @@ final class Version20251007154633 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE field
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE field_config
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE flex_capture_element

@@ -3,34 +3,51 @@
 namespace App\Service\Helper;
 
 use App\Entity\Capture\Field\ChecklistField;
+use App\Entity\Capture\Field\DateField;
+use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
-use App\Entity\Capture\Field\IntegerField;
-use App\Entity\Capture\Field\DecimalField;
-use App\Entity\Capture\Field\DateField;
+use App\Form\Capture\Field\SystemComponentCollectionFieldForm;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 final class FieldTypeHelper
 {
     /** key (discriminator) => FQCN */
     private array $map = [
         'textarea' => TextAreaField::class,
-        'text'     => TextField::class,
-        'integer'  => IntegerField::class,
-        'decimal'  => DecimalField::class,
-        'date'     => DateField::class,
+        'text' => TextField::class,
+        'integer' => IntegerField::class,
+        'decimal' => DecimalField::class,
+        'date' => DateField::class,
         'checklist' => ChecklistField::class,
         'system_component_collection' => SystemComponentCollectionField::class,
+    ];
+
+    /** key => FormType */
+    private array $formTypes = [
+        'textarea' => TextareaType::class,
+        'text' => TextType::class,
+        'integer' => IntegerType::class,
+        'decimal' => TextType::class,
+        'date' => DateType::class,
+        'checklist' => ChoiceType::class,
+        'system_component_collection' => SystemComponentCollectionFieldForm::class,
     ];
 
     /** key => label */
     private array $labels = [
         'textarea' => 'Texte long',
-        'text'     => 'Texte court',
-        'integer'  => 'Nombre entier',
-        'decimal'  => 'Nombre décimal',
-        'date'     => 'Date',
+        'text' => 'Texte court',
+        'integer' => 'Nombre entier',
+        'decimal' => 'Nombre décimal',
+        'date' => 'Date',
         'checklist' => 'Choix multiples',
         'system_component_collection' => 'Composants de SI',
     ];
@@ -52,6 +69,7 @@ final class FieldTypeHelper
         if (!isset($this->map[$key])) {
             throw new \InvalidArgumentException("Type Field inconnu: {$key}");
         }
+
         return $this->map[$key];
     }
 
@@ -64,7 +82,7 @@ final class FieldTypeHelper
                 return $key;
             }
         }
-        throw new \RuntimeException("Aucune clé trouvée pour ". $fqcn);
+        throw new \RuntimeException('Aucune clé trouvée pour '.$fqcn);
     }
 
     /** Label from key */
@@ -73,12 +91,17 @@ final class FieldTypeHelper
         return $this->labels[$key] ?? ucfirst(str_replace('_', ' ', $key));
     }
 
+    /** Form type from instance */
+    public function getFormTypeFor(Field $field): string
+    {
+        return $this->formTypes[$this->getKeyFor($field)];
+    }
+
     /** Label from instance */
     public function getLabelFor(Field $field): string
     {
         return $this->getLabelForKey($this->getKeyFor($field));
     }
-
 
     /** Returns true if the key is public (draggable in library). */
     public function isPublicKey(string $key): bool
@@ -95,13 +118,14 @@ final class FieldTypeHelper
                 $keys[] = $key;
             }
         }
+
         return $keys;
     }
 
     /**
      * Returns items for the draggable library.
      * When $onlyPublic is true, only public keys are included.
-     * Shape: [ ['key' => 'textarea', 'label' => 'Texte long'], ... ]
+     * Shape: [ ['key' => 'textarea', 'label' => 'Texte long'], ... ].
      */
     public function getLibraryChoices(bool $onlyPublic = true): array
     {
@@ -111,14 +135,13 @@ final class FieldTypeHelper
                 continue;
             }
             $items[] = [
-                'key'   => $key,
+                'key' => $key,
                 'label' => $this->getLabelForKey($key),
             ];
         }
+
         return $items;
     }
-
-
 
     /** allowed keys list */
     public function getAllowedKeys(): array

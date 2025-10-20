@@ -24,7 +24,7 @@ class CaptureElementNewForm extends CaptureElementBaseForm
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'   => null,
+            'data_class' => null,
             'type_choices' => [],
         ]);
         $resolver->setAllowedTypes('type_choices', 'array');

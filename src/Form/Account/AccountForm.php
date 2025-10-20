@@ -45,12 +45,11 @@ class AccountForm extends AbstractType
                 'prototype' => true,
                 'entry_options' => [
                     'label' => false,
-                    'attr' => ['class' => 'row']
+                    'attr' => ['class' => 'row'],
                 ],
                 'attr' => [
                     'data-controller' => 'classic-collection',
                 ],
-
             ])
         ;
     }

@@ -27,13 +27,10 @@ class SystemComponentCollectionFieldForm extends AbstractType
                 ],
                 'entry_options' => [
                     'label' => false,
-                    'attr' => ['class' => 'row']
+                    'attr' => ['class' => 'row'],
                 ],
             ])
         ;
-
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

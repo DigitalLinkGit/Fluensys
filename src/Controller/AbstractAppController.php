@@ -7,5 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 abstract class AbstractAppController extends AbstractController
 {
-    public function __construct(protected LoggerInterface $logger) {}
+    public function __construct(protected LoggerInterface $logger)
+    {
+    }
 }

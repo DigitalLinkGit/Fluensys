@@ -38,9 +38,6 @@ class ContactForm extends AbstractType
                 'required' => true,
             ])
         ;
-
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

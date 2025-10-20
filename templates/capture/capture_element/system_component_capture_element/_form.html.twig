@@ -4,33 +4,24 @@
 
 {% include 'components/button/_btn_bar.html.twig' with {
     buttons: {
+        preview: {
+            type: 'link',
+            route: 'app_capture_element_preview',
+            param_map: { id: 'element.id' },
+            icon: 'bi-eye',
+            label: 'Aperçu',
+            class: 'btn btn-outline-primary btn-sm'
+        },
         edit_render: {
             type: 'link',
             route: 'app_capture_element_render_text_edit',
-            param_map: { id: 'flex_capture.id' },
+            param_map: { id: 'element.id' },
             icon: 'bi-pencil',
             label: 'Editer le rendu',
             class: 'btn btn-outline-primary btn-sm'
         },
-        preview_internal: {
-            type: 'link',
-            route: 'app_capture_element_internal_preview',
-            param_map: { id: 'flex_capture.id' },
-            icon: 'bi-eye',
-            label: 'Aperçu interne',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        preview_external: {
-            type: 'link',
-            route: 'app_capture_element_external_preview',
-            param_map: { id: 'flex_capture.id' },
-            icon: 'bi-eye',
-            label: 'Aperçu répondant',
-            class: 'btn btn-outline-primary btn-sm'
-        },
         back: {
-            type: 'link',
-            route: 'app_capture_element_index',
+            type: 'nav-back',
             icon: 'bi-arrow-left',
             label: 'Retour',
             class: 'btn btn-outline-primary btn-sm'

@@ -5,6 +5,7 @@
         {% set expected = btn.param_map|default({}) %}
         {% set allParamsValid = true %}
 
+        {# Resolve params only for 'link' #}
         {% if type == 'link' %}
             {% for param, prop in expected %}
                 {% set parts = prop|split('.') %}
@@ -31,22 +32,36 @@
         {% if type != 'link' or allParamsValid %}
             {% if type == 'link' %}
                 <a href="{{ path(btn.route, params) }}"
-                   class="{{ btn.class|default('btn btn-primary') }} d-inline-flex align-items-center gap-1"
+                   class="{{ btn.class|default('btn btn-primary btn-sm') }} d-inline-flex align-items-center gap-1"
                    title="{{ btn.title|default(btn.label) }}">
-                    {% if btn.icon is defined %}
-                        <i class="bi {{ btn.icon }}"></i>
-                    {% endif %}
+                    {% if btn.icon is defined %}<i class="bi {{ btn.icon }}"></i>{% endif %}
                     {{ btn.label }}
                 </a>
+
             {% elseif type == 'submit' %}
                 <button type="submit"
-                        class="{{ btn.class|default('btn btn-primary') }}"
+                        class="{{ btn.class|default('btn btn-primary btn-sm') }}"
                         title="{{ btn.title|default(btn.label) }}">
-                    {% if btn.icon is defined %}
-                        <i class="bi {{ btn.icon }} me-1"></i>
-                    {% endif %}
+                    {% if btn.icon is defined %}<i class="bi {{ btn.icon }} me-1"></i>{% endif %}
                     {{ btn.label }}
                 </button>
+
+            {% elseif type == 'nav-back' %}
+                {# Compute fallback URL if provided #}
+                {% set fallbackUrl =
+                    btn.fallback_route is defined
+                    ? path(btn.fallback_route, btn.fallback_params|default({}))
+                    : '/' %}
+
+                <a href="{{ fallbackUrl }}"
+                   class="{{ btn.class|default('btn btn-outline-secondary btn-sm') }} d-inline-flex align-items-center gap-1"
+                   title="{{ btn.title|default(btn.label) }}"
+                   data-controller="nav-back"
+                   data-action="click->nav-back#go"
+                   data-nav-back-fallback-url-value="{{ fallbackUrl }}">
+                    {% if btn.icon is defined %}<i class="bi {{ btn.icon }}"></i>{% endif %}
+                    {{ btn.label }}
+                </a>
             {% endif %}
         {% endif %}
     {% endfor %}

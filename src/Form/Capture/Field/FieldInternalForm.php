@@ -4,47 +4,66 @@ namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\FieldConfig;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
-use App\Service\Factory\FieldFactoryOld;
+use App\Service\Helper\FieldTypeHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class FieldInternalForm extends AbstractType
 {
+    public function __construct(private readonly FieldTypeHelper $typeHelper)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+        /** @var \App\Entity\Capture\Field\FieldConfig|null $cfgOpt */
+        $cfgOpt = $options['config'];
+        /** @var string $scope */
+        $scope = $options['config_scope'];
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($cfgOpt, $scope) {
             $field = $event->getData();
-
-            if (!$field instanceof Field) return;
-
-            if ($field instanceof SystemComponentCollectionField) {
-                $event->getForm()->add('value', SystemComponentCollectionFieldForm::class, [
-                    'label' => false,
-                    'inherit_data' => true,
-                ]);
+            if (!$field instanceof Field) {
                 return;
             }
 
-            $formFieldType = \App\Service\Factory\FieldFactoryOld::getSymfonyTypeFromInstance($field);
+            $config = $cfgOpt ?? ('internal' === $scope ? $field->getInternalConfig() : $field->getExternalConfig());
 
-            $options = [
+            if (!$config instanceof FieldConfig) {
+                return;
+            }
+
+            if ($field instanceof SystemComponentCollectionField) {
+                $event->getForm()->add('value', SystemComponentCollectionFieldForm::class, [
+                    'label' => $config->getLabel(),
+                    'inherit_data' => true,
+                ]);
+
+                return;
+            }
+
+            $formFieldType = $this->typeHelper->getFormTypeFor($field);
+
+            $opts = [
                 'data' => $field->getValue(),
-                'label' => $field->getInternalLabel(),
-                'required' => false,
+                'label' => $config->getLabel(),
+                'required' => (bool) $config->isRequired(),
             ];
+
             if ($field instanceof ChecklistField) {
-                $options = array_replace($options, [
+                $opts += [
                     'choices' => $field->toSymfonyChoices(),
                     'expanded' => true,
                     'multiple' => true,
-                ]);
+                ];
             }
-            $event->getForm()->add('value', $formFieldType, $options);
+
+            $event->getForm()->add('value', $formFieldType, $opts);
         });
     }
 
@@ -52,7 +71,11 @@ class FieldInternalForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Field::class,
+            'config' => null,
+            'config_scope' => 'internal',
         ]);
-    }
 
+        $resolver->setAllowedTypes('config', [FieldConfig::class, 'null']);
+        $resolver->setAllowedValues('config_scope', ['internal', 'external']);
+    }
 }

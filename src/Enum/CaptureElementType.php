@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Enum;
 
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
@@ -32,6 +33,7 @@ enum CaptureElementType: string
         foreach (self::cases() as $case) {
             $out[$case->label()] = $case->value;
         }
+
         return $out;
     }
 }

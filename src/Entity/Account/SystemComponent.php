@@ -49,6 +49,7 @@ class SystemComponent
     public function setType(SystemComponentType $type): static
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -66,6 +67,6 @@ class SystemComponent
 
     public function __toString()
     {
-        return $this->name . ' (' . $this->type->value . ')';
+        return $this->name.' ('.$this->type->value.')';
     }
 }

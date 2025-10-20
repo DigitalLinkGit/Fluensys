@@ -18,40 +18,45 @@
     </div>
 </div>
 
-
-{% include 'components/button/_btn_bar.html.twig' with {
-    buttons: {
-        preview_render_template: {
+<div class="d-flex justify-content-end gap-2 mt-4">
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
             type: 'link',
             route: 'app_capture_template_render_text_preview',
             param_map: { id: 'capture.id' },
             icon: 'bi-pencil',
             label: 'Aperçu du rendu',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        back: {
+            class: 'btn btn-outline-primary'
+        }
+    } %}
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
             type: 'link',
-            route: 'app_capture_template_index',
-            icon: 'bi-arrow-left',
             label: 'Retour',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        save: {
+            icon: 'bi-arrow-left',
+            route: 'app_capture_template_index',
+            class: 'btn btn-outline-primary'
+        }
+    } %}
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
             type: 'submit',
-            icon: 'bi-check',
             label: 'Enregistrer',
-            class: 'btn btn-primary btn-sm'
-        },
-    }
-} %}
+            icon: 'bi-check',
+            class: 'btn btn-primary'
+        }
+    } %}
+</div>
 
 <ul class="tabs tabs--primary my-3 nav" role="tablist">
     <li class="tab nav-item" role="presentation">
-        <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements" role="tab" aria-controls="capture-elements"
+        <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements" role="tab"
+           aria-controls="capture-elements"
            aria-selected="false">Eléments de capture</a>
     </li>
     <li class="tab nav-item" role="presentation">
-        <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab" aria-controls="conditions"
+        <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
+           aria-controls="conditions"
            aria-selected="true">Conditions</a>
     </li>
 </ul>
@@ -62,24 +67,27 @@
             {% set prototype %}
                 {% include 'capture/capture_element/_prototype_minimal.html.twig' with { form: form.captureElements.vars.prototype } %}
             {% endset %}
-            <div
-                data-controller="capture"
-                data-prototype="{{ prototype|e('html_attr') }}"
-            >
-                {% for captureElement in form.captureElements %}
-                    {% include 'capture/capture_element/_prototype_minimal.html.twig' with { form: captureElement } %}
-                {% endfor %}
-
-                <a class="btn btn-outline-primary btn-sm"
-                   href="{{ path('app_capture_element_select', { capture: form.vars.data.id }) }}">
-                    Ajouter un élément
-                </a>
+            <div class="row"
+                 data-controller="capture-template"
+                 data-prototype="{{ prototype|e('html_attr') }}">
+                <div class="col-md-8" data-capture-template-target="collection">
+                    {% for captureElement in form.captureElements %}
+                        {% include 'capture/capture_element/_prototype_minimal.html.twig' with { form: captureElement } %}
+                    {% endfor %}
+                    <a class="btn btn-outline-primary btn-sm"
+                       href="{{ path('app_capture_element_new', { capture: form.vars.data.id }) }}">
+                        Add element
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    {% include 'capture/capture_element/_element_library.html.twig' %}
+                </div>
             </div>
         </div>
     </div>
     <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
         {% set prototype %}
-            {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype }%}
+            {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
         {% endset %}
 
         {# headers #}
@@ -125,8 +133,6 @@
 
     </div>
 </div>
-
-
 
 
 {{ form_end(form) }}

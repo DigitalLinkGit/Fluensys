@@ -7,13 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 final class ChecklistField extends Field
 {
-    public const TYPE = 'checklist';
     #[ORM\Column(type: 'json')]
     private array $choices = [];
 
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $value = null;
-
 
     public function getValue(): ?array
     {
@@ -23,6 +21,7 @@ final class ChecklistField extends Field
     public function setValue(?array $value): static
     {
         $this->value = $value;
+
         return $this;
     }
 
@@ -34,6 +33,7 @@ final class ChecklistField extends Field
     public function setChoices(array $choices): static
     {
         $this->choices = $choices;
+
         return $this;
     }
 
@@ -43,9 +43,12 @@ final class ChecklistField extends Field
         foreach ($this->choices as $c) {
             $label = $c['label'] ?? '';
             $value = $c['value'] ?? $label;
-            if ($label === '') { continue; }
+            if ('' === $label) {
+                continue;
+            }
             $out[$label] = $value;
         }
+
         return $out;
     }
 }

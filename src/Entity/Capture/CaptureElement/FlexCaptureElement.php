@@ -8,6 +8,4 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: FlexCaptureElementRepository::class)]
 class FlexCaptureElement extends CaptureElement
 {
-
-
 }

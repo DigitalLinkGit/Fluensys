@@ -60,7 +60,6 @@ final class AccountController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
         }
 
         return $this->render('account/edit.html.twig', [

@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Service\Factory;
 
 use App\Service\Helper\CaptureElementTypeHelper;
 
 final readonly class CaptureElementFactory
 {
-    public function __construct(private CaptureElementTypeHelper $typeHelper) {}
+    public function __construct(private CaptureElementTypeHelper $typeHelper)
+    {
+    }
 
     public function createFromForm(string $typeKey, array $data): object
     {
@@ -23,7 +26,7 @@ final readonly class CaptureElementFactory
 
     private function setIfCallable(object $obj, string $method, mixed $value): void
     {
-        if ($value !== null && is_callable([$obj, $method])) {
+        if (null !== $value && is_callable([$obj, $method])) {
             $obj->{$method}($value);
         }
     }

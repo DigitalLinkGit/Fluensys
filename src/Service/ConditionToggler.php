@@ -1,14 +1,15 @@
 <?php
+
 // src/Service/ConditionToggler.php
+
 namespace App\Service;
 
-
-use App\Entity\Capture\Condition as Condition;
+use App\Entity\Capture\Condition;
 
 final class ConditionToggler
 {
     /**
-     * @param iterable<\App\Entity\Capture\Condition> $conditions
+     * @param iterable<Condition> $conditions
      */
     public function apply(iterable $conditions): void
     {
@@ -17,11 +18,10 @@ final class ConditionToggler
         }
     }
 
-
     public function applyOne(Condition $condition): void
     {
         $target = $condition->getTargetElement();
-        $field  = $condition->getSourceField();
+        $field = $condition->getSourceField();
 
         // 0) imcomplete condition
         if (!$target || !$field) {
@@ -29,11 +29,12 @@ final class ConditionToggler
         }
 
         $expected = $condition->getExpectedValue();
-        $actual   = $field->getValue();
+        $actual = $field->getValue();
 
         // 1) Not answered = inactive
-        if ($actual === null || $actual === '') {
+        if (null === $actual || '' === $actual) {
             $target->setActive(false);
+
             return;
         }
 
@@ -44,6 +45,6 @@ final class ConditionToggler
 
     private function toStr(mixed $v): string
     {
-        return trim((string)$v);
+        return trim((string) $v);
     }
 }

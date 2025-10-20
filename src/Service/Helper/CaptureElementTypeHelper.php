@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Helper;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
@@ -6,18 +7,21 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class CaptureElementTypeHelper
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     /** Labels (key : discriminator → value : label) */
     private array $labels = [
-        'flex'               => 'CaptureTemplate libre',
-        'system_components'  => 'Composants du système',
+        'flex' => 'Capture libre',
+        'system_components' => 'Composants du système',
     ];
 
     /** key → FQCN  */
     public function getMap(): array
     {
         $meta = $this->em->getClassMetadata(CaptureElement::class);
+
         return $meta->discriminatorMap;
     }
 
@@ -26,9 +30,12 @@ final class CaptureElementTypeHelper
     {
         $choices = [];
         foreach ($this->getMap() as $key => $class) {
-            if ($class === CaptureElement::class) { continue; }
+            if (CaptureElement::class === $class) {
+                continue;
+            }
             $choices[$this->labelForKey($key)] = $key;
         }
+
         return $choices;
     }
 
@@ -39,6 +46,7 @@ final class CaptureElementTypeHelper
         if (!isset($map[$key])) {
             throw new \InvalidArgumentException("Type inconnu: {$key}");
         }
+
         return $map[$key];
     }
 
@@ -46,11 +54,12 @@ final class CaptureElementTypeHelper
     public function keyFor(object|string $objectOrClass): string
     {
         $class = is_object($objectOrClass) ? $objectOrClass::class : $objectOrClass;
-        $map   = $this->getMap();
-        $key   = array_search($class, $map, true);
-        if ($key === false) {
+        $map = $this->getMap();
+        $key = array_search($class, $map, true);
+        if (false === $key) {
             throw new \InvalidArgumentException("Classe non inscrite au DiscriminatorMap: {$class}");
         }
+
         return $key;
     }
 

@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DateFieldRepository::class)]
 final class DateField extends Field
 {
-    public const TYPE = 'date';
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $value = null;
 

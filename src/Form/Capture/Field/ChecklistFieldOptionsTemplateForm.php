@@ -35,7 +35,9 @@ class ChecklistFieldOptionsTemplateForm extends AbstractType
             $lines = [];
             foreach ($data->getChoices() as $c) {
                 $label = $c['label'] ?? '';
-                if ($label === '') { continue; }
+                if ('' === $label) {
+                    continue;
+                }
                 $lines[] = $label;
             }
             $event->getForm()->get('choices_raw')->setData(implode("\n", $lines));
@@ -45,13 +47,17 @@ class ChecklistFieldOptionsTemplateForm extends AbstractType
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
             $entity = $event->getData();
             $form = $event->getForm();
-            if (!$entity instanceof \App\Entity\Capture\Field\ChecklistField) { return; }
+            if (!$entity instanceof \App\Entity\Capture\Field\ChecklistField) {
+                return;
+            }
             $raw = (string) $form->get('choices_raw')->getData();
-            $lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $raw)), fn($l) => $l !== ''));
+            $lines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $raw)), fn ($l) => '' !== $l));
             $choices = [];
             foreach ($lines as $line) {
                 $label = $line;
-                if ($label === '') { continue; }
+                if ('' === $label) {
+                    continue;
+                }
                 $choices[] = ['label' => $label, 'value' => $label];
             }
             $entity->setChoices($choices);

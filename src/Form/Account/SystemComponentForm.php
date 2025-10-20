@@ -19,22 +19,17 @@ class SystemComponentForm extends AbstractType
                 'label' => false,
                 'required' => true,
                 'row_attr' => ['class' => 'col-md-4'],
-
             ])
             ->add('type', ChoiceType::class, [
                 'label' => false,
                 'choices' => array_combine(
-                    array_map(fn($c) => ucfirst($c->name), SystemComponentType::cases()),
+                    array_map(fn ($c) => ucfirst($c->name), SystemComponentType::cases()),
                     SystemComponentType::cases()
                 ),
-                'choice_label' => fn(SystemComponentType $choice) => ucfirst($choice->value),
+                'choice_label' => fn (SystemComponentType $choice) => ucfirst($choice->value),
                 'required' => true,
                 'row_attr' => ['class' => 'col-md-4'],
             ]);
-        ;
-
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -3,11 +3,10 @@
 namespace App\Controller\Capture;
 
 use App\Controller\AbstractAppController;
-use App\Entity\Capture\CaptureTemplate;
+use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Rendering\TextChapter;
-use App\Form\Capture\CaptureElement\CaptureElementExternalForm;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
 use App\Form\Capture\CaptureElement\CaptureElementNewForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
@@ -26,12 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/capture-element')]
 final class CaptureElementController extends AbstractAppController
 {
-
     #[Route(name: 'app_capture_element_index', methods: ['GET'])]
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $all = $em->getRepository(CaptureElement::class)->findAll();
-        $templates = array_filter($all, fn($el) => $el->isTemplate());
+        $templates = array_filter($all, fn ($el) => $el->isTemplate());
 
         return $this->render('capture/capture_element/index.html.twig', [
             'capture_elements' => $templates,
@@ -46,17 +44,17 @@ final class CaptureElementController extends AbstractAppController
         ]);
     }
 
-    #[Route('/select',name: 'app_capture_element_select', methods: ['GET'])]
+    #[Route('/select', name: 'app_capture_element_select', methods: ['GET'])]
     public function select(Request $request, EntityManagerInterface $em): Response
     {
         $captureId = $request->query->getInt('capture', $request->query->getInt('capture'));
-        $capture   = $em->getRepository(CaptureTemplate::class)->find($captureId);
+        $capture = $em->getRepository(Capture::class)->find($captureId);
 
         $all = $em->getRepository(CaptureElement::class)->findAll();
         $already = $capture ? $capture->getCaptureElements() : new ArrayCollection();
 
-        $alreadyIds = array_map(fn($e) => $e->getId(), $already->toArray());
-        $available = array_filter($all, fn($el) => $el->isTemplate() && !in_array($el->getId(), $alreadyIds, true));
+        $alreadyIds = array_map(fn ($e) => $e->getId(), $already->toArray());
+        $available = array_filter($all, fn ($el) => $el->isTemplate() && !in_array($el->getId(), $alreadyIds, true));
 
         return $this->render('capture/capture_element/select.html.twig', [
             'capture_elements' => $available,
@@ -64,44 +62,43 @@ final class CaptureElementController extends AbstractAppController
         ]);
     }
 
-    #[Route('/{id}/external-preview', name: 'app_capture_element_external_preview', methods: ['GET'])]
-    public function externalPreview(FlexCaptureElement $flexCapture): Response
+    #[Route('/{id}/preview/{audience}', name: 'app_capture_element_preview', requirements: ['audience' => 'internal|external'], methods: ['GET'])]
+    public function preview(FlexCaptureElement $flexCapture, string $audience = 'internal'): Response
     {
-        $form = $this->createForm(CaptureElementExternalForm::class, $flexCapture);
-        $title = 'Aperçu externe : ' . $flexCapture->getName();
+        $isInternal = 'internal' === $audience;
+
+        $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture, [
+            'config_scope' => $isInternal ? 'internal' : 'external',
+        ]);
+
+        $title = sprintf('Aperçu %s : %s', $isInternal ? 'interne' : 'externe', $flexCapture->getName());
+
         return $this->render('capture/capture_element/preview.html.twig', [
-            'flex_capture' => $flexCapture,
-            'form'=>$form,
-            'title'=>$title,
+            'element' => $flexCapture,
+            'form' => $form,
+            'title' => $title,
+            'audience' => $audience,
         ]);
     }
 
-    #[Route('/{id}/internal-preview', name: 'app_capture_element_internal_preview', methods: ['GET'])]
-    public function internalPreview(FlexCaptureElement $flexCapture): Response
-    {
-        $form = $this->createForm(CaptureElementInternalForm::class, $flexCapture);
-        //dd(array_map(fn($f) => get_class($f), $flexCapture->getFields()->toArray()));
-        $title = 'Aperçu interne : ' . $flexCapture->getName();
-        return $this->render('capture/capture_element/preview.html.twig', [
-            'flex_capture' => $flexCapture,
-            'form'=>$form,
-            'title'=>$title,
-        ]);
-    }
-
-    #[Route('/{id}/render-text/edit', name: 'app_capture_element_render_text_edit', methods: ['GET','POST'])]
+    #[Route('/{id}/render-text/edit', name: 'app_capture_element_render_text_edit', methods: ['GET', 'POST'])]
     public function editRenderText(Request $request, FlexCaptureElement $flexCapture, TemplateInterpolator $interpolator, EntityManagerInterface $entityManager): Response
     {
         // Build available variables from Fields and CalculatedVariables
         $fieldVars = [];
         foreach ($flexCapture->getFields() as $f) {
             $name = $f->getTechnicalName();
-            if ($name) { $fieldVars[] = $name; }
+            if ($name) {
+                $fieldVars[] = $name;
+            }
         }
+
         $calcVars = [];
         foreach ($flexCapture->getCalculatedvariables() as $cv) {
             $name = $cv->getTechnicalName();
-            if ($name) { $calcVars[] = $name; }
+            if ($name) {
+                $calcVars[] = $name;
+            }
         }
         $variables = array_values(array_unique(array_merge($fieldVars, $calcVars)));
 
@@ -116,6 +113,7 @@ final class CaptureElementController extends AbstractAppController
             $entityManager->persist($chapter);
             $entityManager->flush();
             $this->addFlash('success', 'Rendu texte enregistré.');
+
             return $this->redirectToRoute('app_flex_capture_element_edit', ['id' => $flexCapture->getId()]);
         }
 
@@ -125,55 +123,72 @@ final class CaptureElementController extends AbstractAppController
         ]);
     }
 
-    #[Route('/{id}/respond/{captureId}', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function save(CaptureElement $el, int $captureId, Request $r, EntityManagerInterface $em, CaptureRepository $captureRepo): \Symfony\Component\HttpFoundation\RedirectResponse
+    #[Route('/{id}/respond/{captureId}', name: 'app_capture_element_respond', methods: ['GET', 'POST'])]
+    public function respond(CaptureElement $el, int $captureId, Request $r, EntityManagerInterface $em, CaptureRepository $captureRepo): Response
     {
         $capture = $captureRepo->find($captureId) ?? throw $this->createNotFoundException();
 
         $form = $this->createForm(CaptureElementInternalForm::class, $el);
         $form->handleRequest($r);
         if ($form->isSubmitted() && $form->isValid()) {
-
             $em->flush();
         }
 
-        return $this->redirectToRoute('app_capture_edit', [
-            'id' => $captureId,
-            '_fragment' => 'el-'.$el->getId(),
-            'capture'=>$capture,
+        return $this->render('capture/capture_element/respond.html.twig', [
+            'capture' => $capture,
+            'form' => $form,
+            'captureId' => $capture->getId(),
         ]);
     }
 
-    #[Route('/new', name: 'app_capture_element_new', methods: ['GET','POST'])]
-    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeHelper $typeHelper,CaptureElementFactory $factory, CaptureElementRouter $router): Response {
+    #[Route('/new', name: 'app_capture_element_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeHelper $typeHelper, CaptureElementFactory $factory, CaptureElementRouter $router): Response
+    {
+        $captureId = $request->query->getInt('capture');
+
         $form = $this->createForm(CaptureElementNewForm::class, null, [
-            'type_choices' => $typeHelper->getFormChoices(), // [label => key]
+            'type_choices' => $typeHelper->getFormChoices(),
         ])->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $data    = $form->getData();
+            $data = $form->getData();
             $typeKey = $form->get('type')->getData();
 
             $element = $factory->createFromForm($typeKey, $data);
+
+            if ($captureId) {
+                $capture = $em->getRepository(Capture::class)->find($captureId);
+                if ($capture) {
+                    $capture->addCaptureElement($element);
+                    $em->persist($capture);
+                }
+            }
 
             $em->persist($element);
             $em->flush();
 
             [$route, $params] = $router->resolveEditRoute($element);
+
+            if ($captureId) {
+                $params['capture'] = $captureId;
+            }
+
             return $this->redirectToRoute($route, $params);
         }
 
         return $this->render('capture/capture_element/new.html.twig', [
             'form' => $form->createView(),
+            'captureId' => $captureId,
         ]);
     }
 
     #[Route('/{id}/delete', name: 'app_capture_element_delete', methods: ['POST'])]
     public function delete(Request $request, CaptureElement $element, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isCsrfTokenValid('delete' . $element->getId(), $request->getPayload()->getString('_token'))) {
+        if (!$this->isCsrfTokenValid('delete'.$element->getId(), $request->getPayload()->getString('_token'))) {
             $this->addFlash('danger', 'Jeton CSRF invalide. Suppression annulée.');
-            return $this->redirectToRoute('app_flex_capture_element_index', [], Response::HTTP_SEE_OTHER);
+
+            return $this->redirectToRoute('app_capture_element_index', [], Response::HTTP_SEE_OTHER);
         }
 
         try {
@@ -191,10 +206,16 @@ final class CaptureElementController extends AbstractAppController
         return $this->redirectToRoute('app_capture_element_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET','POST'])]
-    public function edit(CaptureElement $element, CaptureElementRouter $router): Response
+    #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET'])]
+    public function editRedirect(int $id, EntityManagerInterface $em, CaptureElementRouter $router): Response
     {
+        $element = $em->getRepository(CaptureElement::class)->find($id);
+        if (!$element) {
+            throw $this->createNotFoundException('CaptureElement not found');
+        }
+
         [$route, $params] = $router->resolveEditRoute($element);
+
         return $this->redirectToRoute($route, $params);
     }
 }

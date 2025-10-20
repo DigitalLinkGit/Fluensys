@@ -1,7 +1,7 @@
 <fieldset class="mb-3 field-entry form-container mt-3 p-0 position-relative border rounded field-card"
           data-controller=""
           data-type-label="{{ form.vars.type_label }}">
-    {{ form_row(form.internalPosition, { attr: { class: 'd-none position-input' } }) }}
+    {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
 
     {# CARD HEADER #}
     <div class="field-card__header row g-2 p-2 align-items-start">
@@ -23,15 +23,14 @@
         </div>
     </div>
 
-
     <div class="field-card__body p-2">
         <div class="row g-3">
             {# EXTERNAL CONFIG #}
             <div class="col-md-4">
                 <div class="border rounded-3 p-3 h-100">
                     <h6 class="mb-1">Externe</h6>
-                    {{ form_row(form.externalRequired, { row_attr: { class: 'mb-0' } }) }}
-                    {{ form_row(form.externalLabel, { row_attr: { class: 'mb-0' } }) }}
+                    {{ form_row(form.externalConfig.required, { row_attr: { class: 'mb-0' } }) }}
+                    {{ form_row(form.externalConfig.label,    { row_attr: { class: 'mb-0' } }) }}
                 </div>
             </div>
 
@@ -39,8 +38,8 @@
             <div class="col-md-4">
                 <div class="border rounded-3 p-3 h-100">
                     <h6 class="mb-1">Interne</h6>
-                    {{ form_row(form.internalRequired, { row_attr: { class: 'mb-0' } }) }}
-                    {{ form_row(form.internalLabel, { row_attr: { class: 'mb-0' } }) }}
+                    {{ form_row(form.internalConfig.required, { row_attr: { class: 'mb-0' } }) }}
+                    {{ form_row(form.internalConfig.label,    { row_attr: { class: 'mb-0' } }) }}
                 </div>
             </div>
 
@@ -53,7 +52,7 @@
                         {{ form_row(form.subtype) }}
                     {% else %}
                         <div class="subtype-config">
-                            {# minimal template will injected here by stimulus controller #}
+                            {# minimal template will be injected here by stimulus controller #}
                         </div>
 
                         {# -------------- Minimal templates ----------------- #}
@@ -69,5 +68,4 @@
             </div>
         </div>
     </div>
-
 </fieldset>

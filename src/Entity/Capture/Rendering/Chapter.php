@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
-    'text' =>TextChapter::class,
+    'text' => TextChapter::class,
 ])]
 abstract class Chapter
 {
@@ -24,7 +24,7 @@ abstract class Chapter
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'],fetch: 'EAGER')]
+    #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'], fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Title $title = null;
 
@@ -62,12 +62,12 @@ abstract class Chapter
     public function setCaptureElement(?CaptureElement $captureElement): static
     {
         // unset the owning side of the relation if necessary
-        if ($captureElement === null && $this->captureElement !== null) {
+        if (null === $captureElement && null !== $this->captureElement) {
             $this->captureElement->setChapter(null);
         }
 
         // set the owning side of the relation if necessary
-        if ($captureElement !== null && $captureElement->getChapter() !== $this) {
+        if (null !== $captureElement && $captureElement->getChapter() !== $this) {
             $captureElement->setChapter($this);
         }
 
@@ -75,5 +75,4 @@ abstract class Chapter
 
         return $this;
     }
-
 }

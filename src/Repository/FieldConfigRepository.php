@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Rendering\ChapterContent;
+use App\Entity\Capture\Field\FieldConfig;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ChapterContent>
+ * @extends ServiceEntityRepository<FieldConfig>
  */
-class ChapterContentRepository extends ServiceEntityRepository
+class FieldConfigRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ChapterContent::class);
+        parent::__construct($registry, FieldConfig::class);
     }
 
     //    /**
-    //     * @return ChapterContent[] Returns an array of ChapterContent objects
+    //     * @return FieldConfig[] Returns an array of FieldConfig objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
+    //            ->orderBy('f.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ChapterContent
+    //    public function findOneBySomeField($value): ?FieldConfig
     //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
+    //        return $this->createQueryBuilder('f')
+    //            ->andWhere('f.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

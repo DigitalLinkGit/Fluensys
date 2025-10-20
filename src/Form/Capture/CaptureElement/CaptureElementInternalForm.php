@@ -18,18 +18,9 @@ class CaptureElementInternalForm extends AbstractType
             ->add('fields', CollectionType::class, [
                 'entry_type' => FieldInternalForm::class,
                 'label' => false,
-                'entry_options' => ['label' => false],
-            ])
-            ->add('active', CheckboxType::class, [
-                'label'     => 'Activé',
-                'required'  => false,
-                'disabled'  => true,
-                'row_attr'  => ['class' => 'form-check form-switch'],
-                'label_attr'=> ['class' => 'form-check-label'],
-                'attr'      => [
-                    'class' => 'form-check-input',
-                    'role'  => 'switch',
-                    'readonly' => true
+                'entry_options' => [
+                    'config_scope' => $options['config_scope'], // 'internal' | 'external'
+                    'label' => false,
                 ],
             ])
         ;
@@ -39,6 +30,9 @@ class CaptureElementInternalForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CaptureElement::class,
+            'config_scope' => 'internal',
         ]);
+
+        $resolver->setAllowedValues('config_scope', ['internal', 'external']);
     }
 }

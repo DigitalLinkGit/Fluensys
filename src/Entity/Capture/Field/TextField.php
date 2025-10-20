@@ -8,8 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: TextFieldRepository::class)]
 final class TextField extends Field
 {
-    public const TYPE = 'text';
-    #[ORM\Column(length: 255,nullable:  true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $value = null;
 
     public function getValue(): ?string

@@ -2,7 +2,7 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture\CaptureTemplate;
+use App\Entity\Capture\Capture;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -33,25 +33,13 @@ class CaptureInternalForm extends AbstractType
                     'placeholder' => 'Description de la capture_template...',
                 ],
             ])
-            ->add('captureElements', CollectionType::class, [
-                'entry_type' => CaptureElementInternalForm::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'label' => false,
-                'by_reference' => false,
-                'prototype' => true,
-                'entry_options' => ['label' => false],
-                'attr' => [
-                    'data-controller'=> 'capture_template'
-                ]
-            ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => CaptureTemplate::class,
+            'data_class' => Capture::class,
         ]);
     }
 }

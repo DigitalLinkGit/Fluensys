@@ -2,7 +2,7 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture\CaptureTemplate;
+use App\Entity\Capture\Capture;
 use App\Form\Capture\CaptureElement\CaptureElementMinimalForm;
 use App\Form\Capture\Rendering\TitleForm;
 use Symfony\Component\Form\AbstractType;
@@ -15,20 +15,22 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CaptureTemplateForm extends AbstractType
 {
-    public function __construct(private UrlGeneratorInterface $urlGenerator) {}
+    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Nom',
-                'attr' => ['class' => 'form-control','placeholder' => 'Nom de la capture...'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Nom de la capture...'],
                 'required' => true,
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
-                'attr' => ['class' => 'form-control','rows' => 3,'placeholder' => 'Description de la capture...'],
+                'attr' => ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Description de la capture...'],
             ])
             ->add('title', TitleForm::class, ['label' => false])
             ->add('captureElements', CollectionType::class, [
@@ -40,7 +42,7 @@ class CaptureTemplateForm extends AbstractType
                 'by_reference' => false,
                 'prototype' => true,
                 'entry_options' => ['label' => false],
-                'attr' => ['data-controller'=> 'capture']
+                'attr' => ['data-controller' => 'capture'],
             ])
             ->add('conditions', CollectionType::class, [
                 'entry_type' => ConditionForm::class,
@@ -66,6 +68,6 @@ class CaptureTemplateForm extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => CaptureTemplate::class]);
+        $resolver->setDefaults(['data_class' => Capture::class]);
     }
 }

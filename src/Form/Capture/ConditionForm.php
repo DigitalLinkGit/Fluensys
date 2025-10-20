@@ -36,9 +36,8 @@ final class ConditionForm extends AbstractType
             'choices' => $this->buildTargetChoices($elements),
             'attr' => [
                 'data-action' => 'change->condition#onTargetChange',
-                'autocomplete' => 'off'
+                'autocomplete' => 'off',
             ],
-
         ]);
 
         $builder->add('sourceElement', EntityType::class, [
@@ -49,7 +48,7 @@ final class ConditionForm extends AbstractType
             'choices' => $this->buildTargetChoices($elements),
             'attr' => [
                 'data-action' => 'change->condition#onSourceChange',
-                'autocomplete' => 'off'
+                'autocomplete' => 'off',
             ],
         ]);
 
@@ -61,15 +60,17 @@ final class ConditionForm extends AbstractType
             'choices' => [],
             'required' => true,
             'attr' => [
-                'autocomplete' => 'off'
+                'autocomplete' => 'off',
             ],
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (PostSubmitEvent $event) {
-            /** @var \App\Entity\Capture\Condition $cond */
+            /** @var Condition $cond */
             $cond = $event->getData();
             $form = $event->getForm();
-            if (!$cond) return;
+            if (!$cond) {
+                return;
+            }
 
             $src = $cond->getSourceElement();
             $tgt = $cond->getTargetElement();
@@ -85,7 +86,7 @@ final class ConditionForm extends AbstractType
                 $fields = $src->getFields();
                 $contains = method_exists($fields, 'contains')
                     ? $fields->contains($fld)
-                    : in_array($fld, is_iterable($fields) ? iterator_to_array($fields) : (array)$fields, true);
+                    : in_array($fld, is_iterable($fields) ? iterator_to_array($fields) : (array) $fields, true);
 
                 if (!$contains) {
                     $form->get('sourceField')->addError(new FormError('Le champ doit appartenir à la source sélectionnée.'));
@@ -104,7 +105,7 @@ final class ConditionForm extends AbstractType
 
             $source = null;
             foreach ($this->getElementsFromOptions($options) as $el) {
-                if ((string)$el->getId() === (string)$sourceId) {
+                if ((string) $el->getId() === (string) $sourceId) {
                     $source = $el;
                     break;
                 }
@@ -130,9 +131,11 @@ final class ConditionForm extends AbstractType
         });
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
-            /** @var \App\Entity\Capture\Condition|null $cond */
+            /** @var Condition|null $cond */
             $cond = $event->getData();
-            if (!$cond) return;
+            if (!$cond) {
+                return;
+            }
 
             $form = $event->getForm();
             $elementsAll = $this->getElementsFromOptions($options);
@@ -143,8 +146,8 @@ final class ConditionForm extends AbstractType
 
             $baseChoices = $this->buildTargetChoices($elementsAll);
 
-            $form->add('sourceElement', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'class' => \App\Entity\Capture\CaptureElement\CaptureElement::class,
+            $form->add('sourceElement', EntityType::class, [
+                'class' => CaptureElement::class,
                 'choice_label' => 'name',
                 'choice_value' => 'id',
                 'placeholder' => 'Sélectionner un élément...',
@@ -154,8 +157,8 @@ final class ConditionForm extends AbstractType
                 'data' => $src,
             ]);
 
-            $form->add('targetElement', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'class' => \App\Entity\Capture\CaptureElement\CaptureElement::class,
+            $form->add('targetElement', EntityType::class, [
+                'class' => CaptureElement::class,
                 'choice_label' => 'name',
                 'choice_value' => 'id',
                 'placeholder' => 'Sélectionner un élément...',
@@ -172,8 +175,8 @@ final class ConditionForm extends AbstractType
                 }
             }
 
-            $form->add('sourceField', \Symfony\Bridge\Doctrine\Form\Type\EntityType::class, [
-                'class' => \App\Entity\Capture\Field\Field::class,
+            $form->add('sourceField', EntityType::class, [
+                'class' => Field::class,
                 'choice_label' => 'technicalName',
                 'choice_value' => 'id',
                 'placeholder' => 'Sélectionner un champ...',
@@ -186,16 +189,21 @@ final class ConditionForm extends AbstractType
         });
     }
 
-    private function ensureIncluded(array $choices, object $value = null): array
+    private function ensureIncluded(array $choices, ?object $value = null): array
     {
-        if (!$value) return $choices;
+        if (!$value) {
+            return $choices;
+        }
         foreach ($choices as $c) {
-            if ($c === $value) return $choices;
-            if (method_exists($c, 'getId') && method_exists($value, 'getId') && (string)$c->getId() === (string)$value->getId()) {
+            if ($c === $value) {
+                return $choices;
+            }
+            if (method_exists($c, 'getId') && method_exists($value, 'getId') && (string) $c->getId() === (string) $value->getId()) {
                 return $choices;
             }
         }
         $choices[] = $value; // inclure la valeur courante même si hors filtre
+
         return $choices;
     }
 
@@ -215,7 +223,7 @@ final class ConditionForm extends AbstractType
         if ($root instanceof \Traversable) {
             $root = iterator_to_array($root);
         } elseif (!is_array($root)) {
-            $root = (array)$root;
+            $root = (array) $root;
         }
         // aplatir récursif (Collection/Traversable/tableaux imbriqués)
         $flat = [];
@@ -238,6 +246,7 @@ final class ConditionForm extends AbstractType
                 $flat[] = $item;
             }
         }
+
         return $flat;
     }
 
@@ -246,7 +255,7 @@ final class ConditionForm extends AbstractType
         // STRICT : seulement isTemplate = true
         return array_values(array_filter(
             $elements,
-            fn(CaptureElement $e) => $e->isTemplate() === true
+            fn (CaptureElement $e) => true === $e->isTemplate()
         ));
     }
 }

@@ -40,15 +40,15 @@ abstract class CaptureElement
         $newCvs = new ArrayCollection();
         foreach ($this->calculatedvariables as $cv) {
             $clonedCv = (new CalculatedVariable())
-                ->setName((string)$cv->getName())
-                ->setTechnicalName((string)$cv->getTechnicalName())
-                ->setExpression((string)$cv->getExpression())
+                ->setName((string) $cv->getName())
+                ->setTechnicalName((string) $cv->getTechnicalName())
+                ->setExpression((string) $cv->getExpression())
                 ->setCaptureElement($this);
             $newCvs->add($clonedCv);
         }
         $this->calculatedvariables = $newCvs;
 
-        //template
+        // template
         $this->template = false;
     }
     #[ORM\Id]
@@ -67,7 +67,6 @@ abstract class CaptureElement
 
     #[ORM\OneToMany(targetEntity: CalculatedVariable::class, mappedBy: 'captureElement', orphanRemoval: true)]
     protected Collection $calculatedvariables;
-
 
     #[ORM\ManyToOne(inversedBy: 'respondentCaptureElements')]
     #[ORM\JoinColumn(nullable: false)]
@@ -134,7 +133,7 @@ abstract class CaptureElement
     {
         if (!$this->fields->contains($field)) {
             $this->fields->add($field);
-            $field->setInternalPosition($this->fields->count());
+            $field->setPosition($this->fields->count());
             $field->setCaptureElement($this);
         }
 
@@ -248,7 +247,7 @@ abstract class CaptureElement
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
         return $this;
     }
-
 }

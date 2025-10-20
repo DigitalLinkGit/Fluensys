@@ -33,7 +33,7 @@ class ParticipantRoleForm extends AbstractType
                 ],
             ])
             ->add('internal', CheckboxType::class, [
-                'label'    => 'Rôle interne ?',
+                'label' => 'Rôle interne ?',
                 'required' => false,
             ])
         ;

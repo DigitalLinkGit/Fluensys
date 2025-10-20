@@ -1,5 +1,7 @@
 <?php
+
 // src/Service/Factory/FieldFactory.php
+
 namespace App\Service\Factory;
 
 use App\Entity\Capture\Field\Field;
@@ -7,11 +9,13 @@ use App\Service\Helper\FieldTypeHelper;
 
 final readonly class FieldFactory
 {
-    public function __construct(private FieldTypeHelper $typeHelper) {}
+    public function __construct(private FieldTypeHelper $typeHelper)
+    {
+    }
 
     /**
-     * @param string $typeKey  Discriminator (ex: 'text', 'textarea', 'integer', ...)
-     * @param array  $data     form data
+     * @param string $typeKey Discriminator (ex: 'text', 'textarea', 'integer', ...)
+     * @param array  $data    form data
      */
     public function createFromForm(string $typeKey, array $data): Field
     {
@@ -31,7 +35,7 @@ final readonly class FieldFactory
         //     $field->setChoices($data['choices']); // tableau normalisé ['key' => 'Label', ...]
         // }
 
-        // if ($field instanceof \App\Entity\CaptureTemplate\Field\DecimalField) {
+        // if ($field instanceof \App\Entity\Capture\Field\DecimalField) {
         //     $this->setIfCallable($field, 'setScale', $data['scale'] ?? null);
         //     $this->setIfCallable($field, 'setMin', $data['min'] ?? null);
         //     $this->setIfCallable($field, 'setMax', $data['max'] ?? null);
@@ -42,7 +46,7 @@ final readonly class FieldFactory
 
     private function setIfCallable(object $obj, string $method, mixed $value): void
     {
-        if ($value !== null && is_callable([$obj, $method])) {
+        if (null !== $value && is_callable([$obj, $method])) {
             $obj->{$method}($value);
         }
     }

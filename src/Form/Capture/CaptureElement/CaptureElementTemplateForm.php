@@ -28,8 +28,8 @@ class CaptureElementTemplateForm extends CaptureElementBaseForm
                 'prototype' => true,
                 'entry_options' => ['label' => false],
                 'attr' => [
-                    'data-controller'=> 'capture-element'
-                ]
+                    'data-controller' => 'capture-element',
+                ],
             ])
         ;
     }

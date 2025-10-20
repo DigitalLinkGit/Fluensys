@@ -1,0 +1,26 @@
+<div class="">
+    <div class="card p-2 my-3">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="m-0">Library</h6>
+                <small class="text-muted">Click to add</small>
+            </div>
+
+            <div class="vstack gap-2">
+                {% for element in availableElements %}
+                    <div class="d-flex align-items-center justify-content-between border rounded p-2"
+                         data-id="{{ element.id }}"
+                         data-label="{{ element.name }}"
+                         data-description="{{ element.description }}">
+                        <div class="small fw-semibold">{{ element.name }}</div>
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                data-action="click->capture-template#add">
+                            Add
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

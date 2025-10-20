@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Répondre{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+
+    {{ form_widget(form) }}
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'nav-back',
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary btn-sm'
+            },
+            save: {
+                type: 'submit',
+                icon: 'bi-check',
+                label: 'Enregistrer',
+                class: 'btn btn-primary btn-sm'
+            },
+        }
+    } %}
+    {{ form_end(form) }}
+
+{% endblock %}
+
+
+
+

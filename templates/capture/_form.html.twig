@@ -1,33 +1,54 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col-md-6">
+        {% include 'components/form/_ghost_field.html.twig' with {
+            field: form.name,
+            placeholder: 'Nom…',
+            class: 'title-input',
+            attrs: { autocomplete: 'off' }
+        } %}
 
-{% include 'components/button/_btn_bar.html.twig' with {
-    buttons: {
-        preview_render: {
-            type: 'link',
-            route: 'app_capture_render_text_preview',
-            param_map: { id: 'capture.id' },
-            icon: 'bi-pencil',
-            label: 'Aperçu du rendu',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        back: {
-            type: 'link',
-            route: 'app_capture_index',
-            icon: 'bi-arrow-left',
-            label: 'Retour',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        save: {
-            type: 'submit',
-            icon: 'bi-check',
-            label: 'Enregistrer',
-            class: 'btn btn-primary btn-sm'
-        },
-    }
-} %}
+        {% include 'components/form/_ghost_field.html.twig' with {
+            field: form.description,
+            placeholder: 'Description…',
+            class: 'subtitle-textarea',
+            attrs: { autocomplete: 'off' }
+        } %}
+    </div>
+
+    <div class="col-md-6">
+        {% include 'components/button/_btn_bar.html.twig' with {
+            buttons: {
+                preview_render: {
+                    type: 'link',
+                    route: 'app_capture_render_text_preview',
+                    param_map: { id: 'capture.id' },
+                    icon: 'bi-pencil',
+                    label: 'Aperçu du rendu',
+                    class: 'btn btn-outline-primary btn-sm'
+                },
+                back: {
+                    type: 'nav-back',
+                    icon: 'bi-arrow-left',
+                    label: 'Retour',
+                    class: 'btn btn-outline-primary btn-sm'
+                },
+                save: {
+                    type: 'submit',
+                    icon: 'bi-check',
+                    label: 'Enregistrer',
+                    class: 'btn btn-primary btn-sm'
+                },
+            }
+        } %}
+    </div>
+
+</div>
 
 <ul class="tabs tabs--primary my-3 nav" role="tablist">
     <li class="tab nav-item" role="presentation">
-        <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab" aria-controls="capture"
+        <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab"
+           aria-controls="capture"
            aria-selected="false">Capture</a>
     </li>
     <li class="tab nav-item" role="presentation">
@@ -39,35 +60,34 @@
 <div class="tab-content">
     <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
         <div class="mx-2">
-            {% if forms is defined %}
+            {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
                 {% set byTarget = conditionsByTargetId|default({}) %}
 
-                {% for element in forms %}
-                    {# Récupère l'id de l'entité portée par le form #}
-                    {% set elementId = element.vars.data.id ?? null %}
+                {% for element in capture.captureElements %}
 
-                    {# Liste des conditions qui ciblent cet élément #}
+                    {% set entity = element ?? null %}
+                    {% set elementId = entity ? entity.id : null %}
                     {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
 
                     <div class="mb-3 row">
-                        {# on passe les conditions au partial #}
                         {% include 'capture/capture_element/_prototype_card.html.twig' with {
-                            element: element,
-                            incomingConditions: incoming
+                        element: element,
+                        incomingConditions: incoming
                         } %}
                     </div>
-                {% else %}
-                    <div class="text-muted small">Aucun élément</div>
                 {% endfor %}
             {% else %}
                 <div class="text-muted small">Aucun élément</div>
             {% endif %}
+
         </div>
     </div>
     <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
-    {# {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %} #}
+        {# {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %} #}
     </div>
 </div>
+
+{{ form_end(form) }}
 
 
 

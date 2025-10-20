@@ -37,8 +37,8 @@ class ParticipantRole
     public function __construct()
     {
         $this->responsibleCaptureElements = new ArrayCollection();
-        $this->validatorCaptureElements   = new ArrayCollection();
-        $this->respondentCaptureElements  = new ArrayCollection();
+        $this->validatorCaptureElements = new ArrayCollection();
+        $this->respondentCaptureElements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -82,8 +82,18 @@ class ParticipantRole
         return $this;
     }
 
-    public function getResponsibleCaptureElements(): Collection { return $this->responsibleCaptureElements; }
-    public function getValidatorCaptureElements():   Collection { return $this->validatorCaptureElements; }
-    public function getRespondentCaptureElements():  Collection { return $this->respondentCaptureElements; }
+    public function getResponsibleCaptureElements(): Collection
+    {
+        return $this->responsibleCaptureElements;
+    }
 
+    public function getValidatorCaptureElements(): Collection
+    {
+        return $this->validatorCaptureElements;
+    }
+
+    public function getRespondentCaptureElements(): Collection
+    {
+        return $this->respondentCaptureElements;
+    }
 }

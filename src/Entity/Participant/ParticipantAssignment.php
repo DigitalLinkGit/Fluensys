@@ -2,7 +2,6 @@
 
 namespace App\Entity\Participant;
 
-use App\Entity\Participant;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -13,8 +12,7 @@ class ParticipantAssignment
     #[ORM\Column]
     private ?int $id = null;
 
-
-    #[ORM\ManyToOne(targetEntity: Participant\ParticipantRole::class)]
+    #[ORM\ManyToOne(targetEntity: ParticipantRole::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ParticipantRole $role;
 
@@ -83,7 +81,6 @@ class ParticipantAssignment
         return $this;
     }
 
-
     public function getRole(): ?ParticipantRole
     {
         return $this->role;
@@ -95,5 +92,4 @@ class ParticipantAssignment
 
         return $this;
     }
-
 }
