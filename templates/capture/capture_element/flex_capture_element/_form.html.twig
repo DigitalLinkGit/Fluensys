@@ -23,7 +23,7 @@
             class: 'btn btn-outline-primary'
         }
     } %}
-    {% if captureId is defined %}
+
         {% include 'components/button/_btn.html.twig' with {
             btn: {
                 type: 'link',
@@ -34,17 +34,6 @@
                 class: 'btn btn-outline-primary'
             }
         } %}
-    {% else %}
-        {% include 'components/button/_btn.html.twig' with {
-            btn: {
-                type: 'link',
-                label: 'Retour',
-                icon: 'bi-arrow-left',
-                route: 'app_capture_element_index',
-                class: 'btn btn-outline-primary'
-            }
-        } %}
-    {% endif %}
 
     {% include 'components/button/_btn.html.twig' with {
         btn: {

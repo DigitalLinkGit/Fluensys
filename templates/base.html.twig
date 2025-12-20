@@ -23,10 +23,10 @@
     {% endblock %}
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100" data-controller="modal-confirmation">
 {% include 'components/partials/_navbar.html.twig' %}
 {% include 'components/alert/_alert.html.twig' %}
-
+{% include 'components/modal/_modal_confirm.html.twig' %}
 
 <main class="flex-grow-1" style="padding-top: 70px;">
 
@@ -37,9 +37,5 @@
 </main>
 
 {% include 'components/partials/_footer.html.twig' %}
-
-{# Modales globales (hors container) #}
-{% include 'components/modal/_modal_confirm.html.twig' %}
-
 </body>
 </html>

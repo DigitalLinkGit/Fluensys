@@ -1,97 +1,76 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-    static targets = ["collection"];
+    static targets = ["flash"];
 
     connect() {
-        this.container = this.hasCollectionTarget ? this.collectionTarget : this.element;
-        this.index = this.container.querySelectorAll("fieldset").length;
-        this.libraryItems = Array.from(this.element.querySelectorAll('button[data-action*="capture-template#add"]'))
-            .map(btn => btn.closest("[data-id]"))
-            .filter(Boolean);
-
-
-        console.log("DEBUG -> libraryItems:", this.libraryItems.length);
-        console.log("DEBUG -> existing ids:", this.getExistingIds());
-
-        this.syncLibrary();
-
+        this.isDeleting = false;
     }
 
-    syncLibrary() {
-        // Collect all existing element IDs already present in the collection
-        const existingIds = Array.from(this.container.querySelectorAll('input[name$="[id]"]')).map(i => i.value);
-
-
-        this.libraryItems.forEach(item => {
-            const id = item.dataset.id;
-            item.hidden = existingIds.includes(id);
-
-        });
-    }
-
-    add(event) {
+    async remove(event) {
         event.preventDefault();
 
-        const item = event.currentTarget.closest("[data-id]");
-        const id = item?.dataset.id || "";
-        const label = item?.dataset.label || "";
-        const description = item?.dataset.description || "";
+        if (this.isDeleting) return;
 
-        const prototype = this.element.dataset.prototype;
-        if (!prototype) return;
+        const button = event.currentTarget;
+        const url = button.dataset.deleteUrl;
+        const csrf = button.dataset.csrf;
 
-        const html = prototype.replace(/__name__/g, this.index);
-        const temp = document.createElement("div");
-        temp.innerHTML = html;
-        const fieldset = temp.firstElementChild;
+        if (!url || !csrf) {
+            this.notify("Configuration invalide (URL/CSRF manquants).", "danger");
+            return;
+        }
 
-        // Optionally set a hidden input for ID if your prototype includes one
-        const idInput = fieldset.querySelector('input[name$="[id]"]');
-        if (idInput) idInput.value = id;
+        const confirmed = window.confirm("Confirmer la suppression de cet élément ?");
+        if (!confirmed) return;
 
-        const nameInput = fieldset.querySelector('input[name$="[name]"]');
-        if (nameInput) nameInput.value = label;
+        this.isDeleting = true;
+        button.disabled = true;
 
-        const descInput = fieldset.querySelector('textarea[name$="[description]"]');
-        if (descInput) descInput.value = description;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json, text/plain, */*",
+                },
+                body: new URLSearchParams({ _token: csrf }).toString(),
+            });
 
-        const addLink = this.container.querySelector("a.btn");
-        if (!addLink) return;
-        this.container.insertBefore(fieldset, addLink);
+            if (!response.ok) {
+                throw new Error(`Delete failed with status ${response.status}`);
+            }
 
-        this.container.insertBefore(fieldset, addLink);
-        this.index++;
+            const card = button.closest(".card");
+            const row = button.closest(".row");
 
-        this.syncLibrary();
+            (row || card)?.remove();
+
+            this.notify("Élément supprimé.", "success");
+        } catch (e) {
+            console.error(e);
+            this.notify("Erreur lors de la suppression.", "danger");
+            button.disabled = false;
+        } finally {
+            this.isDeleting = false;
+        }
     }
 
-    remove(event) {
-        event.preventDefault();
+    notify(message, level = "info") {
+        if (!this.hasFlashTarget) return;
 
-        const fieldset = event.target.closest("fieldset");
-        if (!fieldset) return;
+        this.flashTarget.innerHTML = "";
 
-        // Retrieve id (preferred) or fallback to name
-        const idInput = fieldset.querySelector('input[name$="[id]"]');
-        const id = idInput?.value?.trim();
+        const alert = document.createElement("div");
+        alert.className = `alert alert-${level} mb-2`;
+        alert.setAttribute("role", "alert");
+        alert.textContent = message;
 
-        fieldset.remove();
+        this.flashTarget.appendChild(alert);
 
-        this.libraryItems.forEach(item => {
-            if (item.dataset.id === id) item.style.display = "";
-        });
-
-        this.syncLibrary();
+        window.setTimeout(() => {
+            alert.remove();
+        }, 4000);
     }
-
-    getExistingIds() {
-        return Array.from(this.container.querySelectorAll("fieldset"))
-            .map(fs => {
-                const hidden = fs.querySelector('input[name$="[id]"]');
-                return (hidden?.value?.trim() || fs.dataset.id || "").toString();
-            })
-            .filter(Boolean);
-    }
-
 }

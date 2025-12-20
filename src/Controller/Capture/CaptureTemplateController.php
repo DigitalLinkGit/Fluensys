@@ -31,6 +31,9 @@ final class CaptureTemplateController extends AbstractController
     #[Route('/new', name: 'app_capture_template_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $all = $entityManager->getRepository(CaptureElement::class)->findAll();
+        $availableElements = array_filter($all, fn ($el) => $el->isTemplate());
+
         $capture = new Capture();
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
@@ -45,6 +48,7 @@ final class CaptureTemplateController extends AbstractController
         return $this->render('capture/capture_template/new.html.twig', [
             'capture' => $capture,
             'form' => $form,
+            'availableElements' => $availableElements,
         ]);
     }
 
@@ -62,12 +66,17 @@ final class CaptureTemplateController extends AbstractController
         $all = $entityManager->getRepository(CaptureElement::class)->findAll();
         $availableElements = array_filter($all, fn ($el) => $el->isTemplate());
 
-        /*$presentIds = array_map(static fn ($e) => $e->getId(), $capture->getCaptureElements()->toArray());
-        $availableElements = array_filter($availableElements, static fn ($el) => !in_array($el->getId(), $presentIds, true));
-        */
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
 
+        // make condition map for display condition on CaptureElement
+        $conditionsByTargetId = [];
+        foreach ($capture->getConditions() as $cond) {
+            $tid = $cond->getTargetElement()?->getId();
+            if (null !== $tid) {
+                $conditionsByTargetId[$tid][] = $cond;
+            }
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
             $toggler->apply($capture->getConditions()->toArray());
@@ -83,6 +92,7 @@ final class CaptureTemplateController extends AbstractController
             'capture' => $capture,
             'form' => $form,
             'availableElements' => $availableElements,
+            'conditionsByTargetId' => $conditionsByTargetId,
         ]);
     }
 

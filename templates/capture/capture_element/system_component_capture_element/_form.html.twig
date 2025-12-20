@@ -20,11 +20,13 @@
             label: 'Editer le rendu',
             class: 'btn btn-outline-primary btn-sm'
         },
-        back: {
-            type: 'nav-back',
-            icon: 'bi-arrow-left',
+        btn: {
+            type: 'link',
             label: 'Retour',
-            class: 'btn btn-outline-primary btn-sm'
+            icon: 'bi-arrow-left',
+            route: 'app_capture_template_edit',
+            param_map: { id: 'captureId' },
+            class: 'btn btn-outline-primary'
         },
         save: {
             type: 'submit',

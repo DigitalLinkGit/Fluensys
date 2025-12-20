@@ -155,24 +155,16 @@ final class CaptureElementController extends AbstractAppController
             $typeKey = $form->get('type')->getData();
 
             $element = $factory->createFromForm($typeKey, $data);
-
             if ($captureId) {
                 $capture = $em->getRepository(Capture::class)->find($captureId);
                 if ($capture) {
-                    $capture->addCaptureElement($element);
-                    $em->persist($capture);
+                    $element->setCapture($capture);
                 }
             }
 
             $em->persist($element);
             $em->flush();
-
             [$route, $params] = $router->resolveEditRoute($element);
-
-            if ($captureId) {
-                $params['capture'] = $captureId;
-            }
-
             return $this->redirectToRoute($route, $params);
         }
 
@@ -183,12 +175,21 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/delete', name: 'app_capture_element_delete', methods: ['POST'])]
-    public function delete(Request $request, CaptureElement $element, EntityManagerInterface $entityManager): Response
-    {
+    public function delete(
+        Request $request,
+        CaptureElement $element,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $capture = $element->getCapture(); // récupérer la capture AVANT le remove
+
         if (!$this->isCsrfTokenValid('delete'.$element->getId(), $request->getPayload()->getString('_token'))) {
             $this->addFlash('danger', 'Jeton CSRF invalide. Suppression annulée.');
 
-            return $this->redirectToRoute('app_capture_element_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(
+                'app_capture_template_edit',
+                ['id' => $capture->getId()],
+                Response::HTTP_SEE_OTHER
+            );
         }
 
         try {
@@ -199,23 +200,34 @@ final class CaptureElementController extends AbstractAppController
         } catch (ForeignKeyConstraintViolationException $e) {
             $this->addFlash('warning', 'Impossible de supprimer cet élément car il est utilisé dans au moins une capture.');
         } catch (\Throwable $e) {
-            $this->logger?->error('Erreur lors de la suppression', ['id' => $element->getId(), 'exception' => $e]);
+            $this->logger?->error('Erreur lors de la suppression', [
+                'id' => $element->getId(),
+                'exception' => $e,
+            ]);
             $this->addFlash('danger', 'Une erreur inattendue est survenue pendant la suppression.');
         }
 
-        return $this->redirectToRoute('app_capture_element_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            'app_capture_template_edit',
+            ['id' => $capture->getId()],
+            Response::HTTP_SEE_OTHER
+        );
     }
 
+
     #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET'])]
-    public function editRedirect(int $id, EntityManagerInterface $em, CaptureElementRouter $router): Response
+    public function editRedirect(int $id, Request $request, EntityManagerInterface $em, CaptureElementRouter $router): Response
     {
+        $captureId = $request->query->getInt('capture');
         $element = $em->getRepository(CaptureElement::class)->find($id);
         if (!$element) {
             throw $this->createNotFoundException('CaptureElement not found');
         }
 
         [$route, $params] = $router->resolveEditRoute($element);
-
+        if ($captureId) {
+            $params['capture'] = $captureId;
+        }
         return $this->redirectToRoute($route, $params);
     }
 }

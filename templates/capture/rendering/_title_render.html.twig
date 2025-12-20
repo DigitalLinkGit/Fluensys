@@ -1,7 +1,14 @@
-{% set txt = title.content ?? '' %}
-{% set lvl = title.level|default(1) %}
+{% set txt = title is defined and title is not null and title.content is defined and title.content is not null
+    ? title.content
+    : '' %}
+
+{% set lvl = title is defined and title is not null and title.level is defined and title.level is not null
+    ? title.level
+    : 1 %}
+
 {% set lvl = lvl < 1 ? 1 : (lvl > 6 ? 6 : lvl) %}
 {% set tag = 'h' ~ lvl %}
 
 <{{ tag }} class="mb-1 mt-0">{{ txt }}</{{ tag }}>
+
 

@@ -26,10 +26,12 @@ class Capture
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    /**
-     * @var Collection<int, CaptureElement>
-     */
-    #[ORM\ManyToMany(targetEntity: CaptureElement::class)]
+    #[ORM\OneToMany(
+        mappedBy: 'capture',
+        targetEntity: CaptureElement::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $captureElements;
 
     #[ORM\Column]

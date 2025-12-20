@@ -1,4 +1,4 @@
-// controllers/confirmation_controller.js
+// controllers/modal-confirmation_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -12,10 +12,14 @@ export default class extends Controller {
     open(event) {
         event.preventDefault()
 
-        this.formTarget.action = this.actionValue
-        this.tokenTarget.value = this.tokenValue
-        this.bodyTarget.textContent = this.messageValue || "Êtes-vous sûr de vouloir continuer ?"
-
+        const btn = event.currentTarget
+        this.formTarget.action = btn.dataset.modalConfirmationActionValue
+        this.tokenTarget.value = btn.dataset.modalConfirmationTokenValue
+        this.bodyTarget.textContent = btn.dataset.modalConfirmationMessageValue
+        console.log('action : ' + this.actionValue)
+        console.log('value : ' + this.tokenTarget.value)
+        console.log('textContent : ' + this.bodyTarget.textContent)
         new bootstrap.Modal(this.modalTarget).show()
     }
+
 }

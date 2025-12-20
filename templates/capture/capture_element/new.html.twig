@@ -13,13 +13,14 @@
     {% include 'components/button/_btn_bar.html.twig' with {
         buttons: {
 
-            cancel: {
+            btn: {
                 type: 'link',
-                route: 'app_capture_element_index',
-                icon: 'bi-arrow-left',
                 label: 'Retour',
-                class: 'btn btn-outline-primary btn-sm'
-            },
+                icon: 'bi-arrow-left',
+                route: 'app_capture_template_edit',
+                param_map: { id: 'captureId' },
+                class: 'btn btn-outline-primary'
+            }
             create: {
                 type: 'submit',
                 icon: 'bi-check',

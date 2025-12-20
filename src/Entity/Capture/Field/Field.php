@@ -150,4 +150,9 @@ abstract class Field
 
         return $helper->getLabelFor($this);
     }
+
+    public function getChoices(): array
+    {
+        return [];
+    }
 }

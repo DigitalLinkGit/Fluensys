@@ -1,36 +1,49 @@
 {% if element is defined %}
     {% set collapseId = 'el_' ~ (element.id ?? loop.index) ~ '_fields' %}
-    <div class="card h-100 mb-3">
+
+    <div class="card h-100 mb-1">
         <div class="card-body py-2 d-flex align-items-center">
-            {# Display the element name even if it's not an editable field in the form #}
-            <h5 class="card-title mb-0">
-                {{ element.name }}
-            </h5>
+            <div class="card-title mb-0">
+                <b>{{ element.name }} : </b> {{ element.description }}
+            </div>
             <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
-                {% if incomingConditions is defined and incomingConditions|length %}
-                    <div class="text-muted small mb-2">
-                        {% for cond in incomingConditions %}
-                            <div>{{ cond }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                <div>{{ element.active?'On':'Off' }}</div>
-                <a href="{{ path('app_capture_element_respond', {
+                <div>{{ element.active?'On':'Off' }}  </div>
+                {# EDIT #}
+                <a href="{{ path('app_capture_element_edit', {
                     id: element.id,
                     captureId: capture.id,
                 }) }}"
                    class="btn btn-outline-primary btn-sm"
-                   title="Répondre" aria-label="Répondre">
+                   title="Editer" aria-label="Editer">
                     <i class="bi bi-pencil"></i>
                 </a>
-                <a href="{{ path('app_capture_element_show', {
-                    id: element.id,
-                }) }}"
-                   class="btn btn-outline-primary btn-sm"
-                   title="Aperçu" aria-label="Aperçu">
-                    <i class="bi bi-eye"></i>
-                </a>
+                {# DELETE #}
+                {#<button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    data-action="click->capture-template#remove"
+                    data-element-id="{{ element.id }}"
+                    data-delete-url="{{ path('app_capture_element_delete', { id: element.id }) }}"
+                    data-csrf="{{ csrf_token('delete' ~ element.id) }}"
+                    title="Supprimer cet élément">
+                    <i class="bi bi-trash"></i>
+                </button>#}
+                <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    data-action="click->modal-confirmation#open"
+                    data-modal-confirmation-action-value="{{ path('app_capture_element_delete', { id: element.id }) }}"
+                    data-modal-confirmation-token-value="{{ csrf_token('delete' ~ element.id) }}"
+                    data-modal-confirmation-message-value="Confirmer la suppression de cet élément ?"
+                    title="Supprimer cet élément">
+                    <i class="bi bi-trash"></i>
+                </button>
 
+
+
+
+
+                {# EXPAND #}
                 <button class="btn btn-outline-primary btn-sm"
                         type="button"
                         data-bs-toggle="collapse"
@@ -43,33 +56,39 @@
             </div>
         </div>
         <div id="{{ collapseId }}" class="collapse">
-            <div class="card-body pt-2">
+            <div class="pt-2">
+                {% if incomingConditions is defined and incomingConditions|length %}
+                    <div class="text-muted small mb-2">
+                        {% for cond in incomingConditions %}
+                            <div>{{ cond }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 {% if element.fields is defined %}
 
                     {% for field in element.fields %}
-                        <div class="row mb-3 form-container">
-                            <div class="col-md-12">
-                                Non : {{ field.name }}
+                        <div class="row mb-3"
+                             title="Nom : {{ field.name }}">
+                            <div class="col-md-12 pt-2">
+                                <span class="badge bg-secondary type-badge d-inline-block mb-2 me-2">
+                                    {{ field.type }}
+                                </span>
+                                {{ field.externalConfig.label }}
                             </div>
-                            <div class="col-md-12">
-                                Type : {{ field.type }}
-                            </div>
-                            <h6 class="mt-2">Interne</h6>
-                            <div class="col-md-12">
-                                Label : {{ field.internalConfig.label }}
-                            </div>
-                            <div class="col-md-12">
-                                Obligatoire : {{ field.internalConfig.required }}
-                            </div>
-                            <h6 class="mt-2">Externe</h6>
-                            <div class="col-md-12">
-                                Label externe : {{ field.externalConfig.label }}
-                            </div>
-                            <div class="col-md-12">
-                                Obligatoire : {{ field.externalConfig.required }}
-                            </div>
+
+                            {% set choices = attribute(field, 'getChoices', [], 'method', false) %}
+                            {% if choices is not null and choices is not empty %}
+                                <div class="p-3">
+                                    <ul>
+                                        {% for choice in choices %}
+                                            <li>{{ choice.label }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
+
 
                 {% else %}
                     <div class="text-muted small">Aucun champ</div>

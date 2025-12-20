@@ -17,7 +17,7 @@ class CaptureElementMinimalForm extends AbstractType
     {
         $builder
             ->add('id', HiddenType::class, [
-                'mapped' => true,
+                'mapped' => false,
                 'required' => false,
             ])
             ->add('name', TextType::class, [

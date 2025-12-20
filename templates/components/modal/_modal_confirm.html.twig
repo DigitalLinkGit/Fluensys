@@ -1,15 +1,11 @@
 <div id="confirmationModal"
      class="modal fade"
      tabindex="-1"
-     data-controller="modal-confirmation"
-     data-modal-confirmation-target="modal"
-     data-confirmation-form-target="form"
-     data-confirmation-body-target="body"
-     data-confirmation-token-target="token">
+     data-modal-confirmation-target="modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" data-modal-confirmation-target="form">
-            <div class="modal-body" data-modal-confirmation-target="body"></div>
+                <div class="modal-body" data-modal-confirmation-target="body"></div>
                 <input type="hidden" name="_token" data-modal-confirmation-target="token">
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

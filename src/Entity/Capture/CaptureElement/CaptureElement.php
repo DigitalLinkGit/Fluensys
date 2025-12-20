@@ -2,6 +2,7 @@
 
 namespace App\Entity\Capture\CaptureElement;
 
+use App\Entity\Capture\Capture;
 use App\Entity\Capture\Field\CalculatedVariable;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Rendering\Chapter;
@@ -88,6 +89,15 @@ abstract class CaptureElement
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     protected bool $active = true;
+
+    #[ORM\ManyToOne(
+        targetEntity: Capture::class,
+        inversedBy: 'captureElements'
+    )]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    private ?Capture $capture = null;
+
+
 
     public function __construct()
     {
@@ -247,6 +257,18 @@ abstract class CaptureElement
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getCapture(): ?Capture
+    {
+        return $this->capture;
+    }
+
+    public function setCapture(?Capture $capture): self
+    {
+        $this->capture = $capture;
 
         return $this;
     }

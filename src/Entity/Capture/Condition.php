@@ -107,6 +107,6 @@ class Condition
 
     public function __toString()
     {
-        return '(Affiché si : '.$this->getSourceElement()->getName().' -> '.$this->getSourceField()->getTechnicalName().' = '.$this->getExpectedValue().')';
+        return 'Affiché si : '.$this->getSourceElement()->getName().' -> '.$this->getSourceField()->getTechnicalName().' = '.$this->getExpectedValue();
     }
 }

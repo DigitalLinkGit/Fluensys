@@ -26,8 +26,17 @@
                     </div>
                 {% endif %}
 
-                {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
-                <div class="doc-paragraph">{{ element.chapter.templateContent }}</div>
+                {% if element.chapter is not null and element.chapter.title is not null %}
+                    {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                {% else %}
+                    {% include 'capture/rendering/_title_render.html.twig' with { title: null } only %}
+                {% endif %}
+                <div class="doc-paragraph">
+                    {{ element.chapter is not null and element.chapter.templateContent is not null
+                    ? element.chapter.templateContent
+                    : '' }}
+                </div>
+
             {% endfor %}
         </div>
     </div>
