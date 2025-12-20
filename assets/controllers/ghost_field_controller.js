@@ -8,6 +8,11 @@ export default class extends Controller {
         if (!this.hasInputTarget) return;
         const el = this.inputTarget;
 
+        // CLICK SUR LE CONTENEUR → focus input
+        this.element.addEventListener("click", () => {
+            el.focus();
+        });
+
         // Init
         this._toggleActive(el);
         this._autogrow(el);
@@ -20,6 +25,7 @@ export default class extends Controller {
         });
         el.addEventListener("blur", () => this._toggleActive(el));
     }
+
 
     _activate(el) {
         el.classList.add("is-active");

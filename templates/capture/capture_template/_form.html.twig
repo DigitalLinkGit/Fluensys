@@ -1,52 +1,54 @@
 {{ form_start(form) }}
-<div class="row">
+<div class="row align-items-start">
     <div class="col-md-6">
-        {{ form_row(form.name) }}
-        {{ form_row(form.description) }}
-        <div class="row">
-            <div class="col-md-9">
-                {{ form_row(form.title.content) }}
-            </div>
-            <div class="col-md-3">
-                {{ form_row(form.title.level) }}
-            </div>
-        </div>
+        {% include 'components/form/_ghost_field.html.twig' with {
+            field: form.name,
+            placeholder: 'Nom…',
+            class: 'title-input',
+            attrs: { autocomplete: 'off' }
+        } %}
+
+        {% include 'components/form/_ghost_field.html.twig' with {
+            field: form.description,
+            placeholder: 'Description…',
+            class: 'subtitle-textarea',
+            attrs: { autocomplete: 'off' }
+        } %}
     </div>
 
-    <div class="col-md-6">
-        {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
+    <div class="col-md-6 d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                route: 'app_capture_template_render_text_preview',
+                param_map: { id: 'capture.id' },
+                icon: 'bi-pencil',
+                label: 'Aperçu du rendu',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                label: 'Retour',
+                icon: 'bi-arrow-left',
+                route: 'app_capture_template_index',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        } %}
     </div>
 </div>
 
-<div class="d-flex justify-content-end gap-2 mt-4">
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'link',
-            route: 'app_capture_template_render_text_preview',
-            param_map: { id: 'capture.id' },
-            icon: 'bi-pencil',
-            label: 'Aperçu du rendu',
-            class: 'btn btn-outline-primary'
-        }
-    } %}
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'link',
-            label: 'Retour',
-            icon: 'bi-arrow-left',
-            route: 'app_capture_template_index',
-            class: 'btn btn-outline-primary'
-        }
-    } %}
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'submit',
-            label: 'Enregistrer',
-            icon: 'bi-check',
-            class: 'btn btn-primary'
-        }
-    } %}
-</div>
 
 <ul class="tabs tabs--primary my-3 nav" role="tablist">
     <li class="tab nav-item" role="presentation">
@@ -59,11 +61,20 @@
            aria-controls="conditions"
            aria-selected="true">Conditions</a>
     </li>
+    <li class="tab nav-item" role="presentation">
+        <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+           aria-controls="roles"
+           aria-selected="true">Rôles</a>
+    </li>
+    <li class="tab nav-item" role="presentation">
+        <a id="tab-rendering" class="tab__link nav-link" data-bs-toggle="tab" href="#rendering" role="tab"
+           aria-controls="rendering"
+           aria-selected="true">Rendu</a>
+    </li>
 </ul>
 
 <div class="tab-content">
     <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements" data-controller="capture-template">
-        <div data-capture-template-target="flash"></div>
         <div class="mx-2">
             {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
                 {% set byTarget = conditionsByTargetId|default({}) %}
@@ -138,6 +149,19 @@
             </div>
         </div>
 
+    </div>
+    <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+        {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
+    </div>
+    <div id="rendering" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-rendering">
+        <div class="row">
+            <div class="col-md-9">
+                {{ form_row(form.title.content) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_row(form.title.level) }}
+            </div>
+        </div>
     </div>
 </div>
 

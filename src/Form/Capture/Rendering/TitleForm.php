@@ -15,7 +15,7 @@ class TitleForm extends AbstractType
     {
         $builder
             ->add('content', TextType::class, [
-                'label' => 'Titre du chapitre',
+                'label' => 'Titre',
                 'required' => false,
             ])
             ->add('level', ChoiceType::class, [
