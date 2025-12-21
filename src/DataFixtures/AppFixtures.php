@@ -170,8 +170,7 @@ class AppFixtures extends Fixture
         // chapter
         $chapter = (new TextChapter())
             ->setTitle($title2)
-            ->setTemplateContent(
-                'Textarea : [TEXTAREA]
+            ->setTemplateContent('Textarea : [TEXTAREA]
 Integer : [INTEGER]
 Text : [TEXT]
 Decimal : [DECIMAL]

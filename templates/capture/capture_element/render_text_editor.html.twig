@@ -4,11 +4,29 @@
 
 {% block body %}
 
-	{% include 'components/partials/_page_header.html.twig' with {
-        title: 'Edition du rendu'
-        } %}
+<h1>Editer le rendu du document</h1>
 
 	{{ form_start(form) }}
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                route: 'app_capture_element_edit',
+                param_map: { id: 'element.id' },
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                icon: 'bi-check',
+                label: 'Enregistrer',
+                class: 'btn btn-primary btn-sm'
+            }
+        } %}
+    </div>
 	{# TITLE #}
 	<div class="row">
 		<div class="col-10">
@@ -20,8 +38,7 @@
 	</div>
 
 
-	<div
-		class="row">
+	<div class="row">
 		{# EDITOR #}
 		<div class="col-10">
 			{{ form_row(form.templateContent) }}
@@ -39,8 +56,6 @@
 			</div>
 		</div>
 	</div>
-
-	<button class="btn btn-primary">Enregistrer</button>
 
 	{{ form_end(form) }}
 

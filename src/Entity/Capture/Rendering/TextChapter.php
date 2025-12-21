@@ -52,6 +52,10 @@ class TextChapter extends Chapter
             if (is_object($v)) {
                 return method_exists($v, '__toString') ? (string) $v : '';
             }
+            $sv = is_string($v) ? $v : (string) $v;
+            if ('' === trim($sv)) {
+                return $m[0]; // keep [NOMDELASOCIETE] if no value
+            }
 
             return (string) $v;
         }, $template);

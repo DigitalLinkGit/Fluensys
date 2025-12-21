@@ -13,6 +13,7 @@
             {% for element in capture.captureElements %}
                 {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
                 <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+
             {% endfor %}
         </div>
     </div>

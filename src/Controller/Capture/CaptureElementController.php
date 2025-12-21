@@ -120,6 +120,7 @@ final class CaptureElementController extends AbstractAppController
         return $this->render('capture/capture_element/render_text_editor.html.twig', [
             'form' => $form,
             'variables' => $variables,
+            'element'=> $flexCapture,
         ]);
     }
 
@@ -165,6 +166,7 @@ final class CaptureElementController extends AbstractAppController
             $em->persist($element);
             $em->flush();
             [$route, $params] = $router->resolveEditRoute($element);
+
             return $this->redirectToRoute($route, $params);
         }
 
@@ -178,7 +180,7 @@ final class CaptureElementController extends AbstractAppController
     public function delete(
         Request $request,
         CaptureElement $element,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
         $capture = $element->getCapture(); // récupérer la capture AVANT le remove
 
@@ -214,7 +216,6 @@ final class CaptureElementController extends AbstractAppController
         );
     }
 
-
     #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET'])]
     public function editRedirect(int $id, Request $request, EntityManagerInterface $em, CaptureElementRouter $router): Response
     {
@@ -228,6 +229,7 @@ final class CaptureElementController extends AbstractAppController
         if ($captureId) {
             $params['capture'] = $captureId;
         }
+
         return $this->redirectToRoute($route, $params);
     }
 }

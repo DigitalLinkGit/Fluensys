@@ -62,9 +62,10 @@ final class CaptureTemplateController extends AbstractController
     {
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
-
         // make condition map for display condition on CaptureElement
         $conditionsByTargetId = [];
+        $toggler->apply(is_iterable($capture->getConditions()) ? $capture->getConditions() : []);
+
         foreach ($capture->getConditions() as $cond) {
             $tid = $cond->getTargetElement()?->getId();
             if (null !== $tid) {

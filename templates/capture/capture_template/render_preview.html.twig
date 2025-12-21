@@ -3,7 +3,19 @@
 {% block title %}Aperçu{% endblock %}
 
 {% block body %}
-
+    <h1>Aperçu du document</h1>
+<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'link',
+            route: 'app_capture_template_edit',
+            param_map: { id: 'capture.id' },
+            icon: 'bi-arrow-left',
+            label: 'Retour',
+            class: 'btn btn-outline-primary'
+        }
+    } %}
+</div>
     <div class="doc-container">
         <div class="doc-page">
             {# Title #}
@@ -31,28 +43,12 @@
                 {% else %}
                     {% include 'capture/rendering/_title_render.html.twig' with { title: null } only %}
                 {% endif %}
-                <div class="doc-paragraph">
-                    {{ element.chapter is not null and element.chapter.templateContent is not null
-                    ? element.chapter.templateContent
-                    : '' }}
-                </div>
+                {% if element.chapter is not null and element.chapter.templateContent is not null %}
+                    <div class="doc-paragraph">{{ element.chapter.templateContent }}</div>
+                {% endif %}
+
 
             {% endfor %}
         </div>
     </div>
-
-
-
-    {% include 'components/button/_btn_bar.html.twig' with {
-        buttons: {
-            back: {
-                type: 'nav-back',
-                icon: 'bi-arrow-left',
-                label: 'Retour',
-                class: 'btn btn-outline-primary btn-sm'
-            },
-        }
-    } %}
-
-
 {% endblock %}

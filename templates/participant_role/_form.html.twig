@@ -1,20 +1,24 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
 
-    {% include 'components/button/_btn_bar.html.twig' with {
-        buttons: {
-            back: {
-                type: 'nav-back',
-                icon: 'bi-arrow-left',
-                label: 'Retour',
-                class: 'btn btn-outline-primary btn-sm'
-            },
-            save: {
-                type: 'submit',
-                icon: 'bi-check',
-                label: 'Enregistrer',
-                class: 'btn btn-primary btn-sm'
-            },
+<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'link',
+            label: 'Retour',
+            icon: 'bi-arrow-left',
+            route: 'app_participant_role_index',
+            class: 'btn btn-outline-primary'
         }
     } %}
+
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'submit',
+            label: 'Enregistrer',
+            icon: 'bi-check',
+            class: 'btn btn-primary'
+        }
+    } %}
+</div>
 {{ form_end(form) }}

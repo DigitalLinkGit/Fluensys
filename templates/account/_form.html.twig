@@ -9,22 +9,27 @@
 
 </div>
 
-{% include 'components/button/_btn_bar.html.twig' with {
-    buttons: {
-        back: {
-            type: 'nav-back',
-            icon: 'bi-arrow-left',
+<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'link',
             label: 'Retour',
-            class: 'btn btn-outline-primary btn-sm'
-        },
-        save: {
+            icon: 'bi-arrow-left',
+            route: 'app_account_index',
+            class: 'btn btn-outline-primary'
+        }
+    } %}
+
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
             type: 'submit',
-            icon: 'bi-check',
             label: 'Enregistrer',
-            class: 'btn btn-primary btn-sm'
-        },
-    }
-} %}
+            icon: 'bi-check',
+            class: 'btn btn-primary'
+        }
+    } %}
+</div>
 
 <ul class="tabs tabs--primary my-3 nav" role="tablist">
     <li class="tab nav-item" role="presentation">

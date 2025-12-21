@@ -32,7 +32,7 @@ class CaptureTemplateForm extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Description de la capture...'],
             ])
-            ->add('title', TitleForm::class, ['label' => false])
+            //->add('title', TitleForm::class, ['label' => false])
             /*
             ->add('captureElements', CollectionType::class, [
                 'entry_type' => CaptureElementMinimalForm::class,
