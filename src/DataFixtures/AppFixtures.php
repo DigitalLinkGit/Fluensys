@@ -309,6 +309,8 @@ Scope :
             ->setTitle($CaptureTitle)
             ->setTemplate(true)
             ->addCondition($condition);
+        $flex->setCapture($capture);
+        $flex2->setCapture($capture);
         $manager->persist($capture);
 
         /* ===================================== system components ===================================== */

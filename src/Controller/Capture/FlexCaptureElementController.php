@@ -17,6 +17,7 @@ final class FlexCaptureElementController extends AbstractAppController
     #[Route('/{id}/edit', name: 'app_flex_capture_element_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager, FieldTypeHelper $helper): Response
     {
+
         $captureId = $request->query->getInt('capture');
 
         $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
@@ -25,6 +26,7 @@ final class FlexCaptureElementController extends AbstractAppController
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 try {
+
                     $entityManager->persist($flexCapture);
                     $entityManager->flush();
                     $this->addFlash('success', 'Élément enregistré avec succès.');

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251011123023 extends AbstractMigration
+final class Version20251221124726 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -30,13 +30,10 @@ final class Version20251011123023 extends AbstractMigration
             CREATE TABLE capture (id INT AUTO_INCREMENT NOT NULL, title_id INT DEFAULT NULL, account_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, template TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_8BFEA6E5A9F87BD (title_id), INDEX IDX_8BFEA6E59B6B5FBA (account_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE capture_capture_element (capture_id INT NOT NULL, capture_element_id INT NOT NULL, INDEX IDX_504F58326B301384 (capture_id), INDEX IDX_504F5832DE152EAB (capture_element_id), PRIMARY KEY(capture_id, capture_element_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-        $this->addSql(<<<'SQL'
             CREATE TABLE capture_condition (id INT AUTO_INCREMENT NOT NULL, source_element_id INT NOT NULL, target_element_id INT NOT NULL, source_field_id INT NOT NULL, capture_id INT NOT NULL, expected_value VARCHAR(255) NOT NULL, INDEX IDX_D6CFAC7D63AB5B00 (source_element_id), INDEX IDX_D6CFAC7D2DF3F2B5 (target_element_id), INDEX IDX_D6CFAC7D7173162 (source_field_id), INDEX IDX_D6CFAC7D6B301384 (capture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE capture_element (id INT AUTO_INCREMENT NOT NULL, respondent_id INT NOT NULL, responsible_id INT NOT NULL, validator_id INT NOT NULL, chapter_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, template TINYINT(1) DEFAULT 1 NOT NULL, active TINYINT(1) DEFAULT 1 NOT NULL, type VARCHAR(255) NOT NULL, INDEX IDX_33ED8BFFCE80CD19 (respondent_id), INDEX IDX_33ED8BFF602AD315 (responsible_id), INDEX IDX_33ED8BFFB0644AEC (validator_id), UNIQUE INDEX UNIQ_33ED8BFF579F4768 (chapter_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE capture_element (id INT AUTO_INCREMENT NOT NULL, respondent_id INT NOT NULL, responsible_id INT NOT NULL, validator_id INT NOT NULL, chapter_id INT DEFAULT NULL, capture_id INT NOT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, template TINYINT(1) DEFAULT 1 NOT NULL, active TINYINT(1) DEFAULT 1 NOT NULL, position INT NOT NULL, type VARCHAR(255) NOT NULL, INDEX IDX_33ED8BFFCE80CD19 (respondent_id), INDEX IDX_33ED8BFF602AD315 (responsible_id), INDEX IDX_33ED8BFFB0644AEC (validator_id), UNIQUE INDEX UNIQ_33ED8BFF579F4768 (chapter_id), INDEX IDX_33ED8BFF6B301384 (capture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE chapter (id INT AUTO_INCREMENT NOT NULL, title_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_F981B52EA9F87BD (title_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -114,12 +111,6 @@ final class Version20251011123023 extends AbstractMigration
             ALTER TABLE capture ADD CONSTRAINT FK_8BFEA6E59B6B5FBA FOREIGN KEY (account_id) REFERENCES account (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE capture_capture_element ADD CONSTRAINT FK_504F58326B301384 FOREIGN KEY (capture_id) REFERENCES capture (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE capture_capture_element ADD CONSTRAINT FK_504F5832DE152EAB FOREIGN KEY (capture_element_id) REFERENCES capture_element (id) ON DELETE CASCADE
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE capture_condition ADD CONSTRAINT FK_D6CFAC7D63AB5B00 FOREIGN KEY (source_element_id) REFERENCES capture_element (id) ON DELETE RESTRICT
         SQL);
         $this->addSql(<<<'SQL'
@@ -142,6 +133,9 @@ final class Version20251011123023 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE capture_element ADD CONSTRAINT FK_33ED8BFF579F4768 FOREIGN KEY (chapter_id) REFERENCES chapter (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_element ADD CONSTRAINT FK_33ED8BFF6B301384 FOREIGN KEY (capture_id) REFERENCES capture (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE chapter ADD CONSTRAINT FK_F981B52EA9F87BD FOREIGN KEY (title_id) REFERENCES title (id)
@@ -218,12 +212,6 @@ final class Version20251011123023 extends AbstractMigration
             ALTER TABLE capture DROP FOREIGN KEY FK_8BFEA6E59B6B5FBA
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE capture_capture_element DROP FOREIGN KEY FK_504F58326B301384
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE capture_capture_element DROP FOREIGN KEY FK_504F5832DE152EAB
-        SQL);
-        $this->addSql(<<<'SQL'
             ALTER TABLE capture_condition DROP FOREIGN KEY FK_D6CFAC7D63AB5B00
         SQL);
         $this->addSql(<<<'SQL'
@@ -246,6 +234,9 @@ final class Version20251011123023 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE capture_element DROP FOREIGN KEY FK_33ED8BFF579F4768
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE capture_element DROP FOREIGN KEY FK_33ED8BFF6B301384
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE chapter DROP FOREIGN KEY FK_F981B52EA9F87BD
@@ -312,9 +303,6 @@ final class Version20251011123023 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE capture
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE capture_capture_element
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE capture_condition

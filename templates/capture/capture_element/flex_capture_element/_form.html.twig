@@ -24,16 +24,16 @@
         }
     } %}
 
-        {% include 'components/button/_btn.html.twig' with {
-            btn: {
-                type: 'link',
-                label: 'Retour',
-                icon: 'bi-arrow-left',
-                route: 'app_capture_template_edit',
-                param_map: { id: 'captureId' },
-                class: 'btn btn-outline-primary'
-            }
-        } %}
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'link',
+            label: 'Retour',
+            icon: 'bi-arrow-left',
+            route: 'app_capture_template_edit',
+            param_map: { id: 'captureId' },
+            class: 'btn btn-outline-primary'
+        }
+    } %}
 
     {% include 'components/button/_btn.html.twig' with {
         btn: {

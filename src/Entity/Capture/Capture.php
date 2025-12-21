@@ -27,12 +27,14 @@ class Capture
     private ?string $description = null;
 
     #[ORM\OneToMany(
-        mappedBy: 'capture',
         targetEntity: CaptureElement::class,
+        mappedBy: 'capture',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $captureElements;
+
 
     #[ORM\Column]
     private ?bool $template = true;

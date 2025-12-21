@@ -31,9 +31,6 @@ final class CaptureTemplateController extends AbstractController
     #[Route('/new', name: 'app_capture_template_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $all = $entityManager->getRepository(CaptureElement::class)->findAll();
-        $availableElements = array_filter($all, fn ($el) => $el->isTemplate());
-
         $capture = new Capture();
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
@@ -42,13 +39,13 @@ final class CaptureTemplateController extends AbstractController
             $entityManager->persist($capture);
             $entityManager->flush();
 
+            // dd($capture);
             return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('capture/capture_template/new.html.twig', [
             'capture' => $capture,
             'form' => $form,
-            'availableElements' => $availableElements,
         ]);
     }
 
@@ -63,9 +60,6 @@ final class CaptureTemplateController extends AbstractController
     #[Route('/{id}/edit', name: 'app_capture_template_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager, ConditionToggler $toggler): Response
     {
-        $all = $entityManager->getRepository(CaptureElement::class)->findAll();
-        $availableElements = array_filter($all, fn ($el) => $el->isTemplate());
-
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
 
@@ -77,10 +71,38 @@ final class CaptureTemplateController extends AbstractController
                 $conditionsByTargetId[$tid][] = $cond;
             }
         }
+
         if ($form->isSubmitted() && $form->isValid()) {
+            //update elements order
+            $raw = (string) $request->request->get('capture_elements_order', '[]');
+            $orderedIds = json_decode($raw, true);
+
+            if (is_array($orderedIds)) {
+                foreach ($orderedIds as $index => $id) {
+                    $el = $entityManager->getRepository(CaptureElement::class)->find((int) $id);
+                    if (!$el) {
+                        continue;
+                    }
+                    $el->setPosition($index);
+                }
+            }
+
             $entityManager->flush();
-            $toggler->apply($capture->getConditions()->toArray());
-            $entityManager->flush();
+/*            //  show id => position
+            $repo = $entityManager->getRepository(CaptureElement::class);
+            $reloaded = array_map(
+                fn ($id) => $repo->find((int) $id),
+                is_array($orderedIds) ? $orderedIds : []
+            );
+
+            dd([
+                'raw' => $raw,
+                'orderedIds' => $orderedIds,
+                'saved' => array_map(
+                    fn ($el) => $el ? ['id' => $el->getName(), 'position' => $el->getPosition()] : null,
+                    $reloaded
+                ),
+            ]);*/
         }
 
         foreach ($form->get('conditions') as $child) {
@@ -91,7 +113,6 @@ final class CaptureTemplateController extends AbstractController
         return $this->render('capture/capture_template/edit.html.twig', [
             'capture' => $capture,
             'form' => $form,
-            'availableElements' => $availableElements,
             'conditionsByTargetId' => $conditionsByTargetId,
         ]);
     }

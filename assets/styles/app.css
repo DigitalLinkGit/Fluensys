@@ -674,3 +674,18 @@ input[name$="[url]"]:hover {
 [hidden] {
     display: none !important;
 }
+
+.sortable-list {
+    min-height: 96px; /* hauteur minimale même vide */
+}
+
+.sortable-list.is-empty {
+    border: 1px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+}
+
+.sortable-ghost {
+    opacity: 0.35;
+}
+
+

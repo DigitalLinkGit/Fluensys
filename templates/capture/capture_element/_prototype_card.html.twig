@@ -2,8 +2,8 @@
     {% set collapseId = 'el_' ~ (element.id ?? loop.index) ~ '_fields' %}
 
     <div class="card h-100 mb-1">
-        <div class="card-body py-2 d-flex align-items-center">
-            <div class="card-title mb-0">
+        <div class="card-body py-2 d-flex align-items-center" data-sortable-handle>
+            <div class="card-title mb-0" >
                 <b>{{ element.name }} : </b> {{ element.description }}
             </div>
             <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
@@ -18,16 +18,6 @@
                     <i class="bi bi-pencil"></i>
                 </a>
                 {# DELETE #}
-                {#<button
-                    type="button"
-                    class="btn btn-outline-danger btn-sm"
-                    data-action="click->capture-template#remove"
-                    data-element-id="{{ element.id }}"
-                    data-delete-url="{{ path('app_capture_element_delete', { id: element.id }) }}"
-                    data-csrf="{{ csrf_token('delete' ~ element.id) }}"
-                    title="Supprimer cet élément">
-                    <i class="bi bi-trash"></i>
-                </button>#}
                 <button
                     type="button"
                     class="btn btn-outline-danger btn-sm"
@@ -38,11 +28,6 @@
                     title="Supprimer cet élément">
                     <i class="bi bi-trash"></i>
                 </button>
-
-
-
-
-
                 {# EXPAND #}
                 <button class="btn btn-outline-primary btn-sm"
                         type="button"

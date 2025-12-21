@@ -94,10 +94,12 @@ abstract class CaptureElement
         targetEntity: Capture::class,
         inversedBy: 'captureElements'
     )]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Capture $capture = null;
 
 
+    #[ORM\Column(type: 'integer')]
+    private int $position = 0;
 
     public function __construct()
     {
@@ -269,6 +271,18 @@ abstract class CaptureElement
     public function setCapture(?Capture $capture): self
     {
         $this->capture = $capture;
+
+        return $this;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): self
+    {
+        $this->position = $position;
 
         return $this;
     }
