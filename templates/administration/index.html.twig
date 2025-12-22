@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>Utilisateurs</h1>
+
+    {% include 'components/table/_table.html.twig' with {
+        items: users,
+        columns: ['username', 'email','roles'],
+        headers: ['Nom', 'Email','Rôles'],
+        filter: true,
+        sort: true,
+        add: {route: 'app_administration_new'},
+        actions: [
+            {
+                route: 'app_administration_show',
+                param_map: { id: 'id' },
+                icon: 'bi-eye',
+                label: 'Voir',
+            },
+            {
+                route: 'app_administration_edit',
+                param_map: { id: 'id' },
+                icon: 'bi-pencil',
+                label: 'Éditer',
+            },
+            {
+                route: 'app_administration_delete',
+                param_map: { id: 'id' },
+                icon: 'bi-trash',
+                label: 'Supprimer',
+            }
+        ]
+    } %}
+{% endblock %}
