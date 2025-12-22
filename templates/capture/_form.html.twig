@@ -1,20 +1,22 @@
-{{ form_start(form) }}
 <div class="row">
     <div class="col-md-6">
-        {% include 'components/form/_ghost_field.html.twig' with {
-            field: form.name,
-            placeholder: 'Nom…',
-            class: 'title-input',
-            attrs: { autocomplete: 'off' }
-        } %}
+        <div class="mb-2 d-flex align-items-center gap-2">
+            <div class="text-muted small mb-0">Nom :</div>
+            <div class="fw-semibold">{{ capture.name }}</div>
+        </div>
 
-        {% include 'components/form/_ghost_field.html.twig' with {
-            field: form.description,
-            placeholder: 'Description…',
-            class: 'subtitle-textarea',
-            attrs: { autocomplete: 'off' }
-        } %}
+        <div class="mb-2 d-flex align-items-center gap-2">
+            <div class="text-muted small mb-0">Description :</div>
+            <div class="fw-semibold">{{ capture.description }}</div>
+        </div>
+
+        <div class="mb-2 d-flex align-items-center gap-2">
+            <div class="text-muted small mb-0">Compte :</div>
+            <div class="fw-semibold">{{ capture.account.name }}</div>
+        </div>
+
     </div>
+
 
     <div class="col-md-6">
         {% include 'components/button/_btn_bar.html.twig' with {
@@ -34,61 +36,59 @@
                     route: 'app_capture_index',
                     class: 'btn btn-outline-primary'
                 },
-                save: {
-                    type: 'submit',
-                    icon: 'bi-check',
-                    label: 'Enregistrer',
-                    class: 'btn btn-primary btn-sm'
-                },
             }
         } %}
     </div>
 
 </div>
-
-<ul class="tabs tabs--primary my-3 nav" role="tablist">
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab"
-           aria-controls="capture"
-           aria-selected="false">Capture</a>
-    </li>
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab" aria-controls="roles"
-           aria-selected="true">Rôles</a>
-    </li>
-</ul>
-
+<div
+    data-controller="tabs-persist"
+    data-tabs-persist-default-tab-value="#capture-elements"
+    data-tabs-persist-storage-key-value="captureTabs"
+    data-tabs-persist-mode-value="storage"
+>
+    <ul class="tabs tabs--primary my-3 nav" role="tablist">
+        <li class="tab nav-item" role="presentation">
+            <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements"
+               role="tab"
+               aria-controls="capture-elements"
+               aria-selected="false">Eléments de capture</a>
+        </li>
+        <li class="tab nav-item" role="presentation">
+            <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+               aria-controls="roles"
+               aria-selected="true">Rôles</a>
+        </li>
+    </ul>
+</div>
 <div class="tab-content">
-    <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
+    <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
         <div class="mx-2">
-            {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
-                {% set byTarget = conditionsByTargetId|default({}) %}
+            {% set byTarget = conditionsByTargetId|default({}) %}
 
-                {% for element in capture.captureElements %}
-
-                    {% set entity = element ?? null %}
-                    {% set elementId = entity ? entity.id : null %}
+            {% if elementForms is defined and elementForms|length > 0 %}
+                {% for elementId, elementForm in elementForms %}
+                    {% set captureElement = elementForm.vars.value ?? null %}
                     {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
 
-                    <div class="mb-3 row">
-                        {% include 'capture/capture_element/_prototype_card.html.twig' with {
-                        element: element,
+                    {% include 'capture/capture_element/_prototype_form_card.html.twig' with {
+                        elementForm: elementForm,
+                        captureElement: captureElement,
                         incomingConditions: incoming
-                        } %}
-                    </div>
+                    } %}
                 {% endfor %}
             {% else %}
+
                 <div class="text-muted small">Aucun élément</div>
             {% endif %}
-
         </div>
+
     </div>
     <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
         {# {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %} #}
     </div>
 </div>
 
-{{ form_end(form) }}
 
 
 

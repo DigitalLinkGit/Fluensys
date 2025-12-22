@@ -21,7 +21,7 @@ class FieldInternalForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var \App\Entity\Capture\Field\FieldConfig|null $cfgOpt */
+        /** @var FieldConfig|null $cfgOpt */
         $cfgOpt = $options['config'];
         /** @var string $scope */
         $scope = $options['config_scope'];
@@ -51,7 +51,7 @@ class FieldInternalForm extends AbstractType
 
             $opts = [
                 'data' => $field->getValue(),
-                'label' => $config->getLabel(),
+                'label' => $config->isRequired() ? '*'.$config->getLabel() : $config->isRequired(),
                 'required' => (bool) $config->isRequired(),
             ];
 

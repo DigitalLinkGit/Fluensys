@@ -33,6 +33,17 @@ class CaptureInternalForm extends AbstractType
                     'placeholder' => 'Description de la capture_template...',
                 ],
             ])
+            ->add('captureElements', CollectionType::class, [
+                'entry_type' => CaptureElementInternalForm::class,
+                'allow_add' => true,
+                'disabled' => false,
+                'allow_delete' => true,
+                'label' => false,
+                'by_reference' => false,
+                'prototype' => true,
+                'entry_options' => ['label' => false],
+                'attr' => ['data-controller' => 'capture'],
+            ])
         ;
     }
 

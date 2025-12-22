@@ -10,8 +10,8 @@ use App\Entity\Capture\Rendering\TextChapter;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
 use App\Form\Capture\CaptureElement\CaptureElementNewForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
-use App\Repository\CaptureRepository;
 use App\Service\CaptureElementRouter;
+use App\Service\ConditionToggler;
 use App\Service\Factory\CaptureElementFactory;
 use App\Service\Helper\CaptureElementTypeHelper;
 use App\Service\Rendering\TemplateInterpolator;
@@ -32,7 +32,7 @@ final class CaptureElementController extends AbstractAppController
         $templates = array_filter($all, fn ($el) => $el->isTemplate());
 
         return $this->render('capture/capture_element/index.html.twig', [
-            'capture_elements' => $templates,
+            'capture_elements' => $all,
         ]);
     }
 
@@ -120,26 +120,30 @@ final class CaptureElementController extends AbstractAppController
         return $this->render('capture/capture_element/render_text_editor.html.twig', [
             'form' => $form,
             'variables' => $variables,
-            'element'=> $flexCapture,
+            'element' => $flexCapture,
         ]);
     }
 
-    #[Route('/{id}/respond/{captureId}', name: 'app_capture_element_respond', methods: ['GET', 'POST'])]
-    public function respond(CaptureElement $el, int $captureId, Request $r, EntityManagerInterface $em, CaptureRepository $captureRepo): Response
-    {
-        $capture = $captureRepo->find($captureId) ?? throw $this->createNotFoundException();
+    #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['GET', 'POST'])]
+    public function respond(Request $request,
+        CaptureElement $element,
+        EntityManagerInterface $entityManager,
+        ConditionToggler $toggler,
+    ): Response {
+        $form = $this->createForm(CaptureElementInternalForm::class, $element);
+        $form->handleRequest($request);
+        $capture = $element->getCapture();
 
-        $form = $this->createForm(CaptureElementInternalForm::class, $el);
-        $form->handleRequest($r);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
+            $entityManager->flush();
+
+            if (null !== $capture) {
+                $toggler->apply($capture->getConditions()->toArray());
+                $entityManager->flush();
+            }
         }
 
-        return $this->render('capture/capture_element/respond.html.twig', [
-            'capture' => $capture,
-            'form' => $form,
-            'captureId' => $capture->getId(),
-        ]);
+        return $this->redirectToRoute('app_capture_edit', ['id' => $capture?->getId()], 303);
     }
 
     #[Route('/new', name: 'app_capture_element_new', methods: ['GET', 'POST'])]

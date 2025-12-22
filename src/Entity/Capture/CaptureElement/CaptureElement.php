@@ -20,38 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class CaptureElement
 {
-    public function __clone()
-    {
-        $this->id = null;
-
-        // fields
-        $newFields = new ArrayCollection();
-        foreach ($this->fields as $f) {
-            $cloned = clone $f;
-            $newFields->add($cloned);
-            $cloned->setCaptureElement($this);
-        }
-        $this->fields = $newFields;
-
-        // chapter
-        $clonedChapter = clone $this->chapter;
-        $clonedChapter->setCaptureElement($this);
-
-        // calculated variables
-        $newCvs = new ArrayCollection();
-        foreach ($this->calculatedvariables as $cv) {
-            $clonedCv = (new CalculatedVariable())
-                ->setName((string) $cv->getName())
-                ->setTechnicalName((string) $cv->getTechnicalName())
-                ->setExpression((string) $cv->getExpression())
-                ->setCaptureElement($this);
-            $newCvs->add($clonedCv);
-        }
-        $this->calculatedvariables = $newCvs;
-
-        // template
-        $this->template = false;
-    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -97,7 +65,6 @@ abstract class CaptureElement
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Capture $capture = null;
 
-
     #[ORM\Column(type: 'integer')]
     private int $position = 0;
 
@@ -105,6 +72,41 @@ abstract class CaptureElement
     {
         $this->fields = new ArrayCollection();
         $this->calculatedvariables = new ArrayCollection();
+    }
+
+    public function __clone()
+    {
+        $this->id = null;
+
+        // fields
+        $newFields = new ArrayCollection();
+        foreach ($this->fields as $f) {
+            $cloned = clone $f;
+            $newFields->add($cloned);
+            $cloned->setCaptureElement($this);
+        }
+        $this->fields = $newFields;
+
+        // chapter
+        $clonedChapter = null !== $this->chapter ? clone $this->chapter : null;
+        if ($clonedChapter) {
+            $clonedChapter->setCaptureElement($this);
+        }
+
+        // calculated variables
+        $newCvs = new ArrayCollection();
+        foreach ($this->calculatedvariables as $cv) {
+            $clonedCv = (new CalculatedVariable())
+                ->setName((string) $cv->getName())
+                ->setTechnicalName((string) $cv->getTechnicalName())
+                ->setExpression((string) $cv->getExpression())
+                ->setCaptureElement($this);
+            $newCvs->add($clonedCv);
+        }
+        $this->calculatedvariables = $newCvs;
+
+        // template
+        $this->template = false;
     }
 
     public function getId(): ?int

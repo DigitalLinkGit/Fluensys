@@ -2,15 +2,17 @@
 
 namespace App\Controller\Capture;
 
+use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
 use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
-use App\Form\Capture\CaptureInternalForm;
+use App\Form\Capture\CaptureNewForm;
 use App\Repository\CaptureRepository;
 use App\Service\ConditionToggler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/capture')]
@@ -28,21 +30,30 @@ final class CaptureController extends AbstractController
     }
 
     #[Route('/new', name: 'app_capture_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
-        $capture = new Capture();
-        $form = $this->createForm(CaptureInternalForm::class, $capture);
+        $form = $this->createForm(CaptureNewForm::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($capture);
-            $entityManager->flush();
+            /** @var Account $account */
+            $account = $form->get('account')->getData();
 
-            return $this->redirectToRoute('app_capture_edit', ['id' => $capture->getId()], Response::HTTP_SEE_OTHER);
+            /** @var Capture $template */
+            $template = $form->get('template')->getData();
+
+            $name = (string) $form->get('name')->getData();
+            $description = $form->get('description')->getData();
+
+            $clone = $this->cloneCaptureFromTemplate($template, $account, $name, $description);
+
+            $em->persist($clone);
+            $em->flush();
+
+            return $this->redirectToRoute('app_capture_edit', ['id' => $clone->getId()]);
         }
 
         return $this->render('capture/new.html.twig', [
-            'capture' => $capture,
             'form' => $form,
         ]);
     }
@@ -55,18 +66,14 @@ final class CaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Capture $capture, EntityManagerInterface $entityManager, ConditionToggler $toggler): Response
+    #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET'])]
+    public function edit(Capture $capture, ConditionToggler $toggler): Response
     {
-
-        $form = $this->createForm(CaptureInternalForm::class, $capture);
-        $form->handleRequest($request);
-
         // apply toggle activation from conditions
         $conditions = $capture->getConditions();
         $toggler->apply(is_iterable($conditions) ? $conditions : []);
 
-        // make condition map for display condition on CaptureElement
+        // map conditions by target element id for displaying
         $conditionsByTargetId = [];
         foreach ($capture->getConditions() as $cond) {
             $tid = $cond->getTargetElement()?->getId();
@@ -75,15 +82,27 @@ final class CaptureController extends AbstractController
             }
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            $toggler->apply($capture->getConditions()->toArray());
-            $entityManager->flush();
+        // build one form per element
+        $elementForms = [];
+        foreach ($capture->getCaptureElements() as $element) {
+            $elementForms[$element->getId()] = $this->createForm(
+                CaptureElementInternalForm::class,
+                $element,
+                [
+                    'action' => $this->generateUrl('app_capture_element_respond', [
+                        'id' => $element->getId(),
+                        'captureId' => $capture->getId(),
+                    ]),
+                    'method' => 'POST',
+                    'disabled' => !$element->isActive(),
+                ]
+            )->createView();
         }
+
 
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
-            'form' => $form,
+            'elementForms' => $elementForms,
             'conditionsByTargetId' => $conditionsByTargetId,
         ]);
     }
@@ -107,25 +126,25 @@ final class CaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/capture/{id}/clone', name: 'app_capture_clone', methods: ['GET'])]
-    public function cloneFromTemplate(Capture $template, EntityManagerInterface $em): Response
+    private function cloneCaptureFromTemplate(Capture $template, Account $account, ?string $name, ?string $description): Capture
     {
         if (!$template->isTemplate()) {
-            throw $this->createNotFoundException('Cette capture n’est pas un template.');
+            throw new NotFoundHttpException('Cette capture n’est pas un template.');
         }
 
         $clone = clone $template;
 
         $clone->setTemplate(false);
+        $clone->setAccount($account);
 
-        if (method_exists($clone, 'getName') && method_exists($clone, 'setName')) {
-            $base = $clone->getName() ?: 'Capture';
-            $clone->setName($base.' (copie)');
+        if (null !== $name && '' !== trim($name)) {
+            $clone->setName($name);
         }
 
-        $em->persist($clone);
-        $em->flush();
+        if (null !== $description && '' !== trim($description)) {
+            $clone->setDescription($description);
+        }
 
-        return $this->redirectToRoute('app_capture_edit', ['id' => $clone->getId()]);
+        return $clone;
     }
 }

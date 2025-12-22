@@ -35,7 +35,6 @@ class Capture
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $captureElements;
 
-
     #[ORM\Column]
     private ?bool $template = true;
 
@@ -72,7 +71,7 @@ class Capture
         foreach ($originalElements as $el) {
             $cl = clone $el;
             $cl->setTemplate(false);
-            $this->captureElements->add($cl);
+            $this->addCaptureElement($cl);
 
             $elementMap[$el->getId()] = $cl;
 
@@ -107,8 +106,10 @@ class Capture
         }
 
         // title
-        $clonedTitle = clone $this->title;
-        $this->setTitle($clonedTitle);
+        $clonedTitle = null !== $this->title ? clone $this->title : null;
+        if ($clonedTitle) {
+            $this->setTitle($clonedTitle);
+        }
     }
 
     public function getId(): ?int
@@ -152,6 +153,7 @@ class Capture
     {
         if (!$this->captureElements->contains($captureElement)) {
             $this->captureElements->add($captureElement);
+            $captureElement->setCapture($this);
         }
 
         return $this;

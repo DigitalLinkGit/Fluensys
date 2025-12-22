@@ -3,9 +3,32 @@
 {% block title %}New Capture{% endblock %}
 
 {% block body %}
-    <h1>Capture : {{ capture.name }}</h1>
-    <div class="text-muted">{{ capture.description }}</div>
+    <h1>Nouvelle capture</h1>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
 
-    {{ include('capture/_form.html.twig') }}
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                label: 'Retour',
+                icon: 'bi-arrow-left',
+                route: 'app_capture_index',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        } %}
+    </div>
+    {{ form_end(form) }}
+
+
 
 {% endblock %}

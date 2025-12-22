@@ -28,8 +28,28 @@ final class AccountController extends AbstractController
         $account = new Account();
         $form = $this->createForm(AccountForm::class, $account);
         $form->handleRequest($request);
+        /*if ($form->isSubmitted() && !$form->isValid()) {
+            $errors = [];
+
+            foreach ($form->getErrors(true, true) as $error) {
+                $origin = $error->getOrigin(); // FormInterface
+                $name = $origin instanceof FormInterface ? $origin->getName() : 'form';
+
+                $errors[] = [
+                    'field' => $name,
+                    'message' => $error->getMessage(),
+                    'cause' => $error->getCause() ? get_class($error->getCause()) : null,
+                ];
+            }
+
+            dd('Form invalid', [
+                'type' => get_class($form->getConfig()->getType()->getInnerType()),
+                'errors' => $errors,
+            ]);
+        }*/
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($account);
             $entityManager->flush();
 

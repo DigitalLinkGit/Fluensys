@@ -1,41 +1,60 @@
 {{ form_start(form) }}
 
 <div class="row">
+    {% if form.vars.data.id %}
+    <div class="col-md-6">
+        {% include 'components/form/_ghost_field.html.twig' with {
+            field: form.name,
+            placeholder: 'Nom…',
+            class: 'title-input',
+            attrs: { autocomplete: 'off' }
+        } %}
+
+        {% include 'components/form/_ghost_field.html.twig' with {
+            field: form.description,
+            placeholder: 'Description…',
+            class: 'subtitle-textarea',
+            attrs: { autocomplete: 'off' }
+        } %}
+    </div>
+    <div class="col-md-6 d-flex justify-content-end align-items-start gap-2 mt-4">
+    {% else %}
     <div class="form-container p-3">
-        <h5>Général</h5>
         {{ form_row(form.name) }}
         {{ form_row(form.description) }}
     </div>
+        <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+    {% endif %}
 
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                label: 'Retour',
+                icon: 'bi-arrow-left',
+                route: 'app_account_index',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        } %}
+    </div>
 </div>
 
-<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
 
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'link',
-            label: 'Retour',
-            icon: 'bi-arrow-left',
-            route: 'app_account_index',
-            class: 'btn btn-outline-primary'
-        }
-    } %}
-
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'submit',
-            label: 'Enregistrer',
-            icon: 'bi-check',
-            class: 'btn btn-primary'
-        }
-    } %}
-</div>
 
 <ul class="tabs tabs--primary my-3 nav" role="tablist">
     <li class="tab nav-item" role="presentation">
-        <a id="tab-genaral" class="tab__link nav-link" data-bs-toggle="tab" href="#general" role="tab"
-           aria-controls="general"
-           aria-selected="false">Général</a>
+        <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab"
+           aria-controls="capture"
+           aria-selected="false">Captures</a>
     </li>
     <li class="tab nav-item" role="presentation">
         <a id="tab-information-system" class="tab__link nav-link" data-bs-toggle="tab" href="#information-system"
@@ -50,7 +69,7 @@
 </ul>
 
 <div class="tab-content">
-    <div id="general" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-general">
+    <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
         <div class="mx-2">
 
         </div>

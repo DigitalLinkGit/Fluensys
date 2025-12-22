@@ -13,12 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 abstract class Chapter
 {
-    public function __clone()
-    {
-        $this->id = null;
-        $clonedTitle = clone $this->title;
-        $this->setTitle($clonedTitle);
-    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -30,6 +24,15 @@ abstract class Chapter
 
     #[ORM\OneToOne(mappedBy: 'chapter', cascade: ['persist', 'remove'])]
     private ?CaptureElement $captureElement = null;
+
+    public function __clone()
+    {
+        $this->id = null;
+        $clonedTitle = null !== $this->title ? clone $this->title : null;
+        if ($clonedTitle) {
+            $this->setTitle($clonedTitle);
+        }
+    }
 
     abstract public function getTemplateContent(): mixed;
 

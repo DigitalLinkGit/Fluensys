@@ -7,8 +7,8 @@
 
     {% include 'components/table/_table.html.twig' with {
         items: captures,
-        columns: ['name', 'description'],
-        headers: ['Nom', 'Description'],
+        columns: ['name', 'description','template'],
+        headers: ['Nom', 'Description', 'Template'],
         filter: true,
         sort: true,
         add: {route: 'app_capture_template_new'},
