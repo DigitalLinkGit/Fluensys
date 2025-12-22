@@ -3,6 +3,7 @@
 namespace App\Entity\Participant;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\User;
 use App\Repository\ParticipantRoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -34,11 +35,18 @@ class ParticipantRole
     #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'respondent')]
     private Collection $respondentCaptureElements;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'participantRoles')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->responsibleCaptureElements = new ArrayCollection();
         $this->validatorCaptureElements = new ArrayCollection();
         $this->respondentCaptureElements = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -95,5 +103,32 @@ class ParticipantRole
     public function getRespondentCaptureElements(): Collection
     {
         return $this->respondentCaptureElements;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addParticipantRole($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeParticipantRole($this);
+        }
+
+        return $this;
     }
 }

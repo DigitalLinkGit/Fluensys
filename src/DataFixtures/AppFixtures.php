@@ -21,12 +21,19 @@ use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Rendering\TextChapter;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\Participant\ParticipantRole;
+use App\Entity\User;
 use App\Enum\SystemComponentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    public function __construct(
+        private readonly UserPasswordHasherInterface $passwordHasher,
+    ) {
+    }
+
     public function load(ObjectManager $manager): void
     {
         /* ===================================== Roles ===================================== */
@@ -56,6 +63,49 @@ class AppFixtures extends Fixture
             'Chef de projet',
         );
         $manager->persist($r4);
+
+        /* ===================================== Users ===================================== */
+        // Admin
+        $admin = $this->createUser(
+            $this->passwordHasher,
+            'admin@example.com',
+            'admin',
+            'Admin123!',
+            ['ROLE_ADMIN']
+        );
+        $manager->persist($admin);
+
+        // Standard user
+        $userExpert = $this->createUser(
+            $this->passwordHasher,
+            'expert@example.com',
+            'user expert',
+            'User123!',
+            ['ROLE_EXPERT'],
+            [$r2, $r3]
+        );
+        $manager->persist($userExpert);
+        // Standard user
+        $user = $this->createUser(
+            $this->passwordHasher,
+            'user@example.com',
+            'user standard',
+            'User123!',
+            ['ROLE_USER'],
+            [$r2]
+        );
+        $manager->persist($user);
+
+
+        // External respondant
+        /*$respondent = $this->createUser(
+            $this->passwordHasher,
+            'external@example.com',
+            'User externe',
+            'User123!',
+            ['ROLE_CONTRIBUTOR'],
+            [$r2, $r3]
+        );*/
 
         /* ===================================== Capture element 1 ===================================== */
         // fields
@@ -369,6 +419,24 @@ Scope :
             ->setName($name)
             ->setEmail($email)
             ->setFunction($function);
+    }
+
+    private function createUser(UserPasswordHasherInterface $passwordHasher, string $email, string $username, string $plainPassword, array $securityRoles = ['ROLE_USER'], ?array $participantRoles = []): User
+    {
+        $user = new User();
+        $user->setEmail($email);
+        $user->setUsername($username);
+        $user->setRoles($securityRoles);
+
+        // Store the hashed password in the entity
+        $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
+
+        /** @var ParticipantRole $participantRole */
+        foreach ($participantRoles as $participantRole) {
+            $user->addParticipantRole($participantRole);
+        }
+
+        return $user;
     }
 
     private function createInformationSystem(string $name): InformationSystem
