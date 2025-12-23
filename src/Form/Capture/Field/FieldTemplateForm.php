@@ -3,10 +3,11 @@
 namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\Field;
-use App\Entity\Capture\Field\FieldConfig;
 use App\Service\Helper\FieldTypeHelper;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -37,15 +38,14 @@ final class FieldTemplateForm extends AbstractType
                 'required' => true,
                 'attr' => ['placeholder' => 'Nom du champ'],
             ])
-
-            // replaced old label/required pairs with embedded configs
-            ->add('externalConfig', FieldConfigForm::class, [
-                'label' => 'Répondant',
-                'by_reference' => false,
+            ->add('label', TextareaType::class, [
+                'label' => 'Label',
+                'required' => true,
+                'attr' => ['rows' => 1],
             ])
-            ->add('internalConfig', FieldConfigForm::class, [
-                'label' => 'Utilisateurs internes',
-                'by_reference' => false,
+            ->add('required', CheckboxType::class, [
+                'label' => 'Obligatoire',
+                'required' => false,
             ])
 
             // drag-and-drop discriminator; never shown/edited by user
@@ -67,14 +67,6 @@ final class FieldTemplateForm extends AbstractType
             /** @var Field $concrete */
             $concrete = new $class();
 
-            // ensure embedded configs exist if submit did not provide them
-            if (null === $concrete->getExternalConfig()) {
-                $concrete->setExternalConfig(new FieldConfig());
-            }
-            if (null === $concrete->getInternalConfig()) {
-                $concrete->setInternalConfig(new FieldConfig());
-            }
-
             $form->setData($concrete);
         });
 
@@ -84,14 +76,6 @@ final class FieldTemplateForm extends AbstractType
             $data = $event->getData();
             if (!$data instanceof Field) {
                 return;
-            }
-
-            // guarantee configs are present for editing/prototype
-            if (null === $data->getExternalConfig()) {
-                $data->setExternalConfig(new FieldConfig());
-            }
-            if (null === $data->getInternalConfig()) {
-                $data->setInternalConfig(new FieldConfig());
             }
 
             $key = $this->typeHelper->getKeyFor($data);

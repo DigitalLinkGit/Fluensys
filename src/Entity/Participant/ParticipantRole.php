@@ -26,14 +26,11 @@ class ParticipantRole
     #[ORM\Column]
     private ?bool $internal = null;
 
-    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'responsible')]
-    private Collection $responsibleCaptureElements;
-
     #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'validator')]
     private Collection $validatorCaptureElements;
 
-    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'respondent')]
-    private Collection $respondentCaptureElements;
+    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'contributor')]
+    private Collection $contributorCaptureElements;
 
     /**
      * @var Collection<int, User>
@@ -45,7 +42,7 @@ class ParticipantRole
     {
         $this->responsibleCaptureElements = new ArrayCollection();
         $this->validatorCaptureElements = new ArrayCollection();
-        $this->respondentCaptureElements = new ArrayCollection();
+        $this->contributorCaptureElements = new ArrayCollection();
         $this->users = new ArrayCollection();
     }
 
@@ -100,9 +97,9 @@ class ParticipantRole
         return $this->validatorCaptureElements;
     }
 
-    public function getRespondentCaptureElements(): Collection
+    public function getContributorCaptureElements(): Collection
     {
-        return $this->respondentCaptureElements;
+        return $this->contributorCaptureElements;
     }
 
     /**

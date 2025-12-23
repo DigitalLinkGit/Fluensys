@@ -6,8 +6,11 @@ use App\Entity\Participant\ParticipantRole;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserForm extends AbstractType
 {
@@ -15,6 +18,14 @@ class UserForm extends AbstractType
     {
         $builder
             ->add('email')
+            ->add('plainPassword', PasswordType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => array_filter([
+                    $options['is_edit'] ? null : new NotBlank(message: 'Le mot de passe est obligatoire.'),
+                    new Length(min: 8, minMessage: 'Au moins {{ limit }} caractères.'),
+                ]),
+            ])
             ->add('username')
             ->add('function')
             ->add('participantRoles', EntityType::class, [
@@ -32,6 +43,7 @@ class UserForm extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_edit' => false,
         ]);
     }
 }

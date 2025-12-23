@@ -19,8 +19,8 @@
     <h4>Champs :</h4>
     {% include 'components/table/_table.html.twig' with {
         items: capture_element.fields,
-        columns: ['externalConfig.label','internalConfig.label','technicalName'],
-        headers: ['Label externe','Label interne','Nom technique'],
+        columns: ['label','name','type','technicalName'],
+        headers: ['Label','Non','Type','Nom technique'],
         filter: false,
         sort: false,
     } %}

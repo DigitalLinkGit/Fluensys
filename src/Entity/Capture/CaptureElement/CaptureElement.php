@@ -37,16 +37,12 @@ abstract class CaptureElement
     #[ORM\OneToMany(targetEntity: CalculatedVariable::class, mappedBy: 'captureElement', orphanRemoval: true)]
     protected Collection $calculatedvariables;
 
-    #[ORM\ManyToOne(inversedBy: 'respondentCaptureElements')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?ParticipantRole $respondent = null;
-
-    #[ORM\ManyToOne(inversedBy: 'responsibleCaptureElements')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?ParticipantRole $responsible = null;
+    #[ORM\ManyToOne(inversedBy: 'contributorCaptureElements')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?ParticipantRole $contributor = null;
 
     #[ORM\ManyToOne(inversedBy: 'validatorCaptureElements')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?ParticipantRole $validator = null;
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
@@ -193,26 +189,14 @@ abstract class CaptureElement
         return $this;
     }
 
-    public function getRespondent(): ?ParticipantRole
+    public function getContributor(): ?ParticipantRole
     {
-        return $this->respondent;
+        return $this->contributor;
     }
 
-    public function setRespondent(?ParticipantRole $respondent): static
+    public function setContributor(?ParticipantRole $contributor): static
     {
-        $this->respondent = $respondent;
-
-        return $this;
-    }
-
-    public function getResponsible(): ?ParticipantRole
-    {
-        return $this->responsible;
-    }
-
-    public function setResponsible(?ParticipantRole $responsible): static
-    {
-        $this->responsible = $responsible;
+        $this->contributor = $contributor;
 
         return $this;
     }

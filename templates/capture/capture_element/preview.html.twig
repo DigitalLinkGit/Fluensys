@@ -4,21 +4,6 @@
 
 {% block body %}
     <h1>Aperçu</h1>
-
-    {{ form_start(form) }}
-    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
-        {% include 'components/button/_btn.html.twig' with {
-            btn: {
-                type: 'link',
-                route: 'app_capture_element_edit',
-                param_map: { id: 'element.id' },
-                icon: 'bi-arrow-left',
-                label: 'Retour',
-                class: 'btn btn-outline-primary'
-            }
-        } %}
-    </div>
-
-    {{ form_end(form) }}
+    {% include 'capture/capture_element/_form.html.twig' %}
 
 {% endblock %}

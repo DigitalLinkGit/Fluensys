@@ -23,14 +23,6 @@ abstract class Field
     public function __clone()
     {
         $this->id = null;
-
-        $intConfig = clone $this->internalConfig;
-        $this->setInternalConfig($intConfig);
-        $intConfig->setFieldUsedAsInternal($this);
-
-        $extConfig = clone $this->externalConfig;
-        $this->setExternalConfig($extConfig);
-        $extConfig->setFieldUsedAsExternal($this);
     }
 
     #[ORM\Id]
@@ -47,17 +39,18 @@ abstract class Field
     #[ORM\Column]
     protected ?int $position = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $label = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $help = null;
+
+    #[ORM\Column]
+    private ?bool $required = null;
+
     #[ORM\ManyToOne(inversedBy: 'fields')]
     #[ORM\JoinColumn(nullable: false)]
     protected ?CaptureElement $captureElement = null;
-
-    #[ORM\OneToOne(targetEntity: FieldConfig::class, inversedBy: 'usedAsExternal', cascade: ['persist', 'remove'], fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'external_config_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
-    private ?FieldConfig $externalConfig = null;
-
-    #[ORM\OneToOne(targetEntity: FieldConfig::class, inversedBy: 'usedAsInternal', cascade: ['persist', 'remove'], fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'internal_config_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
-    private ?FieldConfig $internalConfig = null;
 
     abstract public function getValue(): mixed;
 
@@ -120,30 +113,6 @@ abstract class Field
         return $this;
     }
 
-    public function getInternalConfig(): ?FieldConfig
-    {
-        return $this->internalConfig;
-    }
-
-    public function setInternalConfig(?FieldConfig $internalConfig): static
-    {
-        $this->internalConfig = $internalConfig;
-
-        return $this;
-    }
-
-    public function getExternalConfig(): ?FieldConfig
-    {
-        return $this->externalConfig;
-    }
-
-    public function setExternalConfig(?FieldConfig $externalConfig): static
-    {
-        $this->externalConfig = $externalConfig;
-
-        return $this;
-    }
-
     public function getType(): ?string
     {
         $helper = new FieldTypeHelper();
@@ -154,5 +123,38 @@ abstract class Field
     public function getChoices(): array
     {
         return [];
+    }
+
+    public function getLabel(): ?string
+    {
+        return $this->label;
+    }
+
+    public function setLabel(string $label): static
+    {
+        $this->label = $label;
+        return $this;
+    }
+
+    public function getHelp(): ?string
+    {
+        return $this->help;
+    }
+
+    public function setHelp(string $help): static
+    {
+        $this->help = $help;
+        return $this;
+    }
+
+    public function isRequired(): ?bool
+    {
+        return $this->required;
+    }
+
+    public function setRequired(bool $required): static
+    {
+        $this->required = $required;
+        return $this;
     }
 }

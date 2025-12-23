@@ -6,6 +6,7 @@ use App\Entity\Account\Account;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\Participant\ParticipantRole;
+use App\Entity\User;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -50,6 +51,10 @@ class Capture
 
     #[ORM\ManyToOne(inversedBy: 'captures')]
     private ?Account $account = null;
+
+    #[ORM\ManyToOne(inversedBy: 'captures')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $responsible = null;
 
     public function __construct()
     {
@@ -167,12 +172,12 @@ class Capture
     }
 
     /** @return ParticipantRole[] **/
-    public function getRespondentRoles(): array
+    public function getContributorRoles(): array
     {
         $u = [];
         foreach ($this->getCaptureElements() as $el) {
             /** @var CaptureElement $el */
-            if ($r = $el->getRespondent()) {
+            if ($r = $el->getContributor()) {
                 $u[$r->getId()] = $r;
             }
         }
@@ -222,9 +227,8 @@ class Capture
         foreach ($this->getCaptureElements() as $element) {
             $rows[] = [
                 'element' => $element,
-                'respondent' => $element->getRespondentRole(),
-                'responsible' => $element->getResponsibleRole(),
-                'validator' => $element->getValidatorRole(),
+                'contributor' => $element->getContributor(),
+                'validator' => $element->getValidator(),
             ];
         }
 
@@ -292,6 +296,18 @@ class Capture
     public function setAccount(?Account $account): static
     {
         $this->account = $account;
+
+        return $this;
+    }
+
+    public function getResponsible(): ?User
+    {
+        return $this->responsible;
+    }
+
+    public function setResponsible(?User $responsible): static
+    {
+        $this->responsible = $responsible;
 
         return $this;
     }

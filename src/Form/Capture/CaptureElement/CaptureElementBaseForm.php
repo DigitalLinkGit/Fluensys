@@ -24,32 +24,27 @@ class CaptureElementBaseForm extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('respondent', EntityType::class, [
+            ->add('contributor', EntityType::class, [
                 'class' => ParticipantRole::class,
                 'choice_label' => 'name',
+                'label' => 'Contributeur',
+                'required' => false,
                 'query_builder' => function (ParticipantRoleRepository $r) {
                     return $r->createQueryBuilder('role')
                         ->orderBy('role.name', 'ASC');
                 },
-                'placeholder' => 'Sélectionner un rôle...',
-            ])
-            ->add('responsible', EntityType::class, [
-                'class' => ParticipantRole::class,
-                'choice_label' => 'name',
-                'query_builder' => function (ParticipantRoleRepository $r) {
-                    return $r->createQueryBuilder('role')
-                        ->orderBy('role.name', 'ASC');
-                },
-                'placeholder' => 'Sélectionner un rôle...',
+                'placeholder' => 'Aucun contribution'
             ])
             ->add('validator', EntityType::class, [
                 'class' => ParticipantRole::class,
                 'choice_label' => 'name',
+                'label' => 'Validateur',
+                'required' => false,
                 'query_builder' => function (ParticipantRoleRepository $r) {
                     return $r->createQueryBuilder('role')
                         ->orderBy('role.name', 'ASC');
                 },
-                'placeholder' => 'Sélectionner un rôle...',
+                'placeholder' => 'Aucune validation',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',

@@ -13,7 +13,6 @@ use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\Field;
-use App\Entity\Capture\Field\FieldConfig;
 use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
@@ -76,16 +75,6 @@ class AppFixtures extends Fixture
         $manager->persist($admin);
 
         // Standard user
-        $userExpert = $this->createUser(
-            $this->passwordHasher,
-            'expert@example.com',
-            'user expert',
-            'User123!',
-            ['ROLE_EXPERT'],
-            [$r2, $r3]
-        );
-        $manager->persist($userExpert);
-        // Standard user
         $user = $this->createUser(
             $this->passwordHasher,
             'user@example.com',
@@ -95,7 +84,6 @@ class AppFixtures extends Fixture
             [$r2]
         );
         $manager->persist($user);
-
 
         // External respondant
         /*$respondent = $this->createUser(
@@ -109,72 +97,66 @@ class AppFixtures extends Fixture
 
         /* ===================================== Capture element 1 ===================================== */
         // fields
-        $fc1 = $this->createFieldConfig('Textarea', true);
-        $fc2 = $this->createFieldConfig('Textarea', true);
         $f1 = $this->createField(
             new TextAreaField(),
             1,
             'Textarea',
-            $fc1,
-            $fc2
+            'Textarea',
+            true,
+            null
         );
         $manager->persist($f1);
 
-        $fc3 = $this->createFieldConfig('Integer', true);
-        $fc4 = $this->createFieldConfig('Integer', true);
         $f2 = $this->createField(
             new IntegerField(),
             2,
             'Integer',
-            $fc3,
-            $fc4,
+            'Integer',
+            true,
+            null
         );
         $manager->persist($f2);
 
-        $fc5 = $this->createFieldConfig('Text', true);
-        $fc6 = $this->createFieldConfig('Text', true);
         $f3 = $this->createField(
             new TextField(),
             3,
             'Text',
-            $fc5,
-            $fc6,
+            'Text',
+            true,
+            null
         );
         $manager->persist($f3);
 
         // f4 Decimal
-        $fc7 = $this->createFieldConfig('Decimal', true);   // internal
-        $fc8 = $this->createFieldConfig('Decimal', true);   // external
         $f4 = $this->createField(
             new DecimalField(),
             4,
             'Decimal',
-            $fc7,
-            $fc8
+            'Decimal',
+            true,
+            null
         );
         $manager->persist($f4);
 
         // f5 Date
-        $fc9 = $this->createFieldConfig('Date', true);      // internal
-        $fc10 = $this->createFieldConfig('Date', true);      // external
         $f5 = $this->createField(
             new DateField(),
             5,
             'Date',
-            $fc9,
-            $fc10
+            'Date',
+            true,
+            null
         );
         $manager->persist($f5);
 
         // f6 Checklist
-        $fc11 = $this->createFieldConfig('Checklist', true); // internal
-        $fc12 = $this->createFieldConfig('Checklist', true); // external
         $f6 = $this->createField(
             new ChecklistField(),
             5,
             'Checklist',
-            $fc11,
-            $fc12,
+            'Checklist',
+            true,
+            null,
             [
                 ['label' => 'Option A', 'value' => 'Option A'],
                 ['label' => 'Option B', 'value' => 'Option B'],
@@ -184,14 +166,13 @@ class AppFixtures extends Fixture
         $manager->persist($f6);
 
         // f7 SystemComponentCollectionField
-        $fc13 = $this->createFieldConfig('Composants de SI', true); // internal
-        $fc14 = $this->createFieldConfig('Composants de SI', true); // external
         $f7 = $this->createField(
             new SystemComponentCollectionField(),
             6,
             'Composants de SI',
-            $fc13,
-            $fc14
+            'Composants de SI',
+            true,
+            null
         );
         $manager->persist($f7);
 
@@ -199,8 +180,7 @@ class AppFixtures extends Fixture
         $flex = (new FlexCaptureElement())
             ->setDescription("Flex capture utilisée pour vérifier que tous les types de fields fonctionnent et s'affichent correctement")
             ->setName('Flex test fields')
-            ->setRespondent($r1)
-            ->setResponsible($r2)
+            ->setContributor($r1)
             ->setValidator($r3)
             ->addField($f1)
             ->addField($f2)
@@ -235,62 +215,51 @@ Composants de SI : [COMPOSANTSDESI]');
         // ===== Capture element 2 – Fields =====
 
         // f10 TextAreaField (labels différents, required = false)
-        $fc15 = $this->createFieldConfig('Activité', false); // internal
-        $fc16 = $this->createFieldConfig('Décrivez votre activité en quelques lignes', false); // external
         $f10 = $this->createField(
             new TextAreaField(),
             2,
             'Activité',
-            $fc15,
-            $fc16
+            'Décrivez votre activité en quelques lignes',
+            false,
+            null
         );
         $manager->persist($f10);
 
         // f20 IntegerField (labels différents, required = true)
-        $fc17 = $this->createFieldConfig('Nombre de salarié', true); // internal
-        $fc18 = $this->createFieldConfig('Combien de salariés travail dans votre entreprise ?', true); // external
         $f20 = $this->createField(
             new IntegerField(),
             3,
             'Nombre de salarié',
-            $fc17,
-            $fc18
+            'Combien de salariés travail dans votre entreprise ?',
+            true,
+            null
         );
         $manager->persist($f20);
 
         // f30 TextField (labels différents, required = true)
-        $fc19 = $this->createFieldConfig('Nom', true); // internal
-        $fc20 = $this->createFieldConfig('Quel est le nom de votre société ?', true); // external
         $f30 = $this->createField(
             new TextField(),
             1,
             'Nom de la société',
-            $fc19,
-            $fc20
+            'Quel est le nom de votre société ?', true, null
         );
         $manager->persist($f30);
 
         // f50 DateField (labels différents, required = false)
-        $fc21 = $this->createFieldConfig("Date de début d'activité", false); // internal
-        $fc22 = $this->createFieldConfig('Quand avez vous commencez votre activité ?', false); // external
         $f50 = $this->createField(
             new DateField(),
             4,
             "Date de début d'activité",
-            $fc21,
-            $fc22
+            'Quand avez vous commencez votre activité ?', false, null
         );
         $manager->persist($f50);
 
         // f60 ChecklistField (labels différents, required = true)
-        $fc23 = $this->createFieldConfig('Scope', true); // internal
-        $fc24 = $this->createFieldConfig('Cochez les options qui rentrent dans votre activité', true); // external
         $f60 = $this->createField(
             new ChecklistField(),
             5,
             'Scope',
-            $fc23,
-            $fc24,
+            'Cochez les options qui rentrent dans votre activité', true, null,
             [
                 ['label' => 'Gestion de projet', 'value' => 'Gestion de projet'],
                 ['label' => 'RH', 'value' => 'RH'],
@@ -307,8 +276,7 @@ Composants de SI : [COMPOSANTSDESI]');
         $flex2 = (new FlexCaptureElement())
             ->setDescription('Recueil des informations classiques sur le compte')
             ->setName('Informations générale')
-            ->setRespondent($r1)
-            ->setResponsible($r2)
+            ->setContributor($r1)
             ->setValidator($r3)
             ->addField($f10)
             ->addField($f20)
@@ -453,20 +421,17 @@ Scope :
             ->setDescription($description);
     }
 
-    private function createFieldConfig(string $label, bool $required): FieldConfig
-    {
-        return (new FieldConfig())
-            ->setLabel($label)
-            ->setRequired($required);
-    }
-
-    private function createField(Field $field, int $position, string $name, FieldConfig $internal, FieldConfig $external, ?array $choices = null): Field
+    private function createField(Field $field, int $position, string $name, string $label, bool $required, ?string $help, ?array $choices = null): Field
     {
         $field
             ->setPosition($position)
             ->setName($name)
-            ->setExternalConfig($external)
-            ->setInternalConfig($internal);
+            ->setLabel($label)
+            ->setRequired($required);
+
+        if (null !== $help) {
+            $field->setHelp($help);
+        }
 
         if (null !== $choices && $field instanceof ChecklistField) {
             $field->setChoices($choices);

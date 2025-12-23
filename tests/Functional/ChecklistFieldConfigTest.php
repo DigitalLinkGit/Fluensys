@@ -34,7 +34,7 @@ class ChecklistFieldConfigTest extends WebTestCase
         $em->persist($respnd);
         $em->persist($valid);
         $fc->setResponsible($resp);
-        $fc->setRespondent($respnd);
+        $fc->setContributor($respnd);
         $fc->setValidator($valid);
 
         // FlexCaptureElement::addField() if exists, else use collection

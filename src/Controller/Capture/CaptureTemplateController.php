@@ -129,17 +129,6 @@ final class CaptureTemplateController extends AbstractController
         return $this->redirectToRoute('app_capture_template_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/select', name: 'app_capture_template_select', methods: ['GET'])]
-    public function select(Request $request, EntityManagerInterface $em): Response
-    {
-        $all = $em->getRepository(Capture::class)->findAll();
-        $templates = array_filter($all, fn ($el) => $el->isTemplate());
-
-        return $this->render('capture/capture_template/select.html.twig', [
-            'captures' => $templates,
-        ]);
-    }
-
     #[Route('/{captureId}/elements/{id}/attach', name: 'app_capture_template_attach_element', methods: ['GET'])]
     public function attachElement(#[MapEntity(id: 'captureId')] Capture $capture, CaptureElement $element, EntityManagerInterface $em): Response
     {

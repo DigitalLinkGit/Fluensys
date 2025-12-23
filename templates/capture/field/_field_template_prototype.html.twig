@@ -1,0 +1,69 @@
+<fieldset class="mb-3 field-entry form-container mt-3 p-0 position-relative card"
+          data-type-label="{{ form.vars.type_label }}">
+    {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
+
+    {# CARD HEADER #}
+    <div class="card-body d-flex align-items-center">
+        <div class="mb-0 col-md-9">
+            <div>
+                {% include 'components/form/_ghost_field.html.twig' with {
+                    field: form.label,
+                    placeholder: 'Label…',
+                    class: 'subtitle-textarea',
+                    attrs: { autocomplete: 'off' }
+                } %}
+            </div>
+        </div>
+        <div class="col-mb-3 card-actions ms-auto d-inline-flex align-items-center gap-2">
+            <span class="badge bg-secondary type-badge d-inline-block mb-2">{{ form.vars.type_label }}</span>
+            <div class="text-end">
+                <button type="button" class="btn btn-sm btn-outline-primary field-card__toggle"
+                        data-action="click->capture-element#toggle">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm ms-1"
+                        data-action="click->capture-element#remove"
+                        title="Supprimer ce champ">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="field-card__body p-3 border-top">
+        <div class="row">
+            {# CONFIG #}
+            <div class="col-md-6">
+                <h6 class="mb-1">Général</h6>
+                <div class="mb-2">
+                    {{ form_row(form.name,    { row_attr: { class: 'mb-0' } }) }}
+                </div>
+                <div class="mb-2">
+                    {{ form_row(form.required, { row_attr: { class: 'mb-0' } }) }}
+                </div>
+            </div>
+
+            {# OPTIONS #}
+            <div class="col-md-6">
+                <h6 class="mb-1">Options</h6>
+
+                {% if form.subtype is defined %}
+                    {{ form_row(form.subtype) }}
+                {% else %}
+                    <div class="subtype-config">
+                        {# minimal template will be injected here by stimulus controller #}
+                    </div>
+
+                    {# -------------- Minimal templates ----------------- #}
+                    {# List options #}
+                    <script type="text/template" data-subtype-template="checklist">
+                        <label class="form-label">Liste de choix (1 par ligne)</label>
+                        <textarea class="form-control" rows="6"
+                                  name="{{ form.vars.full_name }}[subtype][choices_raw]"
+                                  placeholder="Option A&#10;Option B&#10;Option C"></textarea>
+                    </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</fieldset>

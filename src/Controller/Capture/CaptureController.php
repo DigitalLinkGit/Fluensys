@@ -4,7 +4,8 @@ namespace App\Controller\Capture;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Form\Capture\CaptureElement\CaptureElementInternalForm;
+use App\Form\Capture\CaptureElement\CaptureElementForm;
+use App\Form\Capture\CaptureForm;
 use App\Form\Capture\CaptureNewForm;
 use App\Repository\CaptureRepository;
 use App\Service\ConditionToggler;
@@ -46,7 +47,7 @@ final class CaptureController extends AbstractController
             $description = $form->get('description')->getData();
 
             $clone = $this->cloneCaptureFromTemplate($template, $account, $name, $description);
-
+            $clone->setResponsible($this->getUser());
             $em->persist($clone);
             $em->flush();
 
@@ -67,8 +68,11 @@ final class CaptureController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET'])]
-    public function edit(Capture $capture, ConditionToggler $toggler): Response
+    public function edit(Request $request, Capture $capture, ConditionToggler $toggler): Response
     {
+        $form = $this->createForm(CaptureForm::class, $capture);
+        $form->handleRequest($request);
+
         // apply toggle activation from conditions
         $conditions = $capture->getConditions();
         $toggler->apply(is_iterable($conditions) ? $conditions : []);
@@ -82,27 +86,9 @@ final class CaptureController extends AbstractController
             }
         }
 
-        // build one form per element
-        $elementForms = [];
-        foreach ($capture->getCaptureElements() as $element) {
-            $elementForms[$element->getId()] = $this->createForm(
-                CaptureElementInternalForm::class,
-                $element,
-                [
-                    'action' => $this->generateUrl('app_capture_element_respond', [
-                        'id' => $element->getId(),
-                        'captureId' => $capture->getId(),
-                    ]),
-                    'method' => 'POST',
-                    'disabled' => !$element->isActive(),
-                ]
-            )->createView();
-        }
-
-
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
-            'elementForms' => $elementForms,
+            'form' => $form,
             'conditionsByTargetId' => $conditionsByTargetId,
         ]);
     }

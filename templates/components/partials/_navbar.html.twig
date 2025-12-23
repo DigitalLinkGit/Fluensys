@@ -47,18 +47,6 @@
                     {
                         links: [
                         { label: 'Administration', route: 'app_administration_index' },
-                    ]
-                    }
-                ]
-            } %}
-        {% endif %}
-        {% if is_granted('ROLE_EXPERT') %}
-            {% include 'components/partials/_sidebar_section.html.twig' with {
-                icon: '',
-                title: 'Expert',
-                groups: [
-                    {
-                        links: [
                         { label: 'Eléments de captures', route: 'app_capture_element_index' },
                         { label: 'Templates de captures', route: 'app_capture_template_index' },
                         { label: 'Rôles', route: 'app_participant_role_index' },

@@ -39,12 +39,12 @@
 
 
 {% set prototype %}
-    {% include 'capture/field/_field_prototype.html.twig' with { form: form.fields.vars.prototype } %}
+    {% include 'capture/field/_field_template_prototype.html.twig' with { form: form.fields.vars.prototype } %}
 {% endset %}
 <div class="row p-3 " data-controller="capture-element">
         <div data-prototype="{{ prototype|e('html_attr') }}">
         {% for fieldForm in form.fields %}
-            {% include 'capture/field/_field_prototype.html.twig' with { form: fieldForm } %}
+            {% include 'capture/field/_field_template_prototype.html.twig' with { form: fieldForm } %}
         {% endfor %}
         </div>
 </div>

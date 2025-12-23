@@ -50,125 +50,126 @@
 </div>
 
 {% if form.vars.data.id %}
-<div
-    data-controller="tabs-persist"
-    data-tabs-persist-default-tab-value="#capture-elements"
-    data-tabs-persist-storage-key-value="captureTabs"
-    data-tabs-persist-mode-value="storage"
->
-<ul class="tabs tabs--primary my-3 nav" role="tablist">
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements" role="tab"
-           aria-controls="capture-elements"
-           aria-selected="false">Eléments de capture</a>
-    </li>
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
-           aria-controls="conditions"
-           aria-selected="true">Conditions</a>
-    </li>
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
-           aria-controls="roles"
-           aria-selected="true">Rôles</a>
-    </li>
-</ul>
-</div>
-<div class="tab-content">
-    <div id="capture-elements"
-         class="tab-pane fade"
-         role="tabpanel"
-         aria-labelledby="tab-capture-elements"
-         data-controller="capture-template sortable-order">
+    <div
+        data-controller="tabs-persist"
+        data-tabs-persist-default-tab-value="#capture-elements"
+        data-tabs-persist-storage-key-value="captureTabs"
+        data-tabs-persist-mode-value="storage"
+    >
+        <ul class="tabs tabs--primary my-3 nav" role="tablist">
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements"
+                   role="tab"
+                   aria-controls="capture-elements"
+                   aria-selected="false">Eléments de capture</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
+                   aria-controls="conditions"
+                   aria-selected="true">Conditions</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+                   aria-controls="roles"
+                   aria-selected="true">Rôles</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="capture-elements"
+             class="tab-pane fade"
+             role="tabpanel"
+             aria-labelledby="tab-capture-elements"
+             data-controller="capture-template sortable-order">
 
-        {# ordre JSON (non mappé) #}
-        <input type="hidden"
-               name="capture_elements_order"
-               data-sortable-order-target="input"
-               value="{{ capture.captureElements|default([])|map(e => e.id)|json_encode }}">
+            {# JSON order #}
+            <input type="hidden"
+                   name="capture_elements_order"
+                   data-sortable-order-target="input"
+                   value="{{ capture.captureElements|default([])|map(e => e.id)|json_encode }}">
 
-        <div class="mx-2 mb-3">
-            <div class="sortable-list" data-sortable-order-target="list">
-                {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
-                    {% set byTarget = conditionsByTargetId|default({}) %}
+            <div class="mx-2 mb-3">
+                <div class="sortable-list" data-sortable-order-target="list">
+                    {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
+                        {% set byTarget = conditionsByTargetId|default({}) %}
 
-                    {% for element in capture.captureElements %}
-                        {% set entity = element ?? null %}
-                        {% set elementId = entity ? entity.id : null %}
-                        {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
+                        {% for element in capture.captureElements %}
+                            {% set entity = element ?? null %}
+                            {% set elementId = entity ? entity.id : null %}
+                            {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
 
-                        <div class="mb-3 row" data-sortable-id="{{ element.id }}">
-                            {% include 'capture/capture_element/_prototype_card.html.twig' with {
-                                element: element,
-                                incomingConditions: incoming
-                            } %}
-                        </div>
+                            <div class="mb-3 row" data-sortable-id="{{ element.id }}">
+                                {% include 'capture/capture_element/_prototype_card.html.twig' with {
+                                    element: element,
+                                    incomingConditions: incoming
+                                } %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {# on garde votre message existant (rien ne casse) #}
+                        <div class="text-muted small m-3">Aucun élément</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <a class="btn btn-outline-primary"
+               href="{{ path('app_capture_element_new', { capture: form.vars.data.id }) }}">
+                <i class="bi bi-plus"></i>
+                Ajouter un élément
+            </a>
+        </div>
+
+        <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
+            {% set prototype %}
+                {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
+            {% endset %}
+
+            {# headers #}
+            <div class="row g-3 align-items-end mb-2">
+                <div class="col-md-3">
+                    Elément cible
+                </div>
+                <div class="col-md-3">
+                    Elément source
+                </div>
+                <div class="col-md-3">
+                    Champ source
+                </div>
+                <div class="col-md-2">
+                    Valeur attendue
+                </div>
+                <div class="col-auto ms-auto align-self-end">
+                    Actions
+                </div>
+            </div>
+
+            <div
+                data-controller="condition"
+                data-prototype="{{ prototype|e('html_attr') }}"
+                data-condition-fields-url-value="{{ path('condition_fields') }}"
+            >
+                <div data-condition-target="list" class="mb-3">
+                    {% for condition in form.conditions %}
+                        {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
                     {% endfor %}
-                {% else %}
-                    {# on garde votre message existant (rien ne casse) #}
-                    <div class="text-muted small m-3">Aucun élément</div>
-                {% endif %}
+                </div>
+
+                <div class="col-auto ms-auto align-self-end" data-condition-target="add">
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            data-action="click->condition#add"
+                            title="Ajouter une condition">
+                        <i class="bi bi-plus"></i>
+                        Ajouter une condition
+                    </button>
+                </div>
             </div>
+
         </div>
-
-        <a class="btn btn-outline-primary"
-           href="{{ path('app_capture_element_new', { capture: form.vars.data.id }) }}">
-            <i class="bi bi-plus"></i>
-            Ajouter un élément
-        </a>
-    </div>
-
-    <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
-        {% set prototype %}
-            {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
-        {% endset %}
-
-        {# headers #}
-        <div class="row g-3 align-items-end mb-2">
-            <div class="col-md-3">
-                Elément cible
-            </div>
-            <div class="col-md-3">
-                Elément source
-            </div>
-            <div class="col-md-3">
-                Champ source
-            </div>
-            <div class="col-md-2">
-                Valeur attendue
-            </div>
-            <div class="col-auto ms-auto align-self-end">
-                Actions
-            </div>
+        <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+            {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
         </div>
-
-        <div
-            data-controller="condition"
-            data-prototype="{{ prototype|e('html_attr') }}"
-            data-condition-fields-url-value="{{ path('condition_fields') }}"
-        >
-            <div data-condition-target="list" class="mb-3">
-                {% for condition in form.conditions %}
-                    {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
-                {% endfor %}
-            </div>
-
-            <div class="col-auto ms-auto align-self-end" data-condition-target="add">
-                <button type="button"
-                        class="btn btn-outline-primary"
-                        data-action="click->condition#add"
-                        title="Ajouter une condition">
-                    <i class="bi bi-plus"></i>
-                    Ajouter une condition
-                </button>
-            </div>
-        </div>
-
     </div>
-    <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
-        {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
-    </div>
-</div>
 {% else %}
     <div class="alert alert-info mt-3">
         Enregistrez d’abord la capture pour pouvoir ajouter des éléments, définir des conditions et configurer le rendu.

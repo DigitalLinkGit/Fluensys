@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Capture\Capture;
+use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Participant\ParticipantRole;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -45,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $function = null;
+
+    #[ORM\OneToMany(targetEntity: Capture::class, mappedBy: 'responsible')]
+    private Collection $captures;
 
     public function __construct()
     {

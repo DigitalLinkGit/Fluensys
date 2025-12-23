@@ -3,31 +3,43 @@
 
     <div class="card h-100 mb-1">
         <div class="card-body py-2 d-flex align-items-center" data-sortable-handle>
-            <div class="card-title mb-0" >
+            <div class="card-title mb-0">
                 <b>{{ element.name }} : </b> {{ element.description }}
             </div>
             <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
                 <div>{{ element.active?'On':'Off' }}  </div>
-                {# EDIT #}
-                <a href="{{ path('app_capture_element_edit', {
-                    id: element.id,
-                    captureId: capture.id,
-                }) }}"
-                   class="btn btn-outline-primary btn-sm"
-                   title="Editer" aria-label="Editer">
-                    <i class="bi bi-pencil"></i>
-                </a>
-                {# DELETE #}
-                <button
-                    type="button"
-                    class="btn btn-outline-danger btn-sm"
-                    data-action="click->modal-confirmation#open"
-                    data-modal-confirmation-action-value="{{ path('app_capture_element_delete', { id: element.id }) }}"
-                    data-modal-confirmation-token-value="{{ csrf_token('delete' ~ element.id) }}"
-                    data-modal-confirmation-message-value="Confirmer la suppression de cet élément ?"
-                    title="Supprimer cet élément">
-                    <i class="bi bi-trash"></i>
-                </button>
+                {% if is_granted('ROLE_ADMIN') and element.template %}
+                    {# EDIT #}
+                    <a href="{{ path('app_capture_element_edit', {
+                        id: element.id,
+                        captureId: capture.id,
+                    }) }}"
+                       class="btn btn-outline-primary btn-sm"
+                       title="Editer" aria-label="Editer">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    {# DELETE #}
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        data-action="click->modal-confirmation#open"
+                        data-modal-confirmation-action-value="{{ path('app_capture_element_delete', { id: element.id }) }}"
+                        data-modal-confirmation-token-value="{{ csrf_token('delete' ~ element.id) }}"
+                        data-modal-confirmation-message-value="Confirmer la suppression de cet élément ?"
+                        title="Supprimer cet élément">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                {% endif %}
+                {% if is_granted('ROLE_USER') and not element.template %}
+                    <a href="{{ path('app_capture_element_respond', {
+                        id: element.id,
+                        captureId: capture.id,
+                    }) }}"
+                       class="btn btn-outline-primary btn-sm"
+                       title="Répondre" aria-label="Répondre">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                {% endif %}
                 {# EXPAND #}
                 <button class="btn btn-outline-primary btn-sm"
                         type="button"
@@ -42,28 +54,34 @@
         </div>
         <div id="{{ collapseId }}" class="collapse">
             <div class="pt-2">
-                {% if incomingConditions is defined and incomingConditions|length %}
-                    <div class="text-muted small mb-2">
-                        {% for cond in incomingConditions %}
-                            <div>{{ cond }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                {% if element.fields is defined %}
+                <div class="mx-3">
+                    <div class="mb-1"><span class="semi-bold">Contributor : </span>{{element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}</div>
+                    <div class="mb-1">Validateur : {{element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}</div>
 
+                    {% if incomingConditions is defined and incomingConditions|length %}
+                        <div class="mb-1">Condition(s) :</div>
+                        <div class="text-muted small mb-1">
+                            {% for cond in incomingConditions %}
+                                <div>{{ cond }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                {% if element.fields is defined %}
+                    <div class="mb-1 mt-2">Contenu :</div>
                     {% for field in element.fields %}
-                        <div class="row mb-3"
+                        <div class="row mb-1"
                              title="Nom : {{ field.name }}">
                             <div class="col-md-12 pt-2">
-                                <span class="badge bg-secondary type-badge d-inline-block mb-2 me-2">
+                                <span class="badge bg-secondary type-badge d-inline-block me-2">
                                     {{ field.type }}
                                 </span>
-                                {{ field.externalConfig.label }}
+                                {{ field.label }}
                             </div>
 
                             {% set choices = attribute(field, 'getChoices', [], 'method', false) %}
                             {% if choices is not null and choices is not empty %}
-                                <div class="p-3">
+                                <div class="p-2">
                                     <ul>
                                         {% for choice in choices %}
                                             <li>{{ choice.label }}</li>
@@ -78,6 +96,7 @@
                 {% else %}
                     <div class="text-muted small">Aucun champ</div>
                 {% endif %}
+                </div>
             </div>
         </div>
     </div>

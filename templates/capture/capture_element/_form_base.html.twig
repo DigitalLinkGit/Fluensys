@@ -8,11 +8,8 @@
     </div>
     <div class="form-container p-3" style="flex: 1 1 45%;">
         <h5>Rôles</h5>
-        {% if form.respondent is defined %}
-            {{ form_row(form.respondent) }}
-        {% endif %}
-        {% if form.responsible is defined %}
-            {{ form_row(form.responsible) }}
+        {% if form.contributor is defined %}
+            {{ form_row(form.contributor) }}
         {% endif %}
         {% if form.validator is defined %}
             {{ form_row(form.validator) }}

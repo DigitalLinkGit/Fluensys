@@ -1,0 +1,43 @@
+{{ form_start(form) }}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8">
+        {{ form_widget(form) }}
+    </div>
+</div>
+
+
+{% if is_granted('ROLE_USER') and not element.capture.template %}
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                label: 'Retour',
+                param_map: { id: 'element.capture.id' },
+                icon: 'bi-arrow-left',
+                route: 'app_capture_edit',
+                class: 'btn btn-outline-primary'
+            },
+            save: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        }
+    } %}
+{% endif %}
+{% if is_granted('ROLE_ADMIN') and element.capture.template %}
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                label: 'Retour',
+                param_map: { id: 'element.capture.id' },
+                icon: 'bi-arrow-left',
+                route: 'app_capture_template_edit',
+                class: 'btn btn-outline-primary'
+            },
+        }
+    } %}
+{% endif %}
+{{ form_end(form) }}
