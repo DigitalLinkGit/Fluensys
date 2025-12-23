@@ -49,7 +49,7 @@ class FieldForm extends AbstractType
                 $opts += [
                     'choices' => $field->toSymfonyChoices(),
                     'expanded' => true,
-                    'multiple' => true,
+                    'multiple' => !$field->isUniqueResponse(),
                 ];
             }
 

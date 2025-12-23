@@ -13,6 +13,19 @@ final class ChecklistField extends Field
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $value = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $uniqueResponse = false;
+
+    public function isUniqueResponse(): bool
+    {
+        return $this->uniqueResponse;
+    }
+    public function setUniqueResponse(bool $uniqueResponse): static
+    {
+        $this->uniqueResponse = $uniqueResponse;
+        return $this;
+    }
+
     public function getValue(): ?array
     {
         return $this->value;

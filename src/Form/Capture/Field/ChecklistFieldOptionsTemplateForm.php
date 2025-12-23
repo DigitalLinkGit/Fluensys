@@ -3,6 +3,7 @@
 namespace App\Form\Capture\Field;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -16,7 +17,12 @@ class ChecklistFieldOptionsTemplateForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('choices_raw', TextareaType::class, [
+        $builder
+            ->add('uniqueResponse', CheckboxType::class, [
+                'label' => 'Réponse unique',
+                'required' => false,
+            ])
+            ->add('choices_raw', TextareaType::class, [
             'label' => 'Liste de choix (1 par ligne)',
             'mapped' => false,
             'required' => true,
