@@ -12,15 +12,17 @@ use App\Entity\Capture\Condition;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
+use App\Entity\Capture\Field\EmailField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
+use App\Entity\Capture\Field\UrlField;
 use App\Entity\Capture\Rendering\TextChapter;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\User;
+use App\Entity\Participant\User;
 use App\Enum\SystemComponentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -102,7 +104,7 @@ class AppFixtures extends Fixture
             1,
             'Textarea',
             'Textarea',
-            true,
+            false,
             null
         );
         $manager->persist($f1);
@@ -112,7 +114,7 @@ class AppFixtures extends Fixture
             2,
             'Integer',
             'Integer',
-            true,
+            false,
             null
         );
         $manager->persist($f2);
@@ -122,7 +124,7 @@ class AppFixtures extends Fixture
             3,
             'Text',
             'Text',
-            true,
+            false,
             null
         );
         $manager->persist($f3);
@@ -133,7 +135,7 @@ class AppFixtures extends Fixture
             4,
             'Decimal',
             'Decimal',
-            true,
+            false,
             null
         );
         $manager->persist($f4);
@@ -144,7 +146,7 @@ class AppFixtures extends Fixture
             5,
             'Date',
             'Date',
-            true,
+            false,
             null
         );
         $manager->persist($f5);
@@ -155,7 +157,7 @@ class AppFixtures extends Fixture
             5,
             'Checklist',
             'Checklist',
-            true,
+            false,
             null,
             [
                 ['label' => 'Option A', 'value' => 'Option A'],
@@ -171,10 +173,32 @@ class AppFixtures extends Fixture
             6,
             'Composants de SI',
             'Composants de SI',
-            true,
+            false,
             null
         );
         $manager->persist($f7);
+
+        // f8 Link
+        $f8 = $this->createField(
+            new UrlField(),
+            7,
+            'Url',
+            'Url',
+            false,
+            null
+        );
+        $manager->persist($f8);
+
+        // f9 Email
+        $f9 = $this->createField(
+            new EmailField(),
+            7,
+            'Email',
+            'Email',
+            false,
+            null
+        );
+        $manager->persist($f9);
 
         // capture element
         $flex = (new FlexCaptureElement())
@@ -188,7 +212,9 @@ class AppFixtures extends Fixture
             ->addField($f4)
             ->addField($f5)
             ->addField($f6)
-            ->addField($f7);
+            ->addField($f7)
+            ->addField($f8)
+            ->addField($f9);
         $manager->persist($flex);
 
         // title
@@ -206,7 +232,9 @@ Text : [TEXT]
 Decimal : [DECIMAL]
 Date : [DATE]
 Checklist : [CHECKLIST]
-Composants de SI : [COMPOSANTSDESI]');
+Composants de SI : [COMPOSANTSDESI]
+Url : [URL]
+Email : [EMAIL]');
         $chapter->setCaptureElement($flex);
         $manager->persist($chapter);
 

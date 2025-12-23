@@ -23,14 +23,14 @@ final readonly class FieldFactory
         /** @var Field $field */
         $field = new $class();
 
-        $this->setIfCallable($field, 'setInternalLabel', $data['internalLabel'] ?? null);
-        $this->setIfCallable($field, 'setExternalLabel', $data['externalLabel'] ?? null);
+        $this->setIfCallable($field, 'setLabel', $data['label'] ?? null);
+        $this->setIfCallable($field, 'setHelp', $data['help'] ?? null);
         $this->setIfCallable($field, 'setName', $data['name'] ?? null);
-        $this->setIfCallable($field, 'internalPosition', $data['internalPosition'] ?? null);
-        $this->setIfCallable($field, 'setInternalRequired', $data['internalRequired'] ?? false);
-        $this->setIfCallable($field, 'setExternalRequired', $data['externalRequired'] ?? false);
+        $this->setIfCallable($field, 'setRequired', $data['required'] ?? null);
+        $this->setIfCallable($field, 'setPosition', $data['position'] ?? null);
 
-        // Spécifiques selon sous-type (exemples)
+
+        // Spécifiques selon sous-type
         // if (method_exists($field, 'setChoices') && isset($data['choices'])) {
         //     $field->setChoices($data['choices']); // tableau normalisé ['key' => 'Label', ...]
         // }

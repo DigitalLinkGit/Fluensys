@@ -5,8 +5,10 @@ namespace App\Form\Capture\Field;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
+use App\Entity\Capture\Field\UrlField;
 use App\Service\Helper\FieldTypeHelper;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -27,16 +29,6 @@ class FieldForm extends AbstractType
                 return;
             }
 
-
-            if ($field instanceof SystemComponentCollectionField) {
-                $event->getForm()->add('value', SystemComponentCollectionFieldForm::class, [
-                    'label' => $field->getLabel(),
-                    'inherit_data' => true,
-                ]);
-
-                return;
-            }
-
             $formFieldType = $this->typeHelper->getFormTypeFor($field);
 
             $opts = [
@@ -51,6 +43,22 @@ class FieldForm extends AbstractType
                     'expanded' => true,
                     'multiple' => !$field->isUniqueResponse(),
                 ];
+            }
+            if ($field instanceof UrlField) {
+                $opts += [
+                    'default_protocol' => 'https',
+                    'constraints' => [
+                        new Url(),
+                    ],
+                ];
+            }
+            if ($field instanceof SystemComponentCollectionField) {
+                $event->getForm()->add('value', SystemComponentCollectionFieldForm::class, [
+                    'label' => $field->getLabel(),
+                    'inherit_data' => true,
+                ]);
+
+                return;
             }
 
             $event->getForm()->add('value', $formFieldType, $opts);

@@ -1,13 +1,12 @@
 {% if element is defined %}
     {% set collapseId = 'el_' ~ (element.id ?? loop.index) ~ '_fields' %}
 
-    <div class="card h-100 mb-1">
+    <div class="card h-100 mb-1 {{ 'element' ~ (element.active ? '' : ' card-inactive') }}">
         <div class="card-body py-2 d-flex align-items-center" data-sortable-handle>
             <div class="card-title mb-0">
                 <b>{{ element.name }} : </b> {{ element.description }}
             </div>
             <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
-                <div>{{ element.active?'On':'Off' }}  </div>
                 {% if is_granted('ROLE_ADMIN') and element.template %}
                     {# EDIT #}
                     <a href="{{ path('app_capture_element_edit', {
@@ -31,14 +30,18 @@
                     </button>
                 {% endif %}
                 {% if is_granted('ROLE_USER') and not element.template %}
-                    <a href="{{ path('app_capture_element_respond', {
-                        id: element.id,
-                        captureId: capture.id,
-                    }) }}"
-                       class="btn btn-outline-primary btn-sm"
-                       title="Répondre" aria-label="Répondre">
-                        <i class="bi bi-pencil"></i>
-                    </a>
+                    {% if element.active %}
+                        <a href="{{ path('app_capture_element_respond', {
+                            id: element.id,
+                            captureId: capture.id,
+                        }) }}"
+                           class="btn btn-outline-primary btn-sm"
+                           title="Répondre" aria-label="Répondre">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    {% else %}
+                        <div>OFF</div>
+                    {% endif %}
                 {% endif %}
                 {# EXPAND #}
                 <button class="btn btn-outline-primary btn-sm"

@@ -5,17 +5,21 @@ namespace App\Service\Helper;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
+use App\Entity\Capture\Field\EmailField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
+use App\Entity\Capture\Field\UrlField;
 use App\Form\Capture\Field\SystemComponentCollectionFieldForm;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 final class FieldTypeHelper
 {
@@ -27,6 +31,8 @@ final class FieldTypeHelper
         'decimal' => DecimalField::class,
         'date' => DateField::class,
         'checklist' => ChecklistField::class,
+        'url' => UrlField::class,
+        'email' => EmailField::class,
         'system_component_collection' => SystemComponentCollectionField::class,
     ];
 
@@ -38,6 +44,8 @@ final class FieldTypeHelper
         'decimal' => TextType::class,
         'date' => DateType::class,
         'checklist' => ChoiceType::class,
+        'url' => UrlType::class,
+        'email' => EmailType::class,
         'system_component_collection' => SystemComponentCollectionFieldForm::class,
     ];
 
@@ -49,6 +57,8 @@ final class FieldTypeHelper
         'decimal' => 'Nombre décimal',
         'date' => 'Date',
         'checklist' => 'Choix multiples',
+        'url' => 'lien',
+        'email' => 'Email',
         'system_component_collection' => 'Composants de SI',
     ];
 
@@ -60,6 +70,8 @@ final class FieldTypeHelper
         'decimal' => true,
         'date' => true,
         'checklist' => true,
+        'url' => true,
+        'email' => true,
         'system_component_collection' => false,
     ];
 

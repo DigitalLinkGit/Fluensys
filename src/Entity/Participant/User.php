@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Participant;
 
 use App\Entity\Capture\Capture;
-use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Entity\Participant\ParticipantRole;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

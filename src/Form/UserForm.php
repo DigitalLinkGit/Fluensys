@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\User;
+use App\Entity\Participant\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;

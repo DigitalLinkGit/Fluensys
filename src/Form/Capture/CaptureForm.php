@@ -4,11 +4,9 @@ namespace App\Form\Capture;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Entity\User;
-use App\Form\Capture\CaptureElement\CaptureElementForm;
+use App\Entity\Participant\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

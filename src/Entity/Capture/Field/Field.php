@@ -16,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
     'decimal' => DecimalField::class,
     'date' => DateField::class,
     'checklist' => ChecklistField::class,
+    'url' => UrlField::class,
+    'email' => EmailField::class,
     'system_component_collection' => SystemComponentCollectionField::class,
 ])]
 abstract class Field

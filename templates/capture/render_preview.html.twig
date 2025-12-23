@@ -18,12 +18,12 @@
     </div>
     <div class="doc-container">
         <div class="doc-page">
-            {# Title #}
+            {# Document Title #}
             {% include 'capture/rendering/_title_render.html.twig' with { title: capture.title } only %}
 
             {# Chapter #}
             {% for element in capture.captureElements %}
-
+                {% if element.active %}
                 {# Conditions qui ont pour targetElement cet élément #}
                 {% set elementConditions = (capture.conditions ?? [])
                     | filter(c => (c.targetElement is same as(element))
@@ -40,13 +40,11 @@
 
                 {% if element.chapter is not null and element.chapter.title is not null %}
                     {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
-                {% else %}
-                    {% include 'capture/rendering/_title_render.html.twig' with { title: null } only %}
                 {% endif %}
                 {% if element.chapter is not null and element.chapter.renderContent is not null %}
                     <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
                 {% endif %}
-
+                {% endif %}
 
             {% endfor %}
         </div>

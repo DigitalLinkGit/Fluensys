@@ -3,7 +3,6 @@
 namespace App\Entity\Participant;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Entity\User;
 use App\Repository\ParticipantRoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -40,7 +39,6 @@ class ParticipantRole
 
     public function __construct()
     {
-        $this->responsibleCaptureElements = new ArrayCollection();
         $this->validatorCaptureElements = new ArrayCollection();
         $this->contributorCaptureElements = new ArrayCollection();
         $this->users = new ArrayCollection();

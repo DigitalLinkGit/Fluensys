@@ -6,7 +6,7 @@ use App\Entity\Account\Account;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\User;
+use App\Entity\Participant\User;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
