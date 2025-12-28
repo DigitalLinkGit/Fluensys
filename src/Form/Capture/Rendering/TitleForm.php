@@ -27,6 +27,9 @@ class TitleForm extends AbstractType
                 ],
                 'expanded' => false,
                 'multiple' => false,
+                'attr' => [
+                    'class' => 'w-auto',
+                ],
             ]);
     }
 

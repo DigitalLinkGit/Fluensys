@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Capture\CaptureElement;
 
 use App\Entity\Capture\CaptureElement\SystemComponentCaptureElement;
 use App\Entity\Participant\ParticipantRole;

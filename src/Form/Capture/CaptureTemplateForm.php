@@ -51,6 +51,10 @@ class CaptureTemplateForm extends AbstractType
                     'data-condition-fields-url-value' => $this->urlGenerator->generate('condition_fields'),
                 ],
             ])
+            ->add('title', TitleForm::class, [
+                'required' => false,
+                'label' => false,
+            ])
         ;
     }
 

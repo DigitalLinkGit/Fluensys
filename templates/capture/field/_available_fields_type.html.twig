@@ -1,16 +1,19 @@
-<div class="text-center">
-    <h5 class="card-header pb-3 text-center">Type de réponses disponibles</h5>
-
-    <div class="list-group list-group-flush p-2 d-flex flex-column align-items-stretch mx-auto"
-         style="max-width: 320px;">
-        {% for item in dragTypes %}
-            <button class="draggable-element mb-2 w-100"
-                    draggable="true"
-                    data-type="{{ item.key }}"
-                    data-label="{{ item.label }}"
-                    data-action="dragstart->capture-element#dragStart">
-                {{ item.label }}
-            </button>
-        {% endfor %}
+<div>
+    <div class="input-group">
+        <select class="form-select" data-capture-element-target="typeSelect">
+            {% for item in dragTypes %}
+                <option value="{{ item.key }}">{{ item.label }}</option>
+            {% endfor %}
+        </select>
+        <button type="button"
+                class="btn btn-primary"
+                data-action="click->capture-element#addFromSelect"
+                aria-label="Ajouter un champ">
+            <i class="bi bi-plus"></i>
+            Ajouter
+        </button>
     </div>
 </div>
+
+
+

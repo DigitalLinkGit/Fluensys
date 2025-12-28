@@ -3,6 +3,9 @@
 namespace App\Entity\Participant;
 
 use App\Entity\Capture\Capture;
+use App\Entity\Tenant;
+use App\Entity\TenantAwareInterface;
+use App\Entity\TenantAwareTrait;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,8 +15,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TenantAwareInterface
 {
+    use TenantAwareTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -52,6 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->participantRoles = new ArrayCollection();
+        $this->captures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -171,6 +177,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFunction(?string $function): static
     {
         $this->function = $function;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Capture>
+     */
+    public function getCaptures(): Collection
+    {
+        return $this->captures;
+    }
+
+    public function addCapture(Capture $capture): static
+    {
+        if (!$this->captures->contains($capture)) {
+            $this->captures->add($capture);
+            $capture->setResponsible($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCapture(Capture $capture): static
+    {
+        if ($this->captures->removeElement($capture)) {
+            // set the owning side to null (unless already changed)
+            if ($capture->getResponsible() === $this) {
+                $capture->setResponsible(null);
+            }
+        }
 
         return $this;
     }

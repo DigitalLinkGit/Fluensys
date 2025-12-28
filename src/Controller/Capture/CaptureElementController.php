@@ -7,13 +7,16 @@ use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Rendering\TextChapter;
-use App\Form\Capture\CaptureElement\CaptureElementForm;
+use App\Entity\Participant\User;
 use App\Form\Capture\CaptureElement\CaptureElementNewForm;
+use App\Form\Capture\CaptureElement\CaptureElementRespondForm;
+use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
-use App\Service\CaptureElementRouter;
-use App\Service\ConditionToggler;
 use App\Service\Factory\CaptureElementFactory;
-use App\Service\Helper\CaptureElementTypeHelper;
+use App\Service\Helper\CaptureElementRouter;
+use App\Service\Helper\CaptureElementTypeManager;
+use App\Service\Helper\CaptureStatusManager;
+use App\Service\Helper\ConditionToggler;
 use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/capture-element')]
+#[Route('/capture/element')]
 final class CaptureElementController extends AbstractAppController
 {
     #[Route(name: 'app_capture_element_index', methods: ['GET'])]
@@ -43,11 +46,10 @@ final class CaptureElementController extends AbstractAppController
         ]);
     }
 
-    #[Route('/{id}/preview', name: 'app_capture_element_preview', methods: ['GET'])]
+    #[Route('/{id}/preview', name: 'app_capture_element_form_preview', methods: ['GET'])]
     public function preview(CaptureElement $element): Response
     {
-
-        $form = $this->createForm(CaptureElementForm::class, $element);
+        $form = $this->createForm(CaptureElementRespondForm::class, $element);
 
         return $this->render('capture/capture_element/preview.html.twig', [
             'element' => $element,
@@ -68,7 +70,7 @@ final class CaptureElementController extends AbstractAppController
         }
 
         $calcVars = [];
-        foreach ($flexCapture->getCalculatedvariables() as $cv) {
+        foreach ($flexCapture->getCalculatedVariables() as $cv) {
             $name = $cv->getTechnicalName();
             if ($name) {
                 $calcVars[] = $name;
@@ -81,6 +83,12 @@ final class CaptureElementController extends AbstractAppController
             'variables' => $variables,
         ]);
         $form->handleRequest($request);
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $flexCapture->setChapter($chapter);
@@ -99,17 +107,76 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['GET', 'POST'])]
-    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler): Response
+    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureStatusManager $statusManager): Response
     {
-        $form = $this->createForm(CaptureElementForm::class, $element);
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(CaptureElementRespondForm::class, $element);
         $form->handleRequest($request);
         $capture = $element->getCapture();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (null !== $capture) {
-                $toggler->apply($capture->getConditions()->toArray());
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $statusManager->submit($element, $user, false);
+                if (null !== $capture) {
+                    $toggler->apply($capture->getConditions()->toArray());
+                }
+
+                $entityManager->persist($element);
+                $entityManager->flush();
+                $this->addFlash('success', 'Votre réponse à bien été enregistrée');
+            } else {
+                foreach ($form->getErrors(true, true) as $error) {
+                    $this->addFlash('danger', $error->getMessage());
+                }
             }
-            $entityManager->flush();
+
+            return $this->redirectToRoute('app_capture_edit', ['id' => $capture?->getId()], 303);
+        }
+
+        return $this->render('capture/capture_element/respond.html.twig', [
+            'element' => $element,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/valid', name: 'app_capture_element_valid', methods: ['GET', 'POST'])]
+    public function valid(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureStatusManager $statusManager): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(CaptureElementValidationForm::class, $element);
+        $form->handleRequest($request);
+        $capture = $element->getCapture();
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                // TODO: make reel validation
+                $isValidated = true;
+                /** @var \Symfony\Component\Form\FormInterface $fieldsForm */
+                $fieldsForm = $form->get('fields');
+                foreach ($fieldsForm as $index => $fieldItemForm) {
+                    $isValidated = (bool) $fieldItemForm->get('validated')->getData();
+                    if (!$isValidated) {
+                        break;
+                    }
+                }
+                if ($isValidated) {
+                    $statusManager->valid($element, $user, false);
+                    $this->addFlash('success', 'Enregistrement réussi. L\'élément à été validé');
+                } else {
+                    $this->addFlash('warning', 'Enregistrement réussi. L\'élément n\'est pas valide');
+                }
+                $entityManager->persist($element);
+                $entityManager->flush();
+                $this->addFlash('success', 'Votre réponse à bien été enregistrée');
+            } else {
+                foreach ($form->getErrors(true, true) as $error) {
+                    $this->addFlash('danger', $error->getMessage());
+                }
+            }
 
             return $this->redirectToRoute('app_capture_edit', ['id' => $capture?->getId()], 303);
         }
@@ -121,13 +188,19 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/new', name: 'app_capture_element_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeHelper $typeHelper, CaptureElementFactory $factory, CaptureElementRouter $router): Response
+    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeManager $typeHelper, CaptureElementFactory $factory, CaptureElementRouter $router): Response
     {
         $captureId = $request->query->getInt('capture');
 
         $form = $this->createForm(CaptureElementNewForm::class, null, [
             'type_choices' => $typeHelper->getFormChoices(),
         ])->handleRequest($request);
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
@@ -170,12 +243,33 @@ final class CaptureElementController extends AbstractAppController
         }
 
         try {
+            // 1) Remove conditions referencing this element (source or target)
+            $removedConditions = 0;
+
+            foreach ($capture->getConditions() as $condition) {
+                if ($condition->getSourceElement() === $element || $condition->getTargetElement() === $element) {
+                    $entityManager->remove($condition);
+                    ++$removedConditions;
+                }
+            }
+
+            // 2) Remove the element itself
             $entityManager->remove($element);
             $entityManager->flush();
 
-            $this->addFlash('success', 'L’élément a bien été supprimé.');
+            if ($removedConditions > 0) {
+                $this->addFlash(
+                    'success',
+                    sprintf('L’élément a bien été supprimé (%d condition(s) associée(s) supprimée(s)).', $removedConditions)
+                );
+            } else {
+                $this->addFlash('success', 'L’élément a bien été supprimé.');
+            }
         } catch (ForeignKeyConstraintViolationException $e) {
-            $this->addFlash('warning', 'Impossible de supprimer cet élément car il est utilisé dans au moins une capture.');
+            $this->addFlash(
+                'warning',
+                'Impossible de supprimer cet élément : il est encore référencé par d’autres données.'
+            );
         } catch (\Throwable $e) {
             $this->logger?->error('Erreur lors de la suppression', [
                 'id' => $element->getId(),

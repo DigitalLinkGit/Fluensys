@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CaptureElementForm extends AbstractType
+class CaptureElementRespondForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

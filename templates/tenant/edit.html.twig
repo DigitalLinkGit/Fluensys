@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Tenant{% endblock %}
+
+{% block body %}
+    <h1>Mon organisation</h1>
+
+    {{ include('tenant/_form.html.twig') }}
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'link',
+            route: 'app_tenant_user_new',
+            param_map: { id: 'tenant.id' },
+            icon: 'bi-plus',
+            label: 'Créer le premier user',
+            class: 'btn btn-outline-primary'
+        }
+    } %}
+
+{% endblock %}

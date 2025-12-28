@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Participant Assignment{% endblock %}
+
+{% block body %}
+    <h1>Affectation des participants</h1>
+
+    {{ form_start(form) }}
+
+    <div class="d-flex align-item-center gap-2 mt-3 g-3">
+        <div class="">
+            <div class="mb-3 col-header">Responsable :</div>
+        </div>
+        <div class="col-auto">{{ form_row(form.responsible) }}</div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="mb-3 col-header">Contributeurs</div>
+
+            {% for role in capture.getContributorRoles() %}
+                {% set fieldName = 'contrib_role_' ~ role.id %}
+                <div class="mb-3">
+                    {% include 'participant_role/_role_badge.html.twig' %}
+                    <label class="form-label fw-semibold">{{ role.name }}</label>
+                    {{ form_widget(attribute(form, fieldName), { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(attribute(form, fieldName)) }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3 col-header">Validateurs</div>
+
+            {% for role in capture.getValidatorRoles() %}
+                {% set fieldName = 'valid_role_' ~ role.id %}
+                <div class="mb-3">
+                    {% include 'participant_role/_role_badge.html.twig' %}
+                    <label class="form-label fw-semibold">{{ role.name }}</label>
+                    {{ form_widget(attribute(form, fieldName), { attr: { class: 'form-select' } }) }}
+                    {{ form_errors(attribute(form, fieldName)) }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                label: 'Annuler',
+                icon: 'bi-arrow-left',
+                route: 'app_capture_index',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        } %}
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

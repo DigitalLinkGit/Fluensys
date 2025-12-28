@@ -26,6 +26,10 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: false
+        filters:
+            tenant:
+                class: App\Doctrine\Filter\TenantFilter
+                enabled: false
 
 when@test:
     doctrine:
@@ -44,6 +48,10 @@ when@prod:
             result_cache_driver:
                 type: pool
                 pool: doctrine.result_cache_pool
+            filters:
+                tenant:
+                    class: App\Doctrine\Filter\TenantFilter
+                    enabled: false
 
     framework:
         cache:

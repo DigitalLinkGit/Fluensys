@@ -3,7 +3,7 @@
 namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\Field;
-use App\Service\Helper\FieldTypeHelper;
+use App\Service\Helper\FieldTypeManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -18,7 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class FieldTemplateForm extends AbstractType
 {
-    public function __construct(private readonly FieldTypeHelper $typeHelper)
+    public function __construct(private readonly FieldTypeManager $typeHelper)
     {
     }
 
@@ -47,8 +47,6 @@ final class FieldTemplateForm extends AbstractType
                 'label' => 'Obligatoire',
                 'required' => false,
             ])
-
-            // drag-and-drop discriminator; never shown/edited by user
             ->add('type', HiddenType::class, ['mapped' => false, 'required' => true])
         ;
 

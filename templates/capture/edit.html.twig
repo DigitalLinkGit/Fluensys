@@ -3,9 +3,195 @@
 {% block title %}Edit Capture{% endblock %}
 
 {% block body %}
-    <h1>Capture : </h1>
-    {{ include('capture/_form.html.twig') }}
+    {{ form_start(form) }}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="page-title">{{ capture.template ? 'Template de capture : ':'Capture : ' }}</h2>
+        {% if capture.account is defined and capture.account is not null %}
+            <div>
+                <span class="text-muted">Compte :</span>
+                <a href="{{ path('app_account_edit', { id: capture.account.id }) }}" class="col-header text-decoration-none">
+                    {{ capture.account.name }}
+                </a>
 
+            </div>
+        {% endif %}
+
+    </div>
+    <div class="row align-items-start">
+        <div class="col-md-4">
+            {% include 'components/form/_ghost_field.html.twig' with {
+                field: form.name,
+                placeholder: 'Nom…',
+                class: 'title-input',
+                attrs: { autocomplete: 'off' }
+            } %}
+
+            {% include 'components/form/_ghost_field.html.twig' with {
+                field: form.description,
+                placeholder: 'Description…',
+                class: 'subtitle-textarea',
+                attrs: { autocomplete: 'off' }
+            } %}
+        </div>
+        <div>
+            {% include 'components/button/_btn_bar.html.twig' with {
+                buttons: {
+                    preview_render: {
+                        type: 'link',
+                        route: 'app_capture_render_text_preview',
+                        param_map: { id: 'capture.id' },
+                        icon: 'bi-pencil',
+                        label: 'Aperçu du rendu',
+                        class: 'btn btn-outline-primary btn-sm'
+                    },
+                    back: {
+                        type: 'link',
+                        label: 'Retour',
+                        icon: 'bi-arrow-left',
+                        route: 'app_capture_index',
+                        class: 'btn btn-outline-primary'
+                    },
+                    save: {
+                        type: 'submit',
+                        label: 'Enregistrer',
+                        icon: 'bi-check',
+                        class: 'btn btn-primary'
+                    }
+                }
+            } %}
+        </div>
+    </div>
+
+
+    <div
+        data-controller="tabs-persist"
+        data-tabs-persist-default-tab-value="#capture-elements"
+        data-tabs-persist-storage-key-value="captureTabs"
+        data-tabs-persist-mode-value="storage"
+    >
+        <ul class="tabs tabs--primary my-3 nav" role="tablist">
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements"
+                   role="tab"
+                   aria-controls="capture-elements"
+                   aria-selected="false">Eléments de capture</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+                   aria-controls="roles"
+                   aria-selected="true">Rôles</a>
+            </li>
+            {% if capture.template %}
+                <li class="tab nav-item" role="presentation">
+                    <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
+                       aria-controls="conditions"
+                       aria-selected="true">Conditions</a>
+                </li>
+                <li class="tab nav-item" role="presentation">
+                    <a id="tab-document" class="tab__link nav-link" data-bs-toggle="tab" href="#document" role="tab"
+                       aria-controls="document"
+                       aria-selected="true">Document</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
+            <div class="row mx-2 px-0 g-0 col-header">
+                <div class="col-3">Nom</div>
+                <div class="col-3">Contributeur</div>
+                <div class="col-3">Validateur</div>
+            </div>
+            <div class="mx-2 mb-3 element-card-container">
+                <div class="sortable-list" data-sortable-order-target="list">
+                    {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
+                        {% set byTarget = conditionsByTargetId|default({}) %}
+
+                        {% for element in capture.captureElements %}
+                            {% set entity = element ?? null %}
+                            {% set elementId = entity ? entity.id : null %}
+                            {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
+                            <div class="mb-1 row">
+                                {% include 'capture/capture_element/_prototype_card.html.twig' with {
+                                    element: element,
+                                    incomingConditions: incoming
+                                } %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {# on garde votre message existant (rien ne casse) #}
+                        <div class="text-muted small m-3">Aucun élément</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+            {% include 'participant_role/_participant_roles_and_assignment.html.twig' with { capture: form.vars.data } %}
+        </div>
+        {% if capture.template %}
+            <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
+                {% set prototype %}
+                    {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
+                {% endset %}
+                {# HEADERS #}
+                <div class="mx-2 mb-3">
+                    <div class="mb-2 row g-3 align-items-end">
+                        <div class="col-md-3 col-header" title="L'élément qui sera affecté par la condition">
+                            Elément cible
+                        </div>
+                        <div class="col-md-3 col-header"
+                             title="L'élément qui porte le champ à vérifier pour valider la condition">
+                            Elément source
+                        </div>
+                        <div class="col-md-3 col-header" title="Le champ à vérifier pour valider la condition">
+                            Champ source
+                        </div>
+                        <div class="col-md-2 col-header">
+                            Valeur attendue
+                        </div>
+                        <div class="col-auto ms-auto align-self-end col-header">
+                            Actions
+                        </div>
+                    </div>
+                    {# CONDITIONS #}
+                    <div
+                        data-controller="condition"
+                        data-prototype="{{ prototype|e('html_attr') }}"
+                        data-condition-fields-url-value="{{ path('condition_fields') }}"
+                    >
+                        <div data-condition-target="list" class="mb-3">
+                            {% for condition in form.conditions %}
+                                {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="col-auto ms-auto align-self-end" data-condition-target="add">
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-action="click->condition#add"
+                                    title="Ajouter une condition">
+                                <i class="bi bi-plus"></i>
+                                Ajouter une condition
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="document" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-document">
+                <div class="mx-2 mb-3">
+                    <div class="row g-3 align-items-end">
+                        <div class="col">
+                            {{ form_row(form.title.content) }}
+                        </div>
+                        <div class="col-auto">
+                            {{ form_row(form.title.level) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    {{ form_end(form) }}
 {% endblock %}
 
 

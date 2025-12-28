@@ -4,50 +4,52 @@
 
 {% block body %}
     <h1>Aperçu du document</h1>
-<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'link',
-            route: 'app_capture_template_edit',
-            param_map: { id: 'capture.id' },
-            icon: 'bi-arrow-left',
-            label: 'Retour',
-            class: 'btn btn-outline-primary'
-        }
-    } %}
-</div>
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                route: 'app_capture_template_edit',
+                param_map: { id: 'capture.id' },
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+    </div>
     <div class="doc-container">
         <div class="doc-page">
-            {# Title #}
-            {% include 'capture/rendering/_title_render.html.twig' with { title: capture.title } only %}
+            {# Document Title #}
+            <div class="doc-title">
+                {% include 'capture/rendering/_title_render.html.twig' with { title: capture.title } only %}
+            </div>
 
             {# Chapter #}
             {% for element in capture.captureElements %}
+                {% if element.chapter is not null and (element.chapter.templateContent is not null or element.chapter.title is not null) %}
+                    <div class="">
+                        {# Conditions where targetElement is this element #}
+                        {% set elementConditions = (capture.conditions ?? [])
+                            | filter(c => (c.targetElement is same as(element))
+                            or (c.targetElement is defined and c.targetElement.id is defined and c.targetElement.id == element.id)) %}
 
-                {# Conditions qui ont pour targetElement cet élément #}
-                {% set elementConditions = (capture.conditions ?? [])
-                    | filter(c => (c.targetElement is same as(element))
-                    or (c.targetElement is defined and c.targetElement.id is defined and c.targetElement.id == element.id))
-                %}
+                        {% if elementConditions|length %}
+                            <div class="mb-0 mt-2">
+                                {% for condition in elementConditions %}
+                                    <div class="doc-condition">{{ condition }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
-                {% if elementConditions|length %}
-                    <div class="mb-0 mt-2">
-                        {% for condition in elementConditions %}
-                            <div class="doc-condition">{{ condition }}</div>
-                        {% endfor %}
+                        {% if element.chapter.title is not null %}
+                            {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                        {% else %}
+                            {% include 'capture/rendering/_title_render.html.twig' with { title: null } only %}
+                        {% endif %}
+                        {% if element.chapter.templateContent is not null %}
+                            <div class="doc-paragraph">{{ element.chapter.templateContent }}</div>
+                        {% endif %}
                     </div>
                 {% endif %}
-
-                {% if element.chapter is not null and element.chapter.title is not null %}
-                    {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
-                {% else %}
-                    {% include 'capture/rendering/_title_render.html.twig' with { title: null } only %}
-                {% endif %}
-                {% if element.chapter is not null and element.chapter.templateContent is not null %}
-                    <div class="doc-paragraph">{{ element.chapter.templateContent }}</div>
-                {% endif %}
-
-
             {% endfor %}
         </div>
     </div>

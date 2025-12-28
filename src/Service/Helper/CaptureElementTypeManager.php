@@ -5,7 +5,7 @@ namespace App\Service\Helper;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class CaptureElementTypeHelper
+final class CaptureElementTypeManager
 {
     public function __construct(private EntityManagerInterface $em)
     {

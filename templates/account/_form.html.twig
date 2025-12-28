@@ -18,96 +18,204 @@
         } %}
     </div>
     <div class="col-md-6 d-flex justify-content-end align-items-start gap-2 mt-4">
-    {% else %}
-    <div class="form-container p-3">
-        {{ form_row(form.name) }}
-        {{ form_row(form.description) }}
-    </div>
+        {% else %}
+        <div class="form-container p-3">
+            {{ form_row(form.name) }}
+            {{ form_row(form.description) }}
+        </div>
+        {% endif %}
         <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
-    {% endif %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    label: 'Retour',
+                    icon: 'bi-arrow-left',
+                    route: 'app_account_index',
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
 
-
-        {% include 'components/button/_btn.html.twig' with {
-            btn: {
-                type: 'link',
-                label: 'Retour',
-                icon: 'bi-arrow-left',
-                route: 'app_account_index',
-                class: 'btn btn-outline-primary'
-            }
-        } %}
-
-        {% include 'components/button/_btn.html.twig' with {
-            btn: {
-                type: 'submit',
-                label: 'Enregistrer',
-                icon: 'bi-check',
-                class: 'btn btn-primary'
-            }
-        } %}
-    </div>
-</div>
-
-
-
-<ul class="tabs tabs--primary my-3 nav" role="tablist">
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab"
-           aria-controls="capture"
-           aria-selected="false">Captures</a>
-    </li>
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-information-system" class="tab__link nav-link" data-bs-toggle="tab" href="#information-system"
-           role="tab" aria-controls="information-system"
-           aria-selected="false">Système d'information</a>
-    </li>
-    <li class="tab nav-item" role="presentation">
-        <a id="tab-contacts" class="tab__link nav-link" data-bs-toggle="tab" href="#contacts" role="tab"
-           aria-controls="contacts"
-           aria-selected="true">Contacts</a>
-    </li>
-</ul>
-
-<div class="tab-content">
-    <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
-        <div class="mx-2">
-
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'submit',
+                    label: 'Enregistrer',
+                    icon: 'bi-check',
+                    class: 'btn btn-primary'
+                }
+            } %}
         </div>
     </div>
-    <div id="information-system" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-information-system">
-        <div class="mx-2">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Nom</h5>
-                </div>
-                <div class="col-md-4">
-                    <h5>Type</h5>
-                </div>
+
+
+    <div
+        data-controller="tabs-persist"
+        data-tabs-persist-default-tab-value="#capture"
+        data-tabs-persist-storage-key-value="accountTabs"
+        data-tabs-persist-mode-value="storage"
+    >
+        <ul class="tabs tabs--primary my-3 nav" role="tablist">
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-capture" class="tab__link nav-link" data-bs-toggle="tab" href="#capture" role="tab"
+                   aria-controls="capture"
+                   aria-selected="false">Captures</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-information-system" class="tab__link nav-link" data-bs-toggle="tab"
+                   href="#information-system"
+                   role="tab" aria-controls="information-system"
+                   aria-selected="false">Système d'information</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-contacts" class="tab__link nav-link" data-bs-toggle="tab" href="#contacts" role="tab"
+                   aria-controls="contacts"
+                   aria-selected="true">Contacts</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="capture" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture">
+            <div class="mx-2">
+                {% include 'components/table/_table.html.twig' with {
+                    items: account.captures,
+                    columns: ['name', 'description'],
+                    headers: ['Nom', 'Description'],
+                    filter: true,
+                    sort: true,
+                    add: {route: 'app_contact_new'},
+                    actions: [
+                        {
+                            route: 'app_contact_show',
+                            param_map: { id: 'id' },
+                            icon: 'bi-eye',
+                            label: 'Voir',
+                        },
+                        {
+                            route: 'app_contact_edit',
+                            param_map: { id: 'id' },
+                            icon: 'bi-pencil',
+                            label: 'Éditer',
+                        },
+                        {
+                            route: 'app_contact_delete',
+                            param_map: { id: 'id' },
+                            icon: 'bi-trash',
+                            label: 'Supprimer',
+                        }
+                    ]
+                } %}
             </div>
-            <div>
-                {{ form_widget(form.informationSystem) }}
+        </div>
+        <div id="information-system" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-information-system">
+            <div class="mx-2">
+                <div class="row">
+                    <div class="col-md-4 col-header">
+                        Nom
+                    </div>
+                    <div class="col-md-4 col-header">
+                        Type
+                    </div>
+                </div>
+                <div>
+                    {{ form_widget(form.informationSystem) }}
+                </div>
 
             </div>
+        </div>
+        <div id="contacts" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-contacts">
+            <div class="mx-2" data-controller="classic-collection">
 
+                {#{% include 'components/table/_table.html.twig' with {
+                    items: account.contacts,
+                    columns: ['name', 'function','email'],
+                    headers: ['Nom', 'Fonction','email'],
+                    filter: true,
+                    sort: true,
+                    add: {route: 'app_contact_new'},
+                    actions: [
+                        {
+                            route: 'app_contact_show',
+                            param_map: { id: 'id' },
+                            icon: 'bi-eye',
+                            label: 'Voir',
+                        },
+                        {
+                            route: 'app_contact_edit',
+                            param_map: { id: 'id' },
+                            icon: 'bi-pencil',
+                            label: 'Éditer',
+                        },
+                        {
+                            route: 'app_contact_delete',
+                            param_map: { id: 'id' },
+                            icon: 'bi-trash',
+                            label: 'Supprimer',
+                        }
+                    ]
+                } %}#}
+                <div class="row">
+                    <div class="col-md-2 col-header">
+                        Nom
+                    </div>
+                    <div class="col-md-2 col-header">
+                        Fonction
+                    </div>
+                    <div class="col-md-3 col-header">
+                        Email
+                    </div>
+                    <div class="col-md-2 col-header">
+                        Rôle
+                    </div>
+                    <div class="col-md-2 col-header">
+                        Actions
+                    </div>
+                </div>
+
+                {% for contactForm in form.contacts %}
+                    {% set contactId = contactForm.vars.value.id %}
+                    <fieldset class="mb-3">
+                        <div class="row g-2 align-items-end">
+                            {{ form_row(contactForm.name) }}
+                            {{ form_row(contactForm.function) }}
+                            {{ form_row(contactForm.email) }}
+                            {% set collapseId = 'roles_' ~ contactForm.vars.id %}
+
+                            {% set checkedCount = 0 %}
+                            {% for c in contactForm.participantRoles %}
+                                {% if c.vars.checked %}{% set checkedCount = checkedCount + 1 %}{% endif %}
+                            {% endfor %}
+                            <div class="col-md-2">
+                                <div class="dropdown roles-dropdown mx-3 mb-2">
+                                    <button
+                                        class="btn btn-link p-0 roles-dropdown__toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+                                        Roles ({{ checkedCount }})
+                                    </button>
+
+                                    <div class="dropdown-menu roles-dropdown__menu p-2">
+                                        {{ form_widget(contactForm.participantRoles) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="w-auto">
+                                <label class="m-0 mb-2">
+                                    <input
+                                        type="radio"
+                                        name="defaultContactId"
+                                        value="{{ contactId }}"
+                                        {% if account.defaultContact and contactId == account.defaultContact.id %}checked{% endif %}
+                                        title="Définir comme contact par défaut"
+                                    >
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                {% endfor %}
+            </div>
         </div>
     </div>
-    <div id="contacts" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-contacts">
-        <div class="mx-2">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Nom</h5>
-                </div>
-                <div class="col-md-3">
-                    <h5>Fonction</h5>
-                </div>
-                <div class="col-md-4">
-                    <h5>Email</h5>
-                </div>
-            </div>
-                {{ form_widget(form.contacts) }}
-            </div>
-        </div>
-    </div>
-</div>
 
-{{ form_end(form) }}
+    {{ form_end(form) }}

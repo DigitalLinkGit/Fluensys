@@ -26,18 +26,38 @@ class CaptureElementBaseForm extends AbstractType
             ])
             ->add('contributor', EntityType::class, [
                 'class' => ParticipantRole::class,
-                'choice_label' => 'name',
+                'choice_label' => function (?ParticipantRole $role): string {
+                    if (!$role) {
+                        return '';
+                    }
+
+                    $scope = $role->isInternal() ? 'Interne' : 'Externe';
+
+                    return sprintf('%s - %s', $scope, $role->getName());
+                },
                 'label' => 'Contributeur',
                 'required' => false,
                 'query_builder' => function (ParticipantRoleRepository $r) {
                     return $r->createQueryBuilder('role')
                         ->orderBy('role.name', 'ASC');
                 },
-                'placeholder' => 'Aucun contribution'
+                'placeholder' => 'Aucune contribution',
+                'attr' => [
+                    'title' => 'Si un rôle est sélectionné, le responsable de la capture ne pourra répondre à cet élément que s’il possède ce rôle. Sinon, il devra solliciter un contributeur disposant du rôle requis.',
+                    'class' => 'w-auto',
+                ],
             ])
             ->add('validator', EntityType::class, [
                 'class' => ParticipantRole::class,
-                'choice_label' => 'name',
+                'choice_label' => function (?ParticipantRole $role): string {
+                    if (!$role) {
+                        return '';
+                    }
+
+                    $scope = $role->isInternal() ? 'Interne' : 'Externe';
+
+                    return sprintf('%s - %s', $scope, $role->getName());
+                },
                 'label' => 'Validateur',
                 'required' => false,
                 'query_builder' => function (ParticipantRoleRepository $r) {
@@ -45,17 +65,20 @@ class CaptureElementBaseForm extends AbstractType
                         ->orderBy('role.name', 'ASC');
                 },
                 'placeholder' => 'Aucune validation',
+                'attr' => [
+                    'title' => 'Si un rôle est sélectionné, le responsable de la capture ne pourra valider cet élément que s’il possède ce rôle. Sinon, il devra solliciter un contributeur disposant du rôle requis.',
+                    'class' => 'w-auto',
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 4,
                     'placeholder' => 'Description de la capture...',
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

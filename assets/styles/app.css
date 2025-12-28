@@ -89,6 +89,10 @@ h6 {
     color: var(--easy-text);
 }
 
+.page-title{
+    color: var(--easy-primary-accent-dark);
+}
+
 /* Utility helpers for flex capture */
 .border-dashed { border-style: dashed !important; }
 .drop-zone { background-color: var(--main-surface); color: var(--easy-text-soft); }
@@ -619,6 +623,7 @@ input[name$="[url]"]:hover {
 .doc-page h1, .doc-page h2, .doc-page h3{
     margin: 1.25rem 0 .5rem;
     line-height: 1.25;
+    color: var(--easy-primary);
 }
 
 .doc-paragraph{
@@ -628,6 +633,14 @@ input[name$="[url]"]:hover {
 
 .doc-condition{
     color: var(--easy-danger);
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+
+.doc-title{
+    text-align: center;
+    margin: 0 0 1.5rem;
 }
 
 /* PRINT */
@@ -687,5 +700,83 @@ input[name$="[url]"]:hover {
 .sortable-ghost {
     opacity: 0.35;
 }
+
+.roles-dropdown{
+    position: relative;
+}
+
+.roles-dropdown__toggle{
+    color: var(--easy-primary);
+    text-decoration: none;
+}
+
+.roles-dropdown__toggle:hover,
+.roles-dropdown__toggle:focus{
+    color: var(--easy-primary);
+    text-decoration: none;
+}
+
+.roles-dropdown__toggle:focus{
+    box-shadow: none;
+}
+
+.roles-dropdown__menu{
+    left: 0 !important;
+    right: auto !important;
+    margin-top: .5rem;
+    min-width: 260px;
+    max-height: 240px;
+    overflow: auto;
+    border: 1px solid var(--easy-border-strong);
+    border-radius: var(--easy-min-radius);
+    box-shadow: var(--easy-shadow, 0 10px 30px rgba(0,0,0,.06));
+}
+
+.col-header{
+    color: var(--easy-primary);
+    font-weight: bold;
+}
+.collapse-chevron{
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: none;
+    color: var(--easy-primary);
+    font-weight: bold;
+}
+
+.collapse-chevron i{
+    font-size: 1.5rem;
+    line-height: 3;
+}
+
+.collapse-chevron:hover{
+    color: var(--easy-primary-accent-dark);
+}
+
+.collapse-chevron[aria-expanded="true"] i{
+    transform: rotate(180deg);
+    transition: transform .15s ease;
+}
+.collapse-chevron[aria-expanded="false"] i{
+    transform: rotate(0deg);
+    transition: transform .15s ease;
+}
+.preserve-newlines{
+    white-space: pre-line; /* conserve \n, compacte les espaces */
+}
+.element-card{
+    border-bottom: 1px solid var(--easy-primary);
+}
+.element-card-body{
+    border-bottom: 1px solid var(--easy-primary);
+}
+.element-card-container{
+    border-top: 2px solid var(--easy-primary);
+}
+
 
 

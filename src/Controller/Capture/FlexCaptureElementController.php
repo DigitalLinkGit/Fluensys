@@ -4,8 +4,9 @@ namespace App\Controller\Capture;
 
 use App\Controller\AbstractAppController;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\Field\Field;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
-use App\Service\Helper\FieldTypeHelper;
+use App\Service\Helper\FieldTypeManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,25 +16,34 @@ use Symfony\Component\Routing\Attribute\Route;
 final class FlexCaptureElementController extends AbstractAppController
 {
     #[Route('/{id}/edit', name: 'app_flex_capture_element_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager, FieldTypeHelper $helper): Response
+    public function edit(Request $request, FlexCaptureElement $element, EntityManagerInterface $entityManager, FieldTypeManager $helper): Response
     {
-
-        $captureId = $request->query->getInt('capture');
-
-        $form = $this->createForm(CaptureElementTemplateForm::class, $flexCapture);
+        $form = $this->createForm(CaptureElementTemplateForm::class, $element);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 try {
+                    // update elements order
+                    $raw = (string) $request->request->get('fields_order', '[]');
+                    $orderedIds = json_decode($raw, true);
 
-                    $entityManager->persist($flexCapture);
+                    if (is_array($orderedIds)) {
+                        foreach ($orderedIds as $index => $id) {
+                            $field = $entityManager->getRepository(Field::class)->find((int) $id);
+                            if (!$field) {
+                                continue;
+                            }
+                            $field->setPosition($index);
+                        }
+                    }
+                    $entityManager->persist($element);
                     $entityManager->flush();
                     $this->addFlash('success', 'Élément enregistré avec succès.');
 
                     return $this->redirectToRoute('app_flex_capture_element_edit', [
-                        'id' => $flexCapture->getId(),
-                        'capture' => $captureId,
+                        'id' => $element->getId(),
+                        'capture' => $element->getCapture()->getId(),
                     ]);
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage(), ['exception' => $e]);
@@ -45,11 +55,10 @@ final class FlexCaptureElementController extends AbstractAppController
         }
 
         return $this->render('capture/capture_element/flex_capture_element/edit.html.twig', [
-            'element' => $flexCapture,
+            'element' => $element,
             'form' => $form,
             'dragTypes' => $helper->getLibraryChoices(true),
-            'captureId' => $captureId,
+            'captureId' => $element->getCapture()->getId(),
         ]);
     }
-
 }

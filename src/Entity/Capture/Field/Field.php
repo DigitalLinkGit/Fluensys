@@ -3,7 +3,7 @@
 namespace App\Entity\Capture\Field;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Service\Helper\FieldTypeHelper;
+use App\Service\Helper\FieldTypeManager;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
     'checklist' => ChecklistField::class,
     'url' => UrlField::class,
     'email' => EmailField::class,
+    'text-list' => TextListField::class,
     'system_component_collection' => SystemComponentCollectionField::class,
 ])]
 abstract class Field
@@ -55,6 +56,50 @@ abstract class Field
     protected ?CaptureElement $captureElement = null;
 
     abstract public function getValue(): mixed;
+
+    public function getStringValue(?string $dateFormat = null, ?string $listSeparator = null): string
+    {
+        $value = $this->getValue();
+
+        if (null === $value) {
+            return '';
+        }
+
+        $dateFormat ??= 'd/m/Y';
+        $listSeparator ??= "\r\n";
+
+        return match (true) {
+            $this instanceof DateField => $value instanceof \DateTimeInterface ? $value->format($dateFormat) : '',
+
+            $this instanceof ChecklistField => $this->stringifyChecklist($value, $listSeparator),
+
+            default => $this->stringifyScalar($value),
+        };
+    }
+
+    private function stringifyChecklist(mixed $value, string $listSeparator): string
+    {
+        // Storage is array|null, but we tolerate scalar for safety
+        if (!is_array($value)) {
+            return $this->stringifyScalar($value);
+        }
+
+        $values = array_values(array_filter(array_map(
+            fn ($v) => $this->stringifyScalar($v),
+            $value
+        ), fn (string $v) => '' !== $v));
+
+        if ($this instanceof ChecklistField && $this->isUniqueResponse()) {
+            return $values[0] ?? '';
+        }
+
+        return implode($listSeparator, $values);
+    }
+
+    private function stringifyScalar(mixed $value): string
+    {
+        return trim((string) $value);
+    }
 
     public function getId(): ?int
     {
@@ -117,7 +162,7 @@ abstract class Field
 
     public function getType(): ?string
     {
-        $helper = new FieldTypeHelper();
+        $helper = new FieldTypeManager();
 
         return $helper->getLabelFor($this);
     }
@@ -135,6 +180,7 @@ abstract class Field
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -146,6 +192,7 @@ abstract class Field
     public function setHelp(string $help): static
     {
         $this->help = $help;
+
         return $this;
     }
 
@@ -157,6 +204,7 @@ abstract class Field
     public function setRequired(bool $required): static
     {
         $this->required = $required;
+
         return $this;
     }
 }

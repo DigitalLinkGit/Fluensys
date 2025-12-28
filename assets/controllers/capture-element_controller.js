@@ -18,56 +18,15 @@ export default class extends Controller {
         });
     }
 
-    // ---------- Drag & Drop ----------
-    dragStart(event) {
-        const el = event.currentTarget;
-        const type = el.dataset.type;
-        const label = el.dataset.label || (el.textContent || "").trim();
+    addFromSelect() {
+        const select = this.element.querySelector('[data-capture-element-target="typeSelect"]');
+        if (!select) return;
 
-        this.draggedType = type;
-        this.draggedLabel = label;
+        const type = select.value || "";
+        const label = select.options?.[select.selectedIndex]?.textContent?.trim() || "";
 
-        if (!event.dataTransfer) return;
-        event.dataTransfer.setData("application/x-field-type", type);
-        event.dataTransfer.setData("application/x-field-label", label);
-        try {
-            event.dataTransfer.setData("text/plain", type);
-            event.dataTransfer.setData("text", type);
-        } catch (_) {}
-        event.dataTransfer.effectAllowed = "copy";
-    }
-
-    dragEnter(event) {
-        event.preventDefault();
-        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
-    }
-
-    dragOver(event) {
-        event.preventDefault();
-        if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
-    }
-
-    drop(event) {
-        event.preventDefault();
-        let type = "";
-        let label = "";
-
-        if (event.dataTransfer) {
-            type =
-                event.dataTransfer.getData("application/x-field-type") ||
-                event.dataTransfer.getData("text/plain") ||
-                event.dataTransfer.getData("text") ||
-                "";
-            label = event.dataTransfer.getData("application/x-field-label") || "";
-        }
-
-        if (!type && this.draggedType) type = this.draggedType;
-        if (!label && this.draggedLabel) label = this.draggedLabel;
-        if (!type) return console.warn("No type found on drop");
-
+        if (!type) return;
         this.addFieldOfType(type, label);
-        this.draggedType = null;
-        this.draggedLabel = null;
     }
 
     // ---------- Create item ----------

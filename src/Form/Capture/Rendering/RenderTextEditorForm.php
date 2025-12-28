@@ -19,6 +19,7 @@ final class RenderTextEditorForm extends AbstractType
             ->add('templateContent', TextareaType::class, [
                 'label' => 'Modèle de texte',
                 'attr' => ['rows' => 18, 'spellcheck' => 'false', 'class' => 'font-monospace'],
+                'required' => false,
             ])
         ;
     }

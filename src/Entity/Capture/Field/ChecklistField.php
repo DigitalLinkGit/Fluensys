@@ -20,9 +20,11 @@ final class ChecklistField extends Field
     {
         return $this->uniqueResponse;
     }
+
     public function setUniqueResponse(bool $uniqueResponse): static
     {
         $this->uniqueResponse = $uniqueResponse;
+
         return $this;
     }
 
@@ -31,8 +33,22 @@ final class ChecklistField extends Field
         return $this->value;
     }
 
-    public function setValue(?array $value): static
+    public function setValue(array|string|null $value): static
     {
+        if ('' === $value || null === $value) {
+            $this->value = null;
+
+            return $this;
+        }
+
+        // Radio => string
+        if (is_string($value)) {
+            $this->value = [$value];
+
+            return $this;
+        }
+
+        // Checkbox => array
         $this->value = $value;
 
         return $this;
@@ -64,4 +80,6 @@ final class ChecklistField extends Field
 
         return $out;
     }
+
+
 }

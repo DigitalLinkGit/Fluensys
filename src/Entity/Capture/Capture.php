@@ -5,8 +5,12 @@ namespace App\Entity\Capture;
 use App\Entity\Account\Account;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\Rendering\Title;
+use App\Entity\Participant\ParticipantAssignment;
 use App\Entity\Participant\ParticipantRole;
 use App\Entity\Participant\User;
+use App\Entity\TenantAwareInterface;
+use App\Entity\TenantAwareTrait;
+use App\Enum\CaptureElementStatus;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,8 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CaptureRepository::class)]
 #[ORM\Table(name: 'capture')]
-class Capture
+class Capture implements TenantAwareInterface
 {
+    use TenantAwareTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,12 +32,7 @@ class Capture
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(
-        targetEntity: CaptureElement::class,
-        mappedBy: 'capture',
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
+    #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'capture', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $captureElements;
 
@@ -43,10 +43,7 @@ class Capture
     #[ORM\JoinColumn(nullable: true)]
     private ?Title $title = null;
 
-    /**
-     * @var Collection<int, Condition>
-     */
-    #[ORM\OneToMany(targetEntity: Condition::class, mappedBy: 'capture', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Condition::class, mappedBy: 'capture', cascade: ['persist', 'remove'], fetch: 'EAGER', orphanRemoval: true)]
     private Collection $conditions;
 
     #[ORM\ManyToOne(inversedBy: 'captures')]
@@ -56,18 +53,22 @@ class Capture
     #[ORM\JoinColumn(nullable: true)]
     private ?User $responsible = null;
 
+    #[ORM\OneToMany(targetEntity: ParticipantAssignment::class, mappedBy: 'capture', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $participantAssignments;
+
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
         $this->template = true;
         $this->conditions = new ArrayCollection();
+        $this->participantAssignments = new ArrayCollection();
     }
 
     public function __clone()
     {
         $this->id = null;
-
-        // 1) Cloner éléments + maps
+        $this->participantAssignments = new ArrayCollection();
+        // 1) cloned element + maps
         $elementMap = [];
         $fieldMapByElement = [];
         $originalElements = $this->captureElements;
@@ -75,7 +76,7 @@ class Capture
 
         foreach ($originalElements as $el) {
             $cl = clone $el;
-            $cl->setTemplate(false);
+            $cl->setStatus(CaptureElementStatus::DRAFT);
             $this->addCaptureElement($cl);
 
             $elementMap[$el->getId()] = $cl;
@@ -146,9 +147,6 @@ class Capture
         return $this;
     }
 
-    /**
-     * @return Collection<int, CaptureElement>
-     */
     public function getCaptureElements(): Collection
     {
         return $this->captureElements;
@@ -171,7 +169,6 @@ class Capture
         return $this;
     }
 
-    /** @return ParticipantRole[] **/
     public function getContributorRoles(): array
     {
         $u = [];
@@ -185,20 +182,6 @@ class Capture
         return array_values($u);
     }
 
-    /** @return ParticipantRole[] **/
-    public function getResponsibleRoles(): array
-    {
-        $u = [];
-        foreach ($this->getCaptureElements() as $el) {
-            if ($r = $el->getResponsible()) {
-                $u[$r->getId()] = $r;
-            }
-        }
-
-        return array_values($u);
-    }
-
-    /** @return ParticipantRole[] **/
     public function getValidatorRoles(): array
     {
         $u = [];
@@ -308,6 +291,28 @@ class Capture
     public function setResponsible(?User $responsible): static
     {
         $this->responsible = $responsible;
+
+        return $this;
+    }
+
+    public function getParticipantAssignments(): Collection
+    {
+        return $this->participantAssignments;
+    }
+
+    public function addParticipantAssignment(ParticipantAssignment $participantAssignment): static
+    {
+        if (!$this->participantAssignments->contains($participantAssignment)) {
+            $this->participantAssignments->add($participantAssignment);
+            $participantAssignment->setCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipantAssignment(ParticipantAssignment $participantAssignment): static
+    {
+        $this->participantAssignments->removeElement($participantAssignment);
 
         return $this;
     }

@@ -5,6 +5,7 @@ namespace App\Controller\Participant;
 use App\Entity\Participant\ParticipantRole;
 use App\Form\Participant\ParticipantRoleForm;
 use App\Repository\ParticipantRoleRepository;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,8 +73,19 @@ final class ParticipantRoleController extends AbstractController
     public function delete(Request $request, ParticipantRole $participantRole, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$participantRole->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($participantRole);
-            $entityManager->flush();
+            try {
+                $entityManager->remove($participantRole);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Le rôle a bien été supprimé.');
+            } catch (ForeignKeyConstraintViolationException $e) {
+                $this->addFlash(
+                    'danger',
+                    'Impossible de supprimer ce rôle : il est utilisé par au moins une capture.'
+                );
+            }
+        } else {
+            $this->addFlash('danger', 'Jeton CSRF invalide.');
         }
 
         return $this->redirectToRoute('app_participant_role_index', [], Response::HTTP_SEE_OTHER);

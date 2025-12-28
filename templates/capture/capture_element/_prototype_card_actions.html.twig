@@ -1,0 +1,92 @@
+{% if element.active %}
+    {#
+    template : stade “bibliothèque / modèle”
+    draft : instance créée, paramétrage incomplet
+    ready : prêt à lancer (rôles/assignations OK)
+    collecting : collecte lancée (équivalent de ton started)
+    pending : lancé mais bloqué / en attente d’une action (nouveau rôle requis, activation d’un élément, etc.)
+    submitted : formulaire soumis (équivalent de ton answered)
+    validated : réponses validées
+    #}
+    {% if element.status.value == 'template' %}
+        {% if is_granted('ROLE_ADMIN') and element.template %}
+            {# EDIT ELEMENT RENDER TEXTE TEMPLATE #}
+            <a href="{{ path('app_capture_element_render_text_edit', {
+                id: element.id,
+                captureId: capture.id,
+            }) }}"
+               class="btn btn-outline-primary btn-sm"
+               title="Editer le texte de rendu" aria-label="Editer le texte de rendu">
+                <i class="bi bi-file-earmark-text"></i>
+            </a>
+            {# EDIT ELEMENT TEMPLATE #}
+            <a href="{{ path('app_capture_element_edit', {
+                id: element.id,
+                captureId: capture.id,
+            }) }}"
+               class="btn btn-outline-primary btn-sm"
+               title="Editer le formulaire" aria-label="Editer le formulaire">
+                <i class="bi bi-pencil"></i>
+            </a>
+            {# DELETE ELEMENT TEMPLATE #}
+            <button
+                type="button"
+                class="btn btn-outline-danger btn-sm"
+                data-action="click->modal-confirmation#open"
+                data-modal-confirmation-action-value="{{ path('app_capture_element_delete', { id: element.id }) }}"
+                data-modal-confirmation-token-value="{{ csrf_token('delete' ~ element.id) }}"
+                data-modal-confirmation-message-value="Confirmer la suppression de cet élément ?"
+                title="Supprimer cet élément">
+                <i class="bi bi-trash"></i>
+            </button>
+        {% endif %}
+    {% endif %}
+    {% if element.status.value == 'draft' %}
+        // nothing can be done on a draft
+    {% endif %}
+    {% if element.status.value == 'ready' %}
+        {% if is_granted('ROLE_USER') %}
+            {# RESPOND ELEMENT #}
+            <a href="{{ path('app_capture_element_respond', {
+                id: element.id,
+                captureId: capture.id,
+            }) }}"
+               class="btn btn-outline-primary btn-sm"
+               title="Répondre" aria-label="Répondre">
+                <i class="bi bi-pencil-square"></i>
+            </a>
+        {% endif %}
+    {% endif %}
+    {% if element.status.value == 'collecting' %}
+
+    {% endif %}
+    {% if element.status.value == 'pending' %}
+
+    {% endif %}
+    {% if element.status.value == 'submitted' %}
+        {% if is_granted('ROLE_USER') and not element.template %}
+            {# VALID ELEMENT #}
+            <a href="{{ path('app_capture_element_valid', {
+                id: element.id,
+                captureId: capture.id,
+            }) }}"
+               class="btn btn-outline-primary btn-sm"
+               title="Valider" aria-label="Valider">
+                <i class="bi bi-ui-checks"></i>
+            </a>
+        {% endif %}
+    {% endif %}
+    {% if element.status.value == 'validated' %}
+
+    {% endif %}
+
+    {# // case multiple status
+    {% if element.status.value in ['collecting', 'pending'] %}
+        ...
+    {% endif %} #}
+{% else %}
+    <span class="text-muted">{{ element.activationMessage }}</span>
+{% endif %}
+
+
+

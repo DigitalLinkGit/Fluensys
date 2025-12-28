@@ -4,11 +4,13 @@ namespace App\Controller\Capture;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Form\Capture\CaptureElement\CaptureElementForm;
+use App\Entity\Participant\User;
 use App\Form\Capture\CaptureForm;
 use App\Form\Capture\CaptureNewForm;
+use App\Form\Participant\ParticipantAssignmentForm;
 use App\Repository\CaptureRepository;
-use App\Service\ConditionToggler;
+use App\Service\Helper\CaptureStatusManager;
+use App\Service\Helper\ConditionToggler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,8 +33,11 @@ final class CaptureController extends AbstractController
     }
 
     #[Route('/new', name: 'app_capture_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, CaptureStatusManager $statusManager): Response
     {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
         $form = $this->createForm(CaptureNewForm::class);
         $form->handleRequest($request);
 
@@ -45,17 +50,47 @@ final class CaptureController extends AbstractController
 
             $name = (string) $form->get('name')->getData();
             $description = $form->get('description')->getData();
-
             $clone = $this->cloneCaptureFromTemplate($template, $account, $name, $description);
             $clone->setResponsible($this->getUser());
+            foreach ($clone->getCaptureElements() as $element) {
+                $statusManager->refresh($element, $user, false);
+            }
+
             $em->persist($clone);
             $em->flush();
 
-            return $this->redirectToRoute('app_capture_edit', ['id' => $clone->getId()]);
+            return $this->redirectToRoute('app_capture_participant_assign', ['id' => $clone->getId()]);
         }
 
         return $this->render('capture/new.html.twig', [
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/assign', name: 'app_capture_participant_assign', methods: ['GET', 'POST'])]
+    public function assignParticipant(Request $request, Capture $capture, EntityManagerInterface $em, CaptureStatusManager $statusManager): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        $form = $this->createForm(ParticipantAssignmentForm::class, $capture);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            foreach ($capture->getCaptureElements() as $element) {
+                $statusManager->refresh($element, $user, false);
+            }
+
+            $em->persist($capture);
+            $em->flush();
+            //dd('assignment count : ' . $capture->getParticipantAssignments()->count());
+            return $this->redirectToRoute('app_capture_edit', ['id' => $capture->getId()]);
+        }
+
+        return $this->render('participant_role/participant_assignment_form.html.twig', [
+            'id' => $capture->getId(),
+            'form' => $form,
+            'capture' => $capture,
         ]);
     }
 
@@ -67,11 +102,32 @@ final class CaptureController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET'])]
-    public function edit(Request $request, Capture $capture, ConditionToggler $toggler): Response
+    #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Capture $capture, ConditionToggler $toggler, CaptureStatusManager $statusManager, EntityManagerInterface $em): Response
     {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
         $form = $this->createForm(CaptureForm::class, $capture);
         $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $em->persist($capture);
+                $em->flush();
+            } else {
+                foreach ($form->getErrors(true, true) as $error) {
+                    $this->addFlash('danger', $error->getMessage());
+                }
+            }
+
+            return $this->redirectToRoute('app_capture_edit', ['id' => $capture->getId()]);
+        }
+
+        // refresh elements status
+        foreach ($capture->getCaptureElements() as $element) {
+            $statusManager->refresh($element, $user, false);
+        }
 
         // apply toggle activation from conditions
         $conditions = $capture->getConditions();

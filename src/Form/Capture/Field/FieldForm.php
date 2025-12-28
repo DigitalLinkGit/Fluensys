@@ -4,25 +4,25 @@ namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\TextListField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\UrlField;
-use App\Service\Helper\FieldTypeHelper;
+use App\Service\Helper\FieldTypeManager;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Url;
 
 class FieldForm extends AbstractType
 {
-    public function __construct(private readonly FieldTypeHelper $typeHelper)
+    public function __construct(private readonly FieldTypeManager $typeHelper)
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $field = $event->getData();
             if (!$field instanceof Field) {
@@ -60,6 +60,14 @@ class FieldForm extends AbstractType
 
                 return;
             }
+            if ($field instanceof TextListField) {
+                $event->getForm()->add('value', TextListFieldForm::class, [
+                    'label' => $field->getLabel(),
+                    'inherit_data' => true,
+                ]);
+
+                return;
+            }
 
             $event->getForm()->add('value', $formFieldType, $opts);
         });
@@ -70,6 +78,5 @@ class FieldForm extends AbstractType
         $resolver->setDefaults([
             'data_class' => Field::class,
         ]);
-
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Participant\User;
-use App\Form\UserForm;
+use App\Form\Participant\UserForm;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,22 +23,28 @@ final class AdministrationController extends AbstractController
     #[Route(name: 'app_administration_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
         return $this->render('administration/index.html.twig', [
             'users' => $userRepository->findAll(),
+            'tenant' => $user->getTenant(),
         ]);
     }
 
     #[Route('/new', name: 'app_administration_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
         $form = $this->createForm(UserForm::class, $user, ['is_edit' => false]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            /** @var \App\Entity\User $currentUser */
+            $currentUser = $this->getUser();
+            $user->setTenant($currentUser->getTenant());
             $plainPassword = (string) $form->get('plainPassword')->getData();
-            if ($plainPassword !== '') {
+            if ('' !== $plainPassword) {
                 $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
             }
             $entityManager->persist($user);
@@ -62,15 +68,14 @@ final class AdministrationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_administration_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(UserForm::class, $user, ['is_edit' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $plainPassword = (string) $form->get('plainPassword')->getData();
-            if ($plainPassword !== '') {
+            if ('' !== $plainPassword) {
                 $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
             }
             $entityManager->flush();

@@ -15,7 +15,6 @@
             attrs: { autocomplete: 'off' }
         } %}
     </div>
-
     <div class="col-md-6 d-flex justify-content-end align-items-start gap-2 mt-4">
         {% include 'components/button/_btn.html.twig' with {
             btn: {
@@ -27,7 +26,6 @@
                 class: 'btn btn-outline-primary'
             }
         } %}
-
         {% include 'components/button/_btn.html.twig' with {
             btn: {
                 type: 'link',
@@ -64,18 +62,23 @@
                    aria-selected="false">Eléments de capture</a>
             </li>
             <li class="tab nav-item" role="presentation">
+                <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+                   aria-controls="roles"
+                   aria-selected="true">Rôles</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
                 <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
                    aria-controls="conditions"
                    aria-selected="true">Conditions</a>
             </li>
             <li class="tab nav-item" role="presentation">
-                <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
-                   aria-controls="roles"
-                   aria-selected="true">Rôles</a>
+                <a id="tab-document" class="tab__link nav-link" data-bs-toggle="tab" href="#document" role="tab"
+                   aria-controls="document"
+                   aria-selected="true">Document</a>
             </li>
         </ul>
     </div>
-    <div class="tab-content">
+    <div class="tab-content p-2">
         <div id="capture-elements"
              class="tab-pane fade"
              role="tabpanel"
@@ -106,7 +109,6 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {# on garde votre message existant (rien ne casse) #}
                         <div class="text-muted small m-3">Aucun élément</div>
                     {% endif %}
                 </div>
@@ -118,56 +120,69 @@
                 Ajouter un élément
             </a>
         </div>
-
         <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
             {% set prototype %}
                 {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
             {% endset %}
+            {# HEADERS #}
+            <div class="mx-2 mb-3">
+                <div class="mb-2 row g-3 align-items-end">
+                    <div class="col-md-3 col-header" title="L'élément qui sera affecté par la condition">
+                        Elément cible
+                    </div>
+                    <div class="col-md-3 col-header" title="L'élément qui porte le champ à vérifier pour valider la condition">
+                        Elément source
+                    </div>
+                    <div class="col-md-3 col-header" title="Le champ à vérifier pour valider la condition">
+                        Champ source
+                    </div>
+                    <div class="col-md-2 col-header">
+                        Valeur attendue
+                    </div>
+                    <div class="col-auto ms-auto align-self-end col-header">
+                        Actions
+                    </div>
+                </div>
+                {# CONDITIONS #}
+                <div
+                    data-controller="condition"
+                    data-prototype="{{ prototype|e('html_attr') }}"
+                    data-condition-fields-url-value="{{ path('condition_fields') }}"
+                >
+                    <div data-condition-target="list" class="mb-3">
+                        {% for condition in form.conditions %}
+                            {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
+                        {% endfor %}
+                    </div>
 
-            {# headers #}
-            <div class="row g-3 align-items-end mb-2">
-                <div class="col-md-3">
-                    Elément cible
-                </div>
-                <div class="col-md-3">
-                    Elément source
-                </div>
-                <div class="col-md-3">
-                    Champ source
-                </div>
-                <div class="col-md-2">
-                    Valeur attendue
-                </div>
-                <div class="col-auto ms-auto align-self-end">
-                    Actions
+                    <div class="col-auto ms-auto align-self-end" data-condition-target="add">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-action="click->condition#add"
+                                title="Ajouter une condition">
+                            <i class="bi bi-plus"></i>
+                            Ajouter une condition
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <div
-                data-controller="condition"
-                data-prototype="{{ prototype|e('html_attr') }}"
-                data-condition-fields-url-value="{{ path('condition_fields') }}"
-            >
-                <div data-condition-target="list" class="mb-3">
-                    {% for condition in form.conditions %}
-                        {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
-                    {% endfor %}
-                </div>
-
-                <div class="col-auto ms-auto align-self-end" data-condition-target="add">
-                    <button type="button"
-                            class="btn btn-outline-primary"
-                            data-action="click->condition#add"
-                            title="Ajouter une condition">
-                        <i class="bi bi-plus"></i>
-                        Ajouter une condition
-                    </button>
-                </div>
-            </div>
-
         </div>
         <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
-            {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
+            <div class="mx-2 mb-3">
+                {% include 'participant_role/_required_participant_roles.html.twig' with { capture: form.vars.data } %}
+            </div>
+        </div>
+        <div id="document" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-document">
+            <div class="mx-2 mb-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col">
+                        {{ form_row(form.title.content) }}
+                    </div>
+                    <div class="col-auto">
+                        {{ form_row(form.title.level) }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% else %}

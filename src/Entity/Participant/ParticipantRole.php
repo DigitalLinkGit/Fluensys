@@ -3,14 +3,17 @@
 namespace App\Entity\Participant;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\TenantAwareInterface;
+use App\Entity\TenantAwareTrait;
 use App\Repository\ParticipantRoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ParticipantRoleRepository::class)]
-class ParticipantRole
+class ParticipantRole implements TenantAwareInterface
 {
+    use TenantAwareTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,11 +40,15 @@ class ParticipantRole
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'participantRoles')]
     private Collection $users;
 
+    #[ORM\ManyToMany(targetEntity: Contact::class, mappedBy: 'participantRoles')]
+    private Collection $contacts;
+
     public function __construct()
     {
         $this->validatorCaptureElements = new ArrayCollection();
         $this->contributorCaptureElements = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,11 +92,6 @@ class ParticipantRole
         return $this;
     }
 
-    public function getResponsibleCaptureElements(): Collection
-    {
-        return $this->responsibleCaptureElements;
-    }
-
     public function getValidatorCaptureElements(): Collection
     {
         return $this->validatorCaptureElements;
@@ -122,6 +124,74 @@ class ParticipantRole
     {
         if ($this->users->removeElement($user)) {
             $user->removeParticipantRole($this);
+        }
+
+        return $this;
+    }
+
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contact $contact): static
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts->add($contact);
+            $contact->addParticipantRole($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contact $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeParticipantRole($this);
+        }
+
+        return $this;
+    }
+
+    public function addValidatorCaptureElement(CaptureElement $validatorCaptureElement): static
+    {
+        if (!$this->validatorCaptureElements->contains($validatorCaptureElement)) {
+            $this->validatorCaptureElements->add($validatorCaptureElement);
+            $validatorCaptureElement->setValidator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeValidatorCaptureElement(CaptureElement $validatorCaptureElement): static
+    {
+        if ($this->validatorCaptureElements->removeElement($validatorCaptureElement)) {
+            // set the owning side to null (unless already changed)
+            if ($validatorCaptureElement->getValidator() === $this) {
+                $validatorCaptureElement->setValidator(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addContributorCaptureElement(CaptureElement $contributorCaptureElement): static
+    {
+        if (!$this->contributorCaptureElements->contains($contributorCaptureElement)) {
+            $this->contributorCaptureElements->add($contributorCaptureElement);
+            $contributorCaptureElement->setContributor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContributorCaptureElement(CaptureElement $contributorCaptureElement): static
+    {
+        if ($this->contributorCaptureElements->removeElement($contributorCaptureElement)) {
+            // set the owning side to null (unless already changed)
+            if ($contributorCaptureElement->getContributor() === $this) {
+                $contributorCaptureElement->setContributor(null);
+            }
         }
 
         return $this;

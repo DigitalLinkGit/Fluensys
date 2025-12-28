@@ -19,6 +19,7 @@
         <div class="ms-auto d-flex align-items-center">
             {% if app.user %}
                 <span class="me-2 small text-muted">{{ app.user.username }}</span>
+                <span class="me-2 small col-header">{{ app.user.tenant.name }}</span>
                 <a href="{{ path('app_logout') }}" class="btn btn-icon btn-outline-primary" title="Déconnexion">
                     <i class="bi bi-box-arrow-right"></i>
                 </a>
@@ -46,8 +47,7 @@
                 groups: [
                     {
                         links: [
-                        { label: 'Administration', route: 'app_administration_index' },
-                        { label: 'Eléments de captures', route: 'app_capture_element_index' },
+                        { label: 'Mon organisation', route: 'app_administration_index' },
                         { label: 'Templates de captures', route: 'app_capture_template_index' },
                         { label: 'Rôles', route: 'app_participant_role_index' },
                         { label: 'Comptes', route: 'app_account_index' },
@@ -65,6 +65,20 @@
                         links: [
                         { label: 'Mes captures', route: 'app_capture_index' },
                         { label: 'Mes comptes', route: 'app_account_index' },
+                    ]
+                    }
+                ]
+            } %}
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') %}
+            {% include 'components/partials/_sidebar_section.html.twig' with {
+                icon: '',
+                title: 'Provisoire',
+                groups: [
+                    {
+                        links: [
+                        { label: 'Tenants', route: 'app_tenant_index' },
+                        { label: 'Eléments de captures', route: 'app_capture_element_index' },
                     ]
                     }
                 ]

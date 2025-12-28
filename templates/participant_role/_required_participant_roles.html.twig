@@ -1,32 +1,38 @@
-
 <div class="row g-3">
     <div class="col-12 col-md-6">
-        <div class="fw-semibold mb-1">Contributeur(s)</div>
+        <div class="col-header mb-1">Contributeur(s)</div>
         <div class="p-2">
             <div class="mb-3">
                 {% if capture.getContributorRoles is empty %}
                     <div class="text-muted">Aucun</div>
                 {% else %}
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-column">
                         {% for role in capture.getContributorRoles %}
-                            {{ role.name }}
+                            <div class="mb-1">
+                                {% include 'participant_role/_role_badge.html.twig' %}
+                                {{ role.name }}
+                            </div>
                         {% endfor %}
                     </div>
+
                 {% endif %}
             </div>
         </div>
     </div>
 
     <div class="col-12 col-md-6">
-        <div class="fw-semibold mb-1">Validateur(s)</div>
+        <div class="col-header mb-1">Validateur(s)</div>
         <div class="p-2">
             <div class="mb-3">
                 {% if capture.getValidatorRoles is empty %}
                     <div class="text-muted">Aucun</div>
                 {% else %}
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-column">
                         {% for role in capture.getValidatorRoles %}
+                            <div class="mb-1">
+                                {% include 'participant_role/_role_badge.html.twig' %}
                                 {{ role.name }}
+                            </div>
                         {% endfor %}
                     </div>
                 {% endif %}

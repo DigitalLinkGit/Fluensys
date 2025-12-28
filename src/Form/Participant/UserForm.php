@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Participant;
 
 use App\Entity\Participant\ParticipantRole;
 use App\Entity\Participant\User;
+use App\Repository\ParticipantRoleRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -31,10 +32,17 @@ class UserForm extends AbstractType
             ->add('participantRoles', EntityType::class, [
                 'class' => ParticipantRole::class,
                 'choice_label' => 'name',
+                'label' => false,
                 'multiple' => true,
                 'expanded' => true,
                 'by_reference' => false,
                 'required' => false,
+                'query_builder' => function (ParticipantRoleRepository $repo) {
+                    return $repo->createQueryBuilder('r')
+                        ->andWhere('r.internal = :internal')
+                        ->setParameter('internal', true)
+                        ->orderBy('r.name', 'ASC');
+                },
             ])
         ;
     }

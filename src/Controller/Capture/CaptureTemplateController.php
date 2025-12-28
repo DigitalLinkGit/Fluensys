@@ -5,8 +5,9 @@ namespace App\Controller\Capture;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Form\Capture\CaptureTemplateForm;
+use App\Form\Capture\CaptureTemplateNewForm;
 use App\Repository\CaptureRepository;
-use App\Service\ConditionToggler;
+use App\Service\Helper\ConditionToggler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,14 +33,19 @@ final class CaptureTemplateController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $capture = new Capture();
-        $form = $this->createForm(CaptureTemplateForm::class, $capture);
+        $form = $this->createForm(CaptureTemplateNewForm::class, $capture);
         $form->handleRequest($request);
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($capture);
             $entityManager->flush();
 
-            // dd($capture);
             return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()], Response::HTTP_SEE_OTHER);
         }
 
@@ -62,10 +68,16 @@ final class CaptureTemplateController extends AbstractController
     {
         $form = $this->createForm(CaptureTemplateForm::class, $capture);
         $form->handleRequest($request);
-        // make condition map for display condition on CaptureElement
-        $conditionsByTargetId = [];
+
+        // Reset CaptureElement state
+        foreach ($capture->getCaptureElements() as $element) {
+            $element->setActive(true);
+        }
+        // Aplly conditions on CaptureElement state
         $toggler->apply(is_iterable($capture->getConditions()) ? $capture->getConditions() : []);
 
+        // Condition map for display conditions on CaptureElement
+        $conditionsByTargetId = [];
         foreach ($capture->getConditions() as $cond) {
             $tid = $cond->getTargetElement()?->getId();
             if (null !== $tid) {
@@ -73,8 +85,14 @@ final class CaptureTemplateController extends AbstractController
             }
         }
 
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
-            //update elements order
+            // update elements order
             $raw = (string) $request->request->get('capture_elements_order', '[]');
             $orderedIds = json_decode($raw, true);
 
@@ -89,21 +107,6 @@ final class CaptureTemplateController extends AbstractController
             }
 
             $entityManager->flush();
-/*            //  show id => position
-            $repo = $entityManager->getRepository(CaptureElement::class);
-            $reloaded = array_map(
-                fn ($id) => $repo->find((int) $id),
-                is_array($orderedIds) ? $orderedIds : []
-            );
-
-            dd([
-                'raw' => $raw,
-                'orderedIds' => $orderedIds,
-                'saved' => array_map(
-                    fn ($el) => $el ? ['id' => $el->getName(), 'position' => $el->getPosition()] : null,
-                    $reloaded
-                ),
-            ]);*/
         }
 
         foreach ($form->get('conditions') as $child) {
@@ -111,7 +114,7 @@ final class CaptureTemplateController extends AbstractController
             dump(['FORM' => [$d?->getId(), $child->get('sourceElement')->getData()?->getId(), $child->get('targetElement')->getData()?->getId(), $child->get('sourceField')->getData()?->getId()]]);
         }
 
-        return $this->render('capture/capture_template/edit.html.twig', [
+        return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
             'form' => $form,
             'conditionsByTargetId' => $conditionsByTargetId,

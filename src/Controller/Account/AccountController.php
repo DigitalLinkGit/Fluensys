@@ -3,9 +3,13 @@
 namespace App\Controller\Account;
 
 use App\Entity\Account\Account;
+use App\Entity\Participant\Contact;
+use App\Entity\Tenant;
 use App\Form\Account\AccountForm;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,8 +19,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AccountController extends AbstractController
 {
     #[Route(name: 'app_account_index', methods: ['GET'])]
-    public function index(AccountRepository $accountRepository): Response
+    public function index(AccountRepository $accountRepository, EntityManagerInterface $entityManager): Response
     {
+        /*$tenantId = $this->getUser()->getTenant()->getId();
+
+        $filter = $entityManager->getFilters()->enable('tenant');
+        $filter->setParameter('tenant_id', (string) $tenantId);*/
         return $this->render('account/index.html.twig', [
             'accounts' => $accountRepository->findAll(),
         ]);
@@ -25,31 +33,18 @@ final class AccountController extends AbstractController
     #[Route('/new', name: 'app_account_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
         $account = new Account();
         $form = $this->createForm(AccountForm::class, $account);
         $form->handleRequest($request);
-        /*if ($form->isSubmitted() && !$form->isValid()) {
-            $errors = [];
-
-            foreach ($form->getErrors(true, true) as $error) {
-                $origin = $error->getOrigin(); // FormInterface
-                $name = $origin instanceof FormInterface ? $origin->getName() : 'form';
-
-                $errors[] = [
-                    'field' => $name,
-                    'message' => $error->getMessage(),
-                    'cause' => $error->getCause() ? get_class($error->getCause()) : null,
-                ];
-            }
-
-            dd('Form invalid', [
-                'type' => get_class($form->getConfig()->getType()->getInnerType()),
-                'errors' => $errors,
-            ]);
-        }*/
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $entityManager->clear();
+            $tenant = $entityManager->getRepository(Tenant::class)->find($user->getTenant()->getId());
+            //dd($tenant);
+            $account->setTenant($tenant);
             $entityManager->persist($account);
             $entityManager->flush();
 
@@ -72,13 +67,29 @@ final class AccountController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     #[Route('/{id}/edit', name: 'app_account_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Account $account, EntityManagerInterface $entityManager): Response
     {
+        $defaultContactId = $request->get('defaultContactId');
+
         $form = $this->createForm(AccountForm::class, $account);
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
+        }
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($defaultContactId) {
+                $account->setDefaultContact($entityManager->find(Contact::class, $defaultContactId));
+                $entityManager->persist($account);
+            }
+
             $entityManager->flush();
         }
 

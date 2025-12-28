@@ -3,7 +3,6 @@
 namespace App\DataFixtures;
 
 use App\Entity\Account\Account;
-use App\Entity\Account\Contact;
 use App\Entity\Account\InformationSystem;
 use App\Entity\Account\SystemComponent;
 use App\Entity\Capture\Capture;
@@ -21,6 +20,7 @@ use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Field\UrlField;
 use App\Entity\Capture\Rendering\TextChapter;
 use App\Entity\Capture\Rendering\Title;
+use App\Entity\Participant\Contact;
 use App\Entity\Participant\ParticipantRole;
 use App\Entity\Participant\User;
 use App\Enum\SystemComponentType;

@@ -5,11 +5,11 @@
 namespace App\Service\Factory;
 
 use App\Entity\Capture\Field\Field;
-use App\Service\Helper\FieldTypeHelper;
+use App\Service\Helper\FieldTypeManager;
 
 final readonly class FieldFactory
 {
-    public function __construct(private FieldTypeHelper $typeHelper)
+    public function __construct(private FieldTypeManager $typeHelper)
     {
     }
 

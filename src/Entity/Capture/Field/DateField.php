@@ -3,6 +3,7 @@
 namespace App\Entity\Capture\Field;
 
 use App\Repository\DateFieldRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DateFieldRepository::class)]

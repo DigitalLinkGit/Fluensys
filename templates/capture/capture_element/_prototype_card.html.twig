@@ -1,108 +1,127 @@
 {% if element is defined %}
     {% set collapseId = 'el_' ~ (element.id ?? loop.index) ~ '_fields' %}
 
-    <div class="card h-100 mb-1 {{ 'element' ~ (element.active ? '' : ' card-inactive') }}">
-        <div class="card-body py-2 d-flex align-items-center" data-sortable-handle>
-            <div class="card-title mb-0">
-                <b>{{ element.name }} : </b> {{ element.description }}
-            </div>
-            <div class="card-actions ms-auto d-inline-flex align-items-center gap-2">
-                {% if is_granted('ROLE_ADMIN') and element.template %}
-                    {# EDIT #}
-                    <a href="{{ path('app_capture_element_edit', {
-                        id: element.id,
-                        captureId: capture.id,
-                    }) }}"
-                       class="btn btn-outline-primary btn-sm"
-                       title="Editer" aria-label="Editer">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    {# DELETE #}
-                    <button
-                        type="button"
-                        class="btn btn-outline-danger btn-sm"
-                        data-action="click->modal-confirmation#open"
-                        data-modal-confirmation-action-value="{{ path('app_capture_element_delete', { id: element.id }) }}"
-                        data-modal-confirmation-token-value="{{ csrf_token('delete' ~ element.id) }}"
-                        data-modal-confirmation-message-value="Confirmer la suppression de cet élément ?"
-                        title="Supprimer cet élément">
-                        <i class="bi bi-trash"></i>
-                    </button>
+    <div class="mb-0 {{ 'element' ~ (element.active ? '' : ' card-inactive') }}">
+
+        <div class="element-card py-1">
+            <div class="row g-0 align-items-center">
+
+                {# Handle sortable if template #}
+                {% if element.status == 'template' %}
+                    <div class="col-auto pe-2 text-muted" data-sortable-handle style="cursor: grab;">
+                        <i class="bi bi-grip-vertical"></i>
+                    </div>
                 {% endif %}
-                {% if is_granted('ROLE_USER') and not element.template %}
-                    {% if element.active %}
-                        <a href="{{ path('app_capture_element_respond', {
-                            id: element.id,
-                            captureId: capture.id,
-                        }) }}"
-                           class="btn btn-outline-primary btn-sm"
-                           title="Répondre" aria-label="Répondre">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                    {% else %}
-                        <div>OFF</div>
-                    {% endif %}
-                {% endif %}
-                {# EXPAND #}
-                <button class="btn btn-outline-primary btn-sm"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#{{ collapseId }}"
-                        aria-expanded="false"
-                        aria-controls="{{ collapseId }}"
-                        title="Ouvrir">
-                    <i class="bi bi-chevron-down"></i>
-                </button>
+
+                {# Col Name #}
+                <div class="col-3 pe-3 text-truncate">
+                    <span class="fw-semibold text-truncate">{{ element.name }}</span>
+                </div>
+
+                {# Col Contributor / Validator #}
+                <div class="col-6">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-6 pe-3 text-truncate">
+                            <span class="text-truncate">
+                                {{ element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}
+                            </span>
+                        </div>
+
+                        <div class="col-6 pe-3 text-truncate">
+                            <span class="text-truncate">
+                                {{ element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {# Col Actions #}
+                <div class="col-auto ms-auto">
+                    <div class="d-flex align-items-center">
+
+                        {# Actions buttons #}
+                        <div class="d-flex justify-content-end gap-1 pe-2">
+                            {% include 'capture/capture_element/_prototype_card_actions.html.twig' %}
+                        </div>
+
+                        {# status + collapser #}
+                        <div class="d-inline-flex justify-content-end align-items-center gap-2 text-nowrap"
+                             style="width: 130px;">
+                            <span class="badge bg-secondary type-badge">
+                                {{ element.statusLabel }}
+                            </span>
+
+                            <a href="#{{ collapseId }}"
+                               class="collapse-chevron"
+                               data-bs-toggle="collapse"
+                               role="button"
+                               aria-expanded="false"
+                               aria-controls="{{ collapseId }}"
+                               title="Ouvrir / Fermer">
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div id="{{ collapseId }}" class="collapse">
-            <div class="pt-2">
-                <div class="mx-3">
-                    <div class="mb-1"><span class="semi-bold">Contributor : </span>{{element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}</div>
-                    <div class="mb-1">Validateur : {{element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}</div>
 
-                    {% if incomingConditions is defined and incomingConditions|length %}
-                        <div class="mb-1">Condition(s) :</div>
-                        <div class="text-muted small mb-1">
+        <div id="{{ collapseId }}" class="collapse">
+            <div class="pt-3 mx-3 element-card-body">
+                <div class="mb-2">
+                    <span class="col-header">Description :</span>
+                    <div class="mx-3 mt-1">{{ element.description }}</div>
+                </div>
+                {% if incomingConditions is defined and incomingConditions|length %}
+                    <div class="mb-2">
+                        <span class="col-header">Condition(s) :</span>
+                        <div class="mx-3 mt-1">
                             {% for cond in incomingConditions %}
                                 <div>{{ cond }}</div>
                             {% endfor %}
                         </div>
-                    {% endif %}
+                    </div>
+                {% endif %}
 
                 {% if element.fields is defined %}
-                    <div class="mb-1 mt-2">Contenu :</div>
-                    {% for field in element.fields %}
-                        <div class="row mb-1"
-                             title="Nom : {{ field.name }}">
-                            <div class="col-md-12 pt-2">
-                                <span class="badge bg-secondary type-badge d-inline-block me-2">
-                                    {{ field.type }}
-                                </span>
-                                {{ field.label }}
-                            </div>
-
-                            {% set choices = attribute(field, 'getChoices', [], 'method', false) %}
-                            {% if choices is not null and choices is not empty %}
-                                <div class="p-2">
-                                    <ul>
-                                        {% for choice in choices %}
-                                            <li>{{ choice.label }}</li>
-                                        {% endfor %}
-                                    </ul>
+                    <div class="mb-2">
+                        <span class="col-header">Contenu :</span>
+                        <div class="mx-3 mt-1">
+                            {% for field in element.fields %}
+                                <div class="row"
+                                     title="Nom : {{ field.name }}">
+                                    <div class="col-md-12 mb-1">
+                                        <span class="fw-semibold">{{ field.label }}</span>
+                                        <span class="badge bg-secondary type-badge d-inline-block me-2">
+                                        {{ field.type }}
+                                    </span>
+                                    </div>
+                                    {% if element.status.value == 'submitted' or element.status.value == 'validated' %}
+                                        <div class="mb-2 mx-2 preserve-newlines">{{ field.stringValue }}</div>
+                                    {% else %}
+                                        {# Display choice list if element is not submited or validated #}
+                                        {% set choices = attribute(field, 'getChoices', [], 'method', false) %}
+                                        {% if choices is not null and choices is not empty %}
+                                            <div class="">
+                                                <ul>
+                                                    {% for choice in choices %}
+                                                        <li>{{ choice.label }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
-                            {% endif %}
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-
-
+                    </div>
                 {% else %}
                     <div class="text-muted small">Aucun champ</div>
                 {% endif %}
-                </div>
             </div>
         </div>
     </div>
+
 
 {% else %}
     <div class="col">

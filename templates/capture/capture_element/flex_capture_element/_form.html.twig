@@ -1,14 +1,15 @@
 {{ form_start(form) }}
 
     {{ include('capture/capture_element/_form_base.html.twig') }}
-
+<div data-controller="capture-element">
 <div class="d-flex justify-content-end gap-2 mt-4">
+    {% include 'capture/field/_available_fields_type.html.twig' %}
     {% include 'components/button/_btn.html.twig' with {
         btn: {
             type: 'link',
             label: 'Aperçu',
             icon: 'bi-eye',
-            route: 'app_capture_element_preview',
+            route: 'app_capture_element_form_preview',
             param_map: { id: 'element.id' },
             class: 'btn btn-outline-primary'
         }
@@ -49,26 +50,22 @@
 {% set prototype %}
     {% include 'capture/field/_field_template_prototype.html.twig' with { form: form.fields.vars.prototype } %}
 {% endset %}
-<div class="row p-3 " data-controller="capture-element">
 
-    <div class="col-md-9 p-3">
-        <div
-            class="drop-zone d-flex align-items-center justify-content-center text-center border border-2 border-dashed rounded-3 p-3"
-            data-action="dragenter->capture-element#dragEnter dragover->capture-element#dragOver drop->capture-element#drop">
-            Glissez-déposez des champs ici
-        </div>
 
-        <div data-prototype="{{ prototype|e('html_attr') }}">
+<div class="row p-3 " data-controller="sortable-order">
+    {# JSON order #}
+    <input type="hidden"
+           name="fields_order"
+           data-sortable-order-target="input"
+           value="{{ (fieldForm.vars.value.fields ?? [])|map(f => f.id)|json_encode }}">
+    <div class="p-3">
+        <div class="sortable-list" data-prototype="{{ prototype|e('html_attr') }}" data-sortable-order-target="list">
             {% for fieldForm in form.fields %}
                 {% include 'capture/field/_field_template_prototype.html.twig' with { form: fieldForm } %}
             {% endfor %}
         </div>
-
-    </div>
-    <div class="col-md-3 p-3">
-        {% include 'capture/field/_available_fields_type.html.twig' %}
     </div>
 </div>
-
+</div>
 
 {{ form_end(form) }}

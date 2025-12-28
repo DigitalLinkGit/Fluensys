@@ -3,14 +3,20 @@
 namespace App\Entity\Account;
 
 use App\Entity\Capture\Capture;
+use App\Entity\Participant\Contact;
+use App\Entity\Tenant;
+use App\Entity\TenantAwareInterface;
+use App\Entity\TenantAwareTrait;
 use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
-class Account
+class Account implements TenantAwareInterface
 {
+    use TenantAwareTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -28,7 +34,7 @@ class Account
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'account', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $contacts;
 
-    #[ORM\OneToOne(inversedBy: 'account', cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'account')]
     #[ORM\JoinColumn(name: 'information_system_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?InformationSystem $informationSystem = null;
 
@@ -37,6 +43,9 @@ class Account
      */
     #[ORM\OneToMany(targetEntity: Capture::class, mappedBy: 'account')]
     private Collection $captures;
+
+    #[ORM\ManyToOne(targetEntity: Contact::class)]
+    private ?Contact $defaultContact = null;
 
     public function __construct()
     {
@@ -144,4 +153,17 @@ class Account
 
         return $this;
     }
+
+    public function getDefaultContact(): ?Contact
+    {
+        return $this->defaultContact;
+    }
+
+    public function setDefaultContact(?Contact $defaultContact): static
+    {
+        $this->defaultContact = $defaultContact;
+
+        return $this;
+    }
+
 }

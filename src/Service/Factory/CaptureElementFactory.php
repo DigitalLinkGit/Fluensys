@@ -2,11 +2,11 @@
 
 namespace App\Service\Factory;
 
-use App\Service\Helper\CaptureElementTypeHelper;
+use App\Service\Helper\CaptureElementTypeManager;
 
 final readonly class CaptureElementFactory
 {
-    public function __construct(private CaptureElementTypeHelper $typeHelper)
+    public function __construct(private CaptureElementTypeManager $typeHelper)
     {
     }
 

@@ -1,13 +1,19 @@
 <?php
 
-namespace App\Entity\Account;
+namespace App\Entity\Participant;
 
+use App\Entity\Account\Account;
+use App\Entity\TenantAwareInterface;
+use App\Entity\TenantAwareTrait;
 use App\Repository\ContactRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ContactRepository::class)]
-class Contact
+class Contact implements TenantAwareInterface
 {
+    use TenantAwareTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,6 +30,14 @@ class Contact
 
     #[ORM\ManyToOne(inversedBy: 'contacts')]
     private ?Account $account = null;
+
+    #[ORM\ManyToMany(targetEntity: ParticipantRole::class, inversedBy: 'contacts')]
+    private Collection $participantRoles;
+
+    public function __construct()
+    {
+        $this->participantRoles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,6 +88,30 @@ class Contact
     public function setAccount(?Account $account): static
     {
         $this->account = $account;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ParticipantRole>
+     */
+    public function getParticipantRoles(): Collection
+    {
+        return $this->participantRoles;
+    }
+
+    public function addParticipantRole(ParticipantRole $participantRole): static
+    {
+        if (!$this->participantRoles->contains($participantRole)) {
+            $this->participantRoles->add($participantRole);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipantRole(ParticipantRole $participantRole): static
+    {
+        $this->participantRoles->removeElement($participantRole);
 
         return $this;
     }

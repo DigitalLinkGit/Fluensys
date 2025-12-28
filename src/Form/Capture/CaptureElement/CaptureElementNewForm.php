@@ -17,6 +17,9 @@ class CaptureElementNewForm extends CaptureElementBaseForm
                 'choice_label' => fn ($value, $label) => (string) $label,
                 'choice_value' => fn ($value) => $value,
                 'placeholder' => 'Choisir un type',
+                'attr' => [
+                    'class' => 'w-auto',
+                ],
             ])
         ;
     }

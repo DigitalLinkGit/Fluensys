@@ -35,6 +35,9 @@ class ParticipantRoleForm extends AbstractType
             ->add('internal', CheckboxType::class, [
                 'label' => 'Rôle interne ?',
                 'required' => false,
+                'attr' => [
+                    'title' => 'Si cette case est cochée, ce rôle ne pourra pas être attribué à un participant externe.'
+                ],
             ])
         ;
     }

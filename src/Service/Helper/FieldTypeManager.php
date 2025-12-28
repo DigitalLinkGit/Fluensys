@@ -11,8 +11,10 @@ use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
+use App\Entity\Capture\Field\TextListField;
 use App\Entity\Capture\Field\UrlField;
 use App\Form\Capture\Field\SystemComponentCollectionFieldForm;
+use App\Form\Capture\Field\TextListFieldForm;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -21,7 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
-final class FieldTypeHelper
+final class FieldTypeManager
 {
     /** key (discriminator) => FQCN */
     private array $map = [
@@ -33,6 +35,7 @@ final class FieldTypeHelper
         'checklist' => ChecklistField::class,
         'url' => UrlField::class,
         'email' => EmailField::class,
+        'text-list' => TextListField::class,
         'system_component_collection' => SystemComponentCollectionField::class,
     ];
 
@@ -46,6 +49,7 @@ final class FieldTypeHelper
         'checklist' => ChoiceType::class,
         'url' => UrlType::class,
         'email' => EmailType::class,
+        'text-list' => TextListFieldForm::class,
         'system_component_collection' => SystemComponentCollectionFieldForm::class,
     ];
 
@@ -59,6 +63,7 @@ final class FieldTypeHelper
         'checklist' => 'Choix multiples',
         'url' => 'lien',
         'email' => 'Email',
+        'text-list' => 'Liste',
         'system_component_collection' => 'Composants de SI',
     ];
 
@@ -72,6 +77,7 @@ final class FieldTypeHelper
         'checklist' => true,
         'url' => true,
         'email' => true,
+        'text-list' => true,
         'system_component_collection' => false,
     ];
 

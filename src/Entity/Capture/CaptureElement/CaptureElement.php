@@ -7,6 +7,9 @@ use App\Entity\Capture\Field\CalculatedVariable;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Rendering\Chapter;
 use App\Entity\Participant\ParticipantRole;
+use App\Entity\TenantAwareInterface;
+use App\Entity\TenantAwareTrait;
+use App\Enum\CaptureElementStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,8 +21,10 @@ use Doctrine\ORM\Mapping as ORM;
     'flex' => FlexCaptureElement::class,
     'system_components' => SystemComponentCaptureElement::class,
 ])]
-abstract class CaptureElement
+abstract class CaptureElement implements TenantAwareInterface
 {
+    use TenantAwareTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,6 +36,10 @@ abstract class CaptureElement
     #[ORM\Column(length: 255)]
     protected ?string $description = null;
 
+    #[ORM\Column(enumType: CaptureElementStatus::class, options: ['default' => CaptureElementStatus::TEMPLATE])]
+    private CaptureElementStatus $status = CaptureElementStatus::TEMPLATE;
+
+    #[ORM\OrderBy(['position' => 'ASC'])]
     #[ORM\OneToMany(targetEntity: Field::class, mappedBy: 'captureElement', cascade: ['persist', 'remove'], orphanRemoval: true)]
     protected Collection $fields;
 
@@ -53,6 +62,9 @@ abstract class CaptureElement
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     protected bool $active = true;
+
+    #[ORM\Column(length: 255)]
+    protected ?string $activationMessage = null;
 
     #[ORM\ManyToOne(
         targetEntity: Capture::class,
@@ -122,6 +134,18 @@ abstract class CaptureElement
         return $this;
     }
 
+    public function getActivationMessage(): ?string
+    {
+        return $this->activationMessage;
+    }
+
+    public function setActivationMessage(string $activationMessage): static
+    {
+        $this->activationMessage = $activationMessage;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -132,6 +156,22 @@ abstract class CaptureElement
         $this->description = $description;
 
         return $this;
+    }
+    public function getStatus(): CaptureElementStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(CaptureElementStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatusLabel(): string
+    {
+        return $this->status->getLabel();
     }
 
     public function getFields(): Collection
@@ -146,7 +186,6 @@ abstract class CaptureElement
             $field->setPosition($this->fields->count());
             $field->setCaptureElement($this);
         }
-
         return $this;
     }
 
@@ -158,31 +197,29 @@ abstract class CaptureElement
                 $field->setCaptureElement(null);
             }
         }
-
         return $this;
     }
 
-    public function getCalculatedvariables(): Collection
+    public function getCalculatedVariables(): Collection
     {
         return $this->calculatedvariables;
     }
 
-    public function addCalculatedvariable(CalculatedVariable $calculatedvariable): static
+    public function addCalculatedVariable(CalculatedVariable $calculatedVariable): static
     {
-        if (!$this->calculatedvariables->contains($calculatedvariable)) {
-            $this->calculatedvariables->add($calculatedvariable);
-            $calculatedvariable->setCaptureElement($this);
+        if (!$this->calculatedvariables->contains($calculatedVariable)) {
+            $this->calculatedvariables->add($calculatedVariable);
+            $calculatedVariable->setCaptureElement($this);
         }
 
         return $this;
     }
 
-    public function removeCalculatedvariable(CalculatedVariable $calculatedvariable): static
+    public function removeCalculatedVariable(CalculatedVariable $calculatedVariable): static
     {
-        if ($this->calculatedvariables->removeElement($calculatedvariable)) {
-            // set the owning side to null (unless already changed)
-            if ($calculatedvariable->getCaptureElement() === $this) {
-                $calculatedvariable->setCaptureElement(null);
+        if ($this->calculatedvariables->removeElement($calculatedVariable)) {
+            if ($calculatedVariable->getCaptureElement() === $this) {
+                $calculatedVariable->setCaptureElement(null);
             }
         }
 

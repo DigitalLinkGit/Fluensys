@@ -1,0 +1,92 @@
+{# templates/capture/_participant_assignments.html.twig #}
+{% if not capture.template %}
+    <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <div class="col-header">Responsable :</div>
+            {% if capture.responsible is defined and capture.responsible is not null %}
+                <div class="fw-semibold">{{ capture.responsible.username }}</div>
+            {% endif %}
+        </div>
+
+        <a href="{{ path('app_capture_participant_assign', { id: capture.id }) }}"
+           class="btn btn-outline-primary btn-sm"
+           title="Paramètres">
+            <i class="bi bi-gear"></i>
+        </a>
+    </div>
+{% endif %}
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="mb-3 col-header">Contributeurs</div>
+
+        {% for role in capture.getContributorRoles() %}
+            {% set assignedUser = null %}
+            {% set assignedContact = null %}
+
+            {% if capture.getParticipantAssignments() is iterable and (capture.getParticipantAssignments()|length) > 0 %}
+                {% for a in capture.participantAssignments %}
+                    {% if a.role and a.role.id == role.id %}
+                        {% set assignedUser = a.user %}
+                        {% set assignedContact = a.contact %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <div class="mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    {% include 'participant_role/_role_badge.html.twig' %}
+                    <div class="text-muted">{{ role.name }}</div>
+                </div>
+                {# Contributor Assignment #}
+                {% if capture.getParticipantAssignments() is iterable and (capture.getParticipantAssignments()|length) > 0 %}
+                    <div class="mx-3">
+                        {% if assignedUser %}
+                            <div class="fw-semibold">{{ assignedUser.username }}</div>
+                        {% elseif assignedContact %}
+                            <div class="fw-semibold">{{ assignedContact.name }}</div>
+                        {% else %}
+                            <div class="fw-semibold text-danger">Non assigné</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3 col-header">Validateurs</div>
+
+        {% for role in capture.getValidatorRoles() %}
+            {% set assignedUser = null %}
+            {% set assignedContact = null %}
+
+            {% if capture.getParticipantAssignments() is iterable and (capture.getParticipantAssignments()|length) > 0 %}
+                {% for a in capture.participantAssignments %}
+                    {% if a.role and a.role.id == role.id %}
+                        {% set assignedUser = a.user %}
+                        {% set assignedContact = a.contact %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <div class="mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    {% include 'participant_role/_role_badge.html.twig' %}
+                    <div class="text-muted">{{ role.name }}</div>
+                </div>
+                {# Validator Assignment #}
+                {% if capture.getParticipantAssignments() is iterable and (capture.getParticipantAssignments()|length) > 0 %}
+                    <div class="mx-3">
+                        {% if assignedUser %}
+                            <div class="fw-semibold">{{ assignedUser.username }}</div>
+                        {% elseif assignedContact %}
+                            <div class="fw-semibold">{{ assignedContact.name }}</div>
+                        {% else %}
+                            <div class="fw-semibold text-danger">Non assigné</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+        {% endfor %}
+    </div>
+</div>

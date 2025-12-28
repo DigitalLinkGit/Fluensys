@@ -3,11 +3,12 @@
 namespace App\Form\Account;
 
 use App\Entity\Account\Account;
+use App\Form\Participant\ContactForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -35,6 +36,7 @@ class AccountForm extends AbstractType
             ])
             ->add('informationSystem', InformationSystemForm::class, [
                 'label' => 'Nom',
+                'required' => false,
             ])
             ->add('contacts', CollectionType::class, [
                 'entry_type' => ContactForm::class,
@@ -47,9 +49,6 @@ class AccountForm extends AbstractType
                 'entry_options' => [
                     'label' => false,
                     'attr' => ['class' => 'row'],
-                ],
-                'attr' => [
-                    'data-controller' => 'classic-collection',
                 ],
             ])
         ;
