@@ -12,7 +12,6 @@
                 <a href="{{ path('app_account_edit', { id: capture.account.id }) }}" class="col-header text-decoration-none">
                     {{ capture.account.name }}
                 </a>
-
             </div>
         {% endif %}
 
@@ -97,7 +96,7 @@
     </div>
     <div class="tab-content">
         <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
-            <div class="row mx-2 px-0 g-0 col-header">
+            <div class="row mx-2 mt-2 px-0 g-0 col-header">
                 <div class="col-3">Nom</div>
                 <div class="col-3">Contributeur</div>
                 <div class="col-3">Validateur</div>
@@ -119,8 +118,14 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {# on garde votre message existant (rien ne casse) #}
                         <div class="text-muted small m-3">Aucun élément</div>
+                    {% endif %}
+                    {% if capture.template %}
+                        <a class="btn btn-outline-primary mt-3"
+                           href="{{ path('app_capture_element_new', { capture: form.vars.data.id }) }}">
+                            <i class="bi bi-plus"></i>
+                            Ajouter un élément
+                        </a>
                     {% endif %}
                 </div>
             </div>

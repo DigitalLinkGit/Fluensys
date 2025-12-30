@@ -114,7 +114,7 @@ final class CaptureTemplateController extends AbstractController
             dump(['FORM' => [$d?->getId(), $child->get('sourceElement')->getData()?->getId(), $child->get('targetElement')->getData()?->getId(), $child->get('sourceField')->getData()?->getId()]]);
         }
 
-        return $this->render('capture/edit.html.twig', [
+        return $this->render('capture/capture_template/edit.html.twig', [
             'capture' => $capture,
             'form' => $form,
             'conditionsByTargetId' => $conditionsByTargetId,

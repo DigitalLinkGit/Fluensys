@@ -34,7 +34,6 @@ final class ConditionToggler
 
         // 1) Not answered = inactive
         if (null === $actual || '' === $actual) {
-            $target->setActivationMessage('Condition');
             $target->setActive(false);
             return;
         }
@@ -47,9 +46,6 @@ final class ConditionToggler
             $isActive = in_array($expectedNorm, $actualNorm, true);
         } else {
             $isActive = $actualNorm === $expectedNorm;
-        }
-        if (!$isActive) {
-            $target->setActivationMessage('Condition');
         }
 
         $target->setActive($isActive);

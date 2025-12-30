@@ -8,8 +8,8 @@ use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Rendering\TextChapter;
 use App\Entity\Participant\User;
-use App\Form\Capture\CaptureElement\CaptureElementNewForm;
-use App\Form\Capture\CaptureElement\CaptureElementRespondForm;
+use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
+use App\Form\Capture\CaptureElement\CaptureElementTemplateNewForm;
 use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Service\Factory\CaptureElementFactory;
@@ -49,7 +49,7 @@ final class CaptureElementController extends AbstractAppController
     #[Route('/{id}/preview', name: 'app_capture_element_form_preview', methods: ['GET'])]
     public function preview(CaptureElement $element): Response
     {
-        $form = $this->createForm(CaptureElementRespondForm::class, $element);
+        $form = $this->createForm(CaptureElementContributorForm::class, $element);
 
         return $this->render('capture/capture_element/preview.html.twig', [
             'element' => $element,
@@ -112,7 +112,7 @@ final class CaptureElementController extends AbstractAppController
         /** @var User|null $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(CaptureElementRespondForm::class, $element);
+        $form = $this->createForm(CaptureElementContributorForm::class, $element);
         $form->handleRequest($request);
         $capture = $element->getCapture();
 
@@ -188,37 +188,37 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/new', name: 'app_capture_element_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeManager $typeHelper, CaptureElementFactory $factory, CaptureElementRouter $router): Response
+    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeManager $typeManager, CaptureElementFactory $factory, CaptureElementRouter $router): Response
     {
         $captureId = $request->query->getInt('capture');
 
-        $form = $this->createForm(CaptureElementNewForm::class, null, [
-            'type_choices' => $typeHelper->getFormChoices(),
+        $form = $this->createForm(CaptureElementTemplateNewForm::class, null, [
+            'type_choices' => $typeManager->getFormChoices(),
         ])->handleRequest($request);
 
-        if ($form->isSubmitted() && !$form->isValid()) {
-            foreach ($form->getErrors(true, true) as $error) {
-                $this->addFlash('danger', $error->getMessage());
-            }
-        }
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $typeKey = $form->get('type')->getData();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $typeKey = $form->get('type')->getData();
+                $element = $factory->create($typeKey, $data);
+                if ($captureId) {
+                    $capture = $em->getRepository(Capture::class)->find($captureId);
+                    if ($capture) {
+                        $element->setCapture($capture);
+                    }
+                }
 
-            $element = $factory->createFromForm($typeKey, $data);
-            if ($captureId) {
-                $capture = $em->getRepository(Capture::class)->find($captureId);
-                if ($capture) {
-                    $element->setCapture($capture);
+                $em->persist($element);
+                $em->flush();
+                [$route, $params] = $router->resolveEditRoute($element);
+
+                return $this->redirectToRoute($route, $params);
+            } else {
+                foreach ($form->getErrors(true, true) as $error) {
+                    $this->addFlash('danger', $error->getMessage());
                 }
             }
-
-            $em->persist($element);
-            $em->flush();
-            [$route, $params] = $router->resolveEditRoute($element);
-
-            return $this->redirectToRoute($route, $params);
         }
 
         return $this->render('capture/capture_element/new.html.twig', [

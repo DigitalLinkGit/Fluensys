@@ -2,6 +2,7 @@ twig:
     file_name_pattern: '*.twig'
     form_themes:
         - 'bootstrap_5_layout.html.twig'
+        - 'components/form/_listable_field_item_theme.html.twig'
 
 when@test:
     twig:

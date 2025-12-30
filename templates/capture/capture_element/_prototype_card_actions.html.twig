@@ -79,13 +79,6 @@
     {% if element.status.value == 'validated' %}
 
     {% endif %}
-
-    {# // case multiple status
-    {% if element.status.value in ['collecting', 'pending'] %}
-        ...
-    {% endif %} #}
-{% else %}
-    <span class="text-muted">{{ element.activationMessage }}</span>
 {% endif %}
 
 

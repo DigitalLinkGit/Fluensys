@@ -19,15 +19,15 @@ final class CaptureElementRouter
                     'capture' => $captureId,
                 ],
             ],
-            'SystemComponentCaptureElement' => [
-                'app_system_component_capture_element_edit',
+            'ListableFieldCaptureElement' => [
+                'app_listable_field_capture_element_edit',
                 [
                     'id' => $element->getId(),
                     'capture' => $captureId,
                 ],
             ],
             default => [
-                'app_capture_element_index',
+                'app_capture_element_new',
                 [],
             ],
         };

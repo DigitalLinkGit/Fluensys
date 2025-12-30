@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
     'flex' => FlexCaptureElement::class,
-    'system_components' => SystemComponentCaptureElement::class,
+    'listable_field' => ListableFieldCaptureElement::class,
 ])]
 abstract class CaptureElement implements TenantAwareInterface
 {
@@ -62,9 +62,6 @@ abstract class CaptureElement implements TenantAwareInterface
 
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     protected bool $active = true;
-
-    #[ORM\Column(length: 255)]
-    protected ?string $activationMessage = null;
 
     #[ORM\ManyToOne(
         targetEntity: Capture::class,
@@ -134,18 +131,6 @@ abstract class CaptureElement implements TenantAwareInterface
         return $this;
     }
 
-    public function getActivationMessage(): ?string
-    {
-        return $this->activationMessage;
-    }
-
-    public function setActivationMessage(string $activationMessage): static
-    {
-        $this->activationMessage = $activationMessage;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -183,8 +168,8 @@ abstract class CaptureElement implements TenantAwareInterface
     {
         if (!$this->fields->contains($field)) {
             $this->fields->add($field);
-            $field->setPosition($this->fields->count());
             $field->setCaptureElement($this);
+            $field->setPosition($this->fields->count());
         }
         return $this;
     }
@@ -192,7 +177,6 @@ abstract class CaptureElement implements TenantAwareInterface
     public function removeField(Field $field): static
     {
         if ($this->fields->removeElement($field)) {
-            // set the owning side to null (unless already changed)
             if ($field->getCaptureElement() === $this) {
                 $field->setCaptureElement(null);
             }

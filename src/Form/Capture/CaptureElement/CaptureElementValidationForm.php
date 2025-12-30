@@ -3,7 +3,7 @@
 namespace App\Form\Capture\CaptureElement;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Form\Capture\Field\FieldForm;
+use App\Form\Capture\Field\FieldContributorForm;
 use App\Form\Capture\Field\FieldValidationForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;

@@ -1,0 +1,39 @@
+{% use "bootstrap_5_layout.html.twig" with collection_widget as base_collection_widget %}
+
+{% block collection_widget %}
+    {% set dc = attr['data-controller']|default('') %}
+    {% if 'listable-field' in dc %}
+        {# Keep prototype as real HTML in a <template> to avoid attribute-escaping issues #}
+        {% set prototypeHtml = (prototype is defined and prototype is not null) ? form_widget(prototype) : '' %}
+
+        <div
+            {{ block('widget_container_attributes') }}
+            data-listable-field-index-value="{{ form|length }}"
+        >
+            <template data-listable-field-target="prototype">
+                {{ prototypeHtml|raw }}
+            </template>
+
+            <div data-listable-field-target="container">
+                {% for child in form %}
+                    <div data-listable-field-item="1" class="mb-2">
+                        {{ form_row(child) }}
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm"
+                                data-action="listable-field#remove">
+                            Supprimer
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm mt-2"
+                    data-action="listable-field#add">
+                Ajouter
+            </button>
+        </div>
+    {% else %}
+        {{ block('base_collection_widget') }}
+    {% endif %}
+{% endblock %}

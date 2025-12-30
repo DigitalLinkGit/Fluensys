@@ -126,7 +126,6 @@ final readonly class CaptureStatusManager
                 $this->transition($element, CaptureElementStatus::READY, $flush);
             } elseif ($this->assignmentHasContributorRole($element, $user)) {
                 $this->transition($element, CaptureElementStatus::PENDING, $flush);
-                $element->setActivationMessage('Contributor missing');
             }
         }
     }

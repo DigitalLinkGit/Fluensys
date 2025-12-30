@@ -5,8 +5,8 @@
 {% block body %}
     <h1>Mon organisation : </h1>
 
-    <div>{{ tenant.name }}</div>
-    <h5>Utilisateurs : </h5>
+    <h4 class="col-header my-4">{{ tenant.name }}</h4>
+    <h6>Utilisateurs : </h6>
 
     {% include 'components/table/_table.html.twig' with {
         items: users,

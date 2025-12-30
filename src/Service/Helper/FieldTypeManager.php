@@ -8,13 +8,11 @@ use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\EmailField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
-use App\Entity\Capture\Field\SystemComponentCollectionField;
+use App\Entity\Capture\Field\ListableField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
-use App\Entity\Capture\Field\TextListField;
 use App\Entity\Capture\Field\UrlField;
-use App\Form\Capture\Field\SystemComponentCollectionFieldForm;
-use App\Form\Capture\Field\TextListFieldForm;
+use App\Form\Capture\Field\ListableFieldContributorForm;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -35,8 +33,7 @@ final class FieldTypeManager
         'checklist' => ChecklistField::class,
         'url' => UrlField::class,
         'email' => EmailField::class,
-        'text-list' => TextListField::class,
-        'system_component_collection' => SystemComponentCollectionField::class,
+        'listable_field' => ListableField::class,
     ];
 
     /** key => FormType */
@@ -49,8 +46,7 @@ final class FieldTypeManager
         'checklist' => ChoiceType::class,
         'url' => UrlType::class,
         'email' => EmailType::class,
-        'text-list' => TextListFieldForm::class,
-        'system_component_collection' => SystemComponentCollectionFieldForm::class,
+        'listable_field' => ListableFieldContributorForm::class,
     ];
 
     /** key => label */
@@ -63,8 +59,7 @@ final class FieldTypeManager
         'checklist' => 'Choix multiples',
         'url' => 'lien',
         'email' => 'Email',
-        'text-list' => 'Liste',
-        'system_component_collection' => 'Composants de SI',
+        'listable_field' => 'Liste',
     ];
 
     /** key => public (bool) */
@@ -77,8 +72,7 @@ final class FieldTypeManager
         'checklist' => true,
         'url' => true,
         'email' => true,
-        'text-list' => true,
-        'system_component_collection' => false,
+        'listable_field' => true,
     ];
 
     /** FQCN form key */
@@ -109,7 +103,7 @@ final class FieldTypeManager
         return $this->labels[$key] ?? ucfirst(str_replace('_', ' ', $key));
     }
 
-    /** Form type from instance */
+    /** themes type from instance */
     public function getFormTypeFor(Field $field): string
     {
         return $this->formTypes[$this->getKeyFor($field)];

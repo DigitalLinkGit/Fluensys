@@ -4,6 +4,8 @@
 
 {% block body %}
     <h1>Répondre aux éléments</h1>
+    {{ dump(form.fields[0].items.items.vars.attr) }}
+
     {% include 'capture/capture_element/_form.html.twig' %}
 
 {% endblock %}

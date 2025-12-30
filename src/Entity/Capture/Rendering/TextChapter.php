@@ -25,6 +25,12 @@ class TextChapter extends Chapter
 
     public function getRenderContent(): string
     {
+        // ToDO: make a FieldValueResolver
+        /*
+        pour chaque Field du template text
+        récupérer le field et fournir la valeur en fonction du type
+        */
+
         $template = (string) $this->getTemplateContent();
 
         $fields = $this->getCaptureElement()->getFields();

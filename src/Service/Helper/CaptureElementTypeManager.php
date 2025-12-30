@@ -13,8 +13,8 @@ final class CaptureElementTypeManager
 
     /** Labels (key : discriminator → value : label) */
     private array $labels = [
-        'flex' => 'Capture libre',
-        'system_components' => 'Composants du système',
+        'flex' => 'Formulaire de capture libre',
+        'listable' => 'Liste',
     ];
 
     /** key → FQCN  */

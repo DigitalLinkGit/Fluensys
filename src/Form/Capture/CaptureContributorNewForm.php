@@ -2,10 +2,8 @@
 
 namespace App\Form\Capture;
 
+use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Entity\Participant\Contact;
-use App\Entity\Participant\ParticipantAssignment;
-use App\Entity\Participant\ParticipantRole;
 use App\Entity\Participant\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -13,26 +11,44 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CaptureForm extends AbstractType
+class CaptureContributorNewForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Capture $capture */
-        $capture = $builder->getData();
-
         $builder
+            ->add('account', EntityType::class, [
+                'class' => Account::class,
+                'choice_label' => 'name',
+                'mapped' => false,
+                'required' => true,
+                'placeholder' => '— Sélectionner un compte —',
+                'attr' => [
+                    'class' => 'w-auto',
+                ],
+            ])
+
+            ->add('template', EntityType::class, [
+                'class' => Capture::class,
+                'choice_label' => 'name',
+                'mapped' => false,
+                'required' => true,
+                'placeholder' => '— Sélectionner un template —',
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('c')
+                    ->andWhere('c.template = true')
+                    ->orderBy('c.name', 'ASC'),
+                'attr' => [
+                    'class' => 'w-auto',
+                ],
+            ])
             ->add('name', TextType::class, [
                 'label' => 'Nom',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Nom de la capture_template...',
                 ],
-                'required' => true,
+                'required' => false,
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
@@ -49,8 +65,7 @@ class CaptureForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Capture::class,
+            'data_class' => null,
         ]);
     }
-
 }

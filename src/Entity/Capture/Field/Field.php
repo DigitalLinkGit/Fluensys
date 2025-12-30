@@ -18,8 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
     'checklist' => ChecklistField::class,
     'url' => UrlField::class,
     'email' => EmailField::class,
-    'text-list' => TextListField::class,
-    'system_component_collection' => SystemComponentCollectionField::class,
+    'listable_field' => ListableField::class,
 ])]
 abstract class Field
 {

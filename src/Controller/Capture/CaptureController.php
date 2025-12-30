@@ -5,8 +5,8 @@ namespace App\Controller\Capture;
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
 use App\Entity\Participant\User;
-use App\Form\Capture\CaptureForm;
-use App\Form\Capture\CaptureNewForm;
+use App\Form\Capture\CaptureContributorForm;
+use App\Form\Capture\CaptureContributorNewForm;
 use App\Form\Participant\ParticipantAssignmentForm;
 use App\Repository\CaptureRepository;
 use App\Service\Helper\CaptureStatusManager;
@@ -38,7 +38,7 @@ final class CaptureController extends AbstractController
         /** @var User|null $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(CaptureNewForm::class);
+        $form = $this->createForm(CaptureContributorNewForm::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -108,7 +108,7 @@ final class CaptureController extends AbstractController
         /** @var User|null $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(CaptureForm::class, $capture);
+        $form = $this->createForm(CaptureContributorForm::class, $capture);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {

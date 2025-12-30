@@ -18,8 +18,10 @@
 
         <div class="ms-auto d-flex align-items-center">
             {% if app.user %}
-                <span class="me-2 small text-muted">{{ app.user.username }}</span>
-                <span class="me-2 small col-header">{{ app.user.tenant.name }}</span>
+                <div>
+                    <span class="d-block me-2 small col-header">{{ app.user.tenant.name }}</span>
+                    <span class="d-block me-2 small text-muted">{{ app.user.username }}</span>
+                </div>
                 <a href="{{ path('app_logout') }}" class="btn btn-icon btn-outline-primary" title="Déconnexion">
                     <i class="bi bi-box-arrow-right"></i>
                 </a>

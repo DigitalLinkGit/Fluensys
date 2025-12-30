@@ -10,7 +10,7 @@ class FieldValidationForm extends AbstractType
 {
     public function getParent(): string
     {
-        return FieldForm::class;
+        return FieldContributorForm::class;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

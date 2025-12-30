@@ -4,8 +4,7 @@ namespace App\Form\Capture\Field;
 
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
-use App\Entity\Capture\Field\TextListField;
-use App\Entity\Capture\Field\SystemComponentCollectionField;
+use App\Entity\Capture\Field\ListableField;
 use App\Entity\Capture\Field\UrlField;
 use App\Service\Helper\FieldTypeManager;
 use Symfony\Component\Form\AbstractType;
@@ -15,9 +14,9 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Url;
 
-class FieldForm extends AbstractType
+class FieldContributorForm extends AbstractType
 {
-    public function __construct(private readonly FieldTypeManager $typeHelper)
+    public function __construct(private readonly FieldTypeManager $typeManager)
     {
     }
 
@@ -29,7 +28,17 @@ class FieldForm extends AbstractType
                 return;
             }
 
-            $formFieldType = $this->typeHelper->getFormTypeFor($field);
+            if ($field instanceof ListableField) {
+                $event->getForm()->add('items', ListableFieldContributorForm::class, [
+                    'inherit_data' => true,
+                    'label' => $field->isRequired() ? '*'.$field->getLabel() : $field->getLabel(),
+                    'required' => (bool) $field->isRequired(),
+                ]);
+
+                return;
+            }
+
+            $formFieldType = $this->typeManager->getFormTypeFor($field);
 
             $opts = [
                 'data' => $field->getValue(),
@@ -44,6 +53,7 @@ class FieldForm extends AbstractType
                     'multiple' => !$field->isUniqueResponse(),
                 ];
             }
+
             if ($field instanceof UrlField) {
                 $opts += [
                     'default_protocol' => 'https',
@@ -51,22 +61,6 @@ class FieldForm extends AbstractType
                         new Url(),
                     ],
                 ];
-            }
-            if ($field instanceof SystemComponentCollectionField) {
-                $event->getForm()->add('value', SystemComponentCollectionFieldForm::class, [
-                    'label' => $field->getLabel(),
-                    'inherit_data' => true,
-                ]);
-
-                return;
-            }
-            if ($field instanceof TextListField) {
-                $event->getForm()->add('value', TextListFieldForm::class, [
-                    'label' => $field->getLabel(),
-                    'inherit_data' => true,
-                ]);
-
-                return;
             }
 
             $event->getForm()->add('value', $formFieldType, $opts);
