@@ -1,6 +1,7 @@
 <fieldset class="mb-3 field-entry form-container mt-3 p-0 position-relative card"
           data-sortable-id="{{ form.vars.value.id ?? form.vars.name }}"
-          data-type-label="{{ form.vars.type_label }}">
+          data-type-label="{{ form.vars.type_label }}"
+          data-controller="ghost-field">
     {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}
     {{ form_row(form.type) }}
     {# CARD HEADER #}
