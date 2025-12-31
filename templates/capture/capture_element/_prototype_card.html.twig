@@ -18,21 +18,9 @@
                     <span class="fw-semibold text-truncate">{{ element.name }}</span>
                 </div>
 
-                {# Col Contributor / Validator #}
-                <div class="col-6">
-                    <div class="row g-0 align-items-center">
-                        <div class="col-6 pe-3 text-truncate">
-                            <span class="text-truncate">
-                                {{ element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}
-                            </span>
-                        </div>
-
-                        <div class="col-6 pe-3 text-truncate">
-                            <span class="text-truncate">
-                                {{ element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}
-                            </span>
-                        </div>
-                    </div>
+                {# Col Description #}
+                <div class="col-6 pe-3 text-truncate">
+                    <span class="text-truncate">{{ element.description }}</span>
                 </div>
 
                 {# Col Actions #}
@@ -68,10 +56,19 @@
 
         <div id="{{ collapseId }}" class="collapse">
             <div class="pt-3 mx-3 element-card-body">
-                <div class="mb-2">
-                    <span class="col-header">Description :</span>
-                    <div class="mx-3 mt-1">{{ element.description }}</div>
+                <div class="row g-0 align-items-center">
+                    <span class="col-header">Contributeur :</span>
+                            <span class="text-truncate">
+                                {{ element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}
+                            </span>
                 </div>
+                <div class="row g-0 align-items-center">
+                    <span class="col-header">Validateur :</span>
+                            <span class="text-truncate">
+                                {{ element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}
+                            </span>
+                </div>
+
                 {% if incomingConditions is defined and incomingConditions|length %}
                     <div class="mb-2">
                         <span class="col-header">Condition(s) :</span>

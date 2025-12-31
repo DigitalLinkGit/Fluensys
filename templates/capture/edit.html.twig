@@ -72,9 +72,13 @@
     <div class="tab-content">
         <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
             <div class="row mx-2 mt-2 px-0 g-0 col-header">
+                {% if capture.template %}
+                    <div class="col-auto pe-2 text-muted">
+                        <i class="bi bi-grip-vertical"></i>
+                    </div>
+                {% endif %}
                 <div class="col-3">Nom</div>
-                <div class="col-3">Contributeur</div>
-                <div class="col-3">Validateur</div>
+                <div class="col-3">Description</div>
             </div>
             {% include 'capture/_elements_order_panel.html.twig' with {
                 capture: capture,
