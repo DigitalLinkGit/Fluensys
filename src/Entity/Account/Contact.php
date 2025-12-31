@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Entity\Participant;
+namespace App\Entity\Account;
 
-use App\Entity\Account\Account;
-use App\Entity\TenantAwareInterface;
-use App\Entity\TenantAwareTrait;
+use App\Entity\Participant\ParticipantRole;
+use App\Entity\Tenant\TenantAwareInterface;
+use App\Entity\Tenant\TenantAwareTrait;
 use App\Repository\ContactRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

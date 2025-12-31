@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Form\Participant;
+namespace App\Form\Account;
 
-use App\Entity\Participant\Contact;
+use App\Entity\Account\Contact;
 use App\Entity\Participant\ParticipantRole;
 use App\Repository\ParticipantRoleRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

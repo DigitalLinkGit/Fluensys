@@ -1,19 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Capture{% endblock %}
+{% block title %}{{ templateMode ? 'Nouveau template de capture' : 'New Capture' }}{% endblock %}
 
 {% block body %}
-    <h1>Nouvelle capture</h1>
+    <h1>{{ templateMode ? 'Nouveau template de capture' : 'Nouvelle capture' }}</h1>
     {{ form_start(form) }}
     {{ form_widget(form) }}
 
     <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% set backRoute = templateMode ? 'app_capture_template_index' : 'app_capture_index' %}
         {% include 'components/button/_btn.html.twig' with {
             btn: {
                 type: 'link',
                 label: 'Retour',
                 icon: 'bi-arrow-left',
-                route: 'app_capture_index',
+                route: backRoute,
                 class: 'btn btn-outline-primary'
             }
         } %}
@@ -28,7 +29,4 @@
         } %}
     </div>
     {{ form_end(form) }}
-
-
-
 {% endblock %}

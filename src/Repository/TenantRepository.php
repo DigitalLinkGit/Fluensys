@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Tenant;
+use App\Entity\Tenant\Tenant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Tenant>
+ * @extends ServiceEntityRepository<\App\Entity\Tenant\Tenant>
  */
 class TenantRepository extends ServiceEntityRepository
 {

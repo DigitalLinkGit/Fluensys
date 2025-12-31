@@ -3,10 +3,8 @@
 namespace App\Entity\Account;
 
 use App\Entity\Capture\Capture;
-use App\Entity\Participant\Contact;
-use App\Entity\Tenant;
-use App\Entity\TenantAwareInterface;
-use App\Entity\TenantAwareTrait;
+use App\Entity\Tenant\TenantAwareInterface;
+use App\Entity\Tenant\TenantAwareTrait;
 use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

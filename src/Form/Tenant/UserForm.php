@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Form\Participant;
+namespace App\Form\Tenant;
 
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\Participant\User;
+use App\Entity\Tenant\User;
 use App\Repository\ParticipantRoleRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

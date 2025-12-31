@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Entity\Participant;
+namespace App\Entity\Tenant;
 
 use App\Entity\Capture\Capture;
-use App\Entity\Tenant;
-use App\Entity\TenantAwareInterface;
-use App\Entity\TenantAwareTrait;
+use App\Entity\Participant\ParticipantRole;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

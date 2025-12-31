@@ -4,40 +4,15 @@
 
 {% block body %}
     {{ form_start(form) }}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="page-title">{{ capture.template ? 'Template de capture : ':'Capture : ' }}</h2>
-        {% if capture.account is defined and capture.account is not null %}
-            <div>
-                <span class="text-muted">Compte :</span>
-                <a href="{{ path('app_account_edit', { id: capture.account.id }) }}" class="col-header text-decoration-none">
-                    {{ capture.account.name }}
-                </a>
-            </div>
-        {% endif %}
-
-    </div>
+    {% include 'capture/_header.html.twig' with { capture: capture, templateMode: templateMode } %}
     <div class="row align-items-start">
-        <div class="col-md-4">
-            {% include 'components/form/_ghost_field.html.twig' with {
-                field: form.name,
-                placeholder: 'Nom…',
-                class: 'title-input',
-                attrs: { autocomplete: 'off' }
-            } %}
-
-            {% include 'components/form/_ghost_field.html.twig' with {
-                field: form.description,
-                placeholder: 'Description…',
-                class: 'subtitle-textarea',
-                attrs: { autocomplete: 'off' }
-            } %}
-        </div>
+        {% include 'capture/_capture_form.html.twig' with { form: form } %}
         <div>
             {% include 'components/button/_btn_bar.html.twig' with {
                 buttons: {
                     preview_render: {
                         type: 'link',
-                        route: 'app_capture_render_text_preview',
+                        route: templateMode ? 'app_capture_template_render_text_preview' : 'app_capture_render_text_preview',
                         param_map: { id: 'capture.id' },
                         icon: 'bi-pencil',
                         label: 'Aperçu du rendu',
@@ -47,7 +22,7 @@
                         type: 'link',
                         label: 'Retour',
                         icon: 'bi-arrow-left',
-                        route: 'app_capture_index',
+                        route: templateMode ? 'app_capture_template_index' : 'app_capture_index',
                         class: 'btn btn-outline-primary'
                     },
                     save: {
@@ -101,86 +76,19 @@
                 <div class="col-3">Contributeur</div>
                 <div class="col-3">Validateur</div>
             </div>
-            <div class="mx-2 mb-3 element-card-container">
-                <div class="sortable-list" data-sortable-order-target="list">
-                    {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
-                        {% set byTarget = conditionsByTargetId|default({}) %}
-
-                        {% for element in capture.captureElements %}
-                            {% set entity = element ?? null %}
-                            {% set elementId = entity ? entity.id : null %}
-                            {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
-                            <div class="mb-1 row">
-                                {% include 'capture/capture_element/_prototype_card.html.twig' with {
-                                    element: element,
-                                    incomingConditions: incoming
-                                } %}
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="text-muted small m-3">Aucun élément</div>
-                    {% endif %}
-                    {% if capture.template %}
-                        <a class="btn btn-outline-primary mt-3"
-                           href="{{ path('app_capture_element_new', { capture: form.vars.data.id }) }}">
-                            <i class="bi bi-plus"></i>
-                            Ajouter un élément
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
+            {% include 'capture/_elements_order_panel.html.twig' with {
+                capture: capture,
+                form: form,
+                conditionsByTargetId: conditionsByTargetId,
+                templateMode: templateMode
+            } %}
         </div>
         <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
-            {% include 'participant_role/_participant_roles_and_assignment.html.twig' with { capture: form.vars.data } %}
+            {% include 'capture/_assignment_panel.html.twig' with { form: form } %}
         </div>
         {% if capture.template %}
             <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
-                {% set prototype %}
-                    {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
-                {% endset %}
-                {# HEADERS #}
-                <div class="mx-2 mb-3">
-                    <div class="mb-2 row g-3 align-items-end">
-                        <div class="col-md-3 col-header" title="L'élément qui sera affecté par la condition">
-                            Elément cible
-                        </div>
-                        <div class="col-md-3 col-header"
-                             title="L'élément qui porte le champ à vérifier pour valider la condition">
-                            Elément source
-                        </div>
-                        <div class="col-md-3 col-header" title="Le champ à vérifier pour valider la condition">
-                            Champ source
-                        </div>
-                        <div class="col-md-2 col-header">
-                            Valeur attendue
-                        </div>
-                        <div class="col-auto ms-auto align-self-end col-header">
-                            Actions
-                        </div>
-                    </div>
-                    {# CONDITIONS #}
-                    <div
-                        data-controller="condition"
-                        data-prototype="{{ prototype|e('html_attr') }}"
-                        data-condition-fields-url-value="{{ path('condition_fields') }}"
-                    >
-                        <div data-condition-target="list" class="mb-3">
-                            {% for condition in form.conditions %}
-                                {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
-                            {% endfor %}
-                        </div>
-
-                        <div class="col-auto ms-auto align-self-end" data-condition-target="add">
-                            <button type="button"
-                                    class="btn btn-outline-primary"
-                                    data-action="click->condition#add"
-                                    title="Ajouter une condition">
-                                <i class="bi bi-plus"></i>
-                                Ajouter une condition
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                {% include 'capture/_conditions_panel.html.twig' with { form: form } %}
             </div>
             <div id="document" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-document">
                 <div class="mx-2 mb-3">

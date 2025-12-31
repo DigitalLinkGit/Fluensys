@@ -2,11 +2,11 @@
 
 namespace App\Form\Participant;
 
+use App\Entity\Account\Contact;
 use App\Entity\Capture\Capture;
-use App\Entity\Participant\Contact;
 use App\Entity\Participant\ParticipantAssignment;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\Participant\User;
+use App\Entity\Tenant\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -28,8 +28,8 @@ class ParticipantAssignmentForm extends AbstractType
         $capture = $builder->getData();
 
         $builder->add('responsible', EntityType::class, [
-            'class' => User::class,
-            'choice_label' => fn (User $u) => $u->getUsername(),
+            'class' => \App\Entity\Tenant\User::class,
+            'choice_label' => fn (\App\Entity\Tenant\User $u) => $u->getUsername(),
             'placeholder' => 'Sélectionner un responsable',
             'required' => true,
             'label' => false,
@@ -76,7 +76,7 @@ class ParticipantAssignmentForm extends AbstractType
         if ((bool) $role->isInternal()) {
             $builder->add($fieldName, EntityType::class, [
                 'class' => User::class,
-                'choice_label' => fn (User $u) => $u->getUsername(),
+                'choice_label' => fn (\App\Entity\Tenant\User $u) => $u->getUsername(),
                 'placeholder' => 'Sélectionner un utilisateur',
                 'required' => false,
                 'mapped' => false,
@@ -96,7 +96,7 @@ class ParticipantAssignmentForm extends AbstractType
         $account = $capture->getAccount();
 
         $builder->add($fieldName, EntityType::class, [
-            'class' => Contact::class,
+            'class' => \App\Entity\Account\Contact::class,
             'choice_label' => fn (Contact $c) => $c->getName(),
             'placeholder' => 'Sélectionner un contact',
             'required' => false,

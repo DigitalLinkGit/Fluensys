@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Doctrine\Filter;
 
-use App\Entity\TenantAwareInterface;
+use App\Entity\Tenant\TenantAwareInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 

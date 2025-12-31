@@ -3,30 +3,35 @@
 {% block title %}Capture index{% endblock %}
 
 {% block body %}
-    <h1>Captures</h1>
+    <h1>{{ templateMode ? 'Mes templates de captures' : 'Captures' }}</h1>
+
+    {% set addRoute = templateMode ? 'app_capture_template_new' : 'app_capture_new' %}
+    {% set showRoute = templateMode ? 'app_capture_template_show' : 'app_capture_show' %}
+    {% set editRoute = templateMode ? 'app_capture_template_edit' : 'app_capture_edit' %}
+    {% set deleteRoute = templateMode ? 'app_capture_template_delete' : 'app_capture_delete' %}
 
     {% include 'components/table/_table.html.twig' with {
         items: captures,
-        columns: ['name', 'description'],
-        headers: ['Nom', 'Description'],
+        columns: templateMode ? ['name', 'description','template'] : ['name','description'],
+        headers: templateMode ? ['Nom','Description','Template'] : ['Nom','Description'],
         filter: true,
         sort: true,
-        add: {route: 'app_capture_new'},
+        add: {route: addRoute},
         actions: [
             {
-                route: 'app_capture_show',
+                route: showRoute,
                 param_map: { id: 'id' },
                 icon: 'bi-eye',
                 label: 'Voir',
             },
             {
-                route: 'app_capture_edit',
+                route: editRoute,
                 param_map: { id: 'id' },
                 icon: 'bi-pencil',
                 label: 'Éditer',
             },
             {
-                route: 'app_capture_delete',
+                route: deleteRoute,
                 param_map: { id: 'id' },
                 icon: 'bi-trash',
                 label: 'Supprimer',

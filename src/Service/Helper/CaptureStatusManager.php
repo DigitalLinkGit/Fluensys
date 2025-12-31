@@ -3,7 +3,7 @@
 namespace App\Service\Helper;
 
 use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Entity\Participant\User;
+use App\Entity\Tenant\User;
 use App\Enum\CaptureElementStatus;
 use Doctrine\ORM\EntityManagerInterface;
 

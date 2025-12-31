@@ -8,7 +8,7 @@
         {% include 'components/button/_btn.html.twig' with {
             btn: {
                 type: 'link',
-                route: 'app_capture_edit',
+                route: templateMode ? 'app_capture_template_edit' : 'app_capture_edit',
                 param_map: { id: 'capture.id' },
                 icon: 'bi-arrow-left',
                 label: 'Retour',

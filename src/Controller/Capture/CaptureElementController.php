@@ -7,7 +7,7 @@ use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Rendering\TextChapter;
-use App\Entity\Participant\User;
+use App\Entity\Tenant\User;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateNewForm;
 use App\Form\Capture\CaptureElement\CaptureElementValidationForm;

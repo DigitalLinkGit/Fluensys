@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Participant\Contact;
+use App\Entity\Account\Contact;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<\App\Entity\Participant\Contact>
+ * @extends ServiceEntityRepository<\App\Entity\Account\Contact>
  */
 class ContactRepository extends ServiceEntityRepository
 {

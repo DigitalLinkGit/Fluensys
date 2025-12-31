@@ -1,0 +1,45 @@
+{# Conditions panel (templates) #}
+{% set prototype %}
+    {% include 'capture/condition/_prototype.html.twig' with { condition: form.conditions.vars.prototype } %}
+{% endset %}
+<div class="mx-2 mb-3">
+    <div class="mb-2 row g-3 align-items-end">
+        <div class="col-md-3 col-header" title="L'élément qui sera affecté par la condition">
+            Elément cible
+        </div>
+        <div class="col-md-3 col-header"
+             title="L'élément qui porte le champ à vérifier pour valider la condition">
+            Elément source
+        </div>
+        <div class="col-md-3 col-header" title="Le champ à vérifier pour valider la condition">
+            Champ source
+        </div>
+        <div class="col-md-2 col-header">
+            Valeur attendue
+        </div>
+        <div class="col-auto ms-auto align-self-end col-header">
+            Actions
+        </div>
+    </div>
+    <div
+        data-controller="condition"
+        data-prototype="{{ prototype|e('html_attr') }}"
+        data-condition-fields-url-value="{{ path('condition_fields') }}"
+    >
+        <div data-condition-target="list" class="mb-3">
+            {% for condition in form.conditions %}
+                {% include 'capture/condition/_prototype.html.twig' with { condition: condition } only %}
+            {% endfor %}
+        </div>
+
+        <div class="col-auto ms-auto align-self-end" data-condition-target="add">
+            <button type="button"
+                    class="btn btn-outline-primary"
+                    data-action="click->condition#add"
+                    title="Ajouter une condition">
+                <i class="bi bi-plus"></i>
+                Ajouter une condition
+            </button>
+        </div>
+    </div>
+</div>

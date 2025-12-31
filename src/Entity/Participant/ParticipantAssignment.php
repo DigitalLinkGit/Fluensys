@@ -2,7 +2,9 @@
 
 namespace App\Entity\Participant;
 
+use App\Entity\Account\Contact;
 use App\Entity\Capture\Capture;
+use App\Entity\Tenant\User;
 use App\Repository\ParticipantAssignmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

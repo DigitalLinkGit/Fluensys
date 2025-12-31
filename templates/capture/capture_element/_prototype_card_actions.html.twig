@@ -1,5 +1,6 @@
-{% if element.active %}
+
     {#
+                ----- STATUTS -----
     template : stade “bibliothèque / modèle”
     draft : instance créée, paramétrage incomplet
     ready : prêt à lancer (rôles/assignations OK)
@@ -9,7 +10,7 @@
     validated : réponses validées
     #}
     {% if element.status.value == 'template' %}
-        {% if is_granted('ROLE_ADMIN') and element.template %}
+        {% if is_granted('ROLE_ADMIN') %}
             {# EDIT ELEMENT RENDER TEXTE TEMPLATE #}
             <a href="{{ path('app_capture_element_render_text_edit', {
                 id: element.id,
@@ -44,8 +45,9 @@
     {% if element.status.value == 'draft' %}
         // nothing can be done on a draft
     {% endif %}
+
     {% if element.status.value == 'ready' %}
-        {% if is_granted('ROLE_USER') %}
+        {% if is_granted('ROLE_USER') and element.active %}
             {# RESPOND ELEMENT #}
             <a href="{{ path('app_capture_element_respond', {
                 id: element.id,
@@ -64,7 +66,7 @@
 
     {% endif %}
     {% if element.status.value == 'submitted' %}
-        {% if is_granted('ROLE_USER') and not element.template %}
+        {% if is_granted('ROLE_USER') and element.active %}
             {# VALID ELEMENT #}
             <a href="{{ path('app_capture_element_valid', {
                 id: element.id,
@@ -79,7 +81,6 @@
     {% if element.status.value == 'validated' %}
 
     {% endif %}
-{% endif %}
 
 
 

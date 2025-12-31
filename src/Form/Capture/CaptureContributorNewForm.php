@@ -4,7 +4,6 @@ namespace App\Form\Capture;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Entity\Participant\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

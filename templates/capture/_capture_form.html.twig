@@ -1,0 +1,16 @@
+{# Generic capture header form  #}
+<div class="col-md-4">
+    {% include 'components/form/_ghost_field.html.twig' with {
+        field: form.name,
+        placeholder: 'Nom…',
+        class: 'title-input',
+        attrs: { autocomplete: 'off' }
+    } %}
+
+    {% include 'components/form/_ghost_field.html.twig' with {
+        field: form.description,
+        placeholder: 'Description…',
+        class: 'subtitle-textarea',
+        attrs: { autocomplete: 'off' }
+    } %}
+</div>

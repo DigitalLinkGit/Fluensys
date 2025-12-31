@@ -3,8 +3,8 @@
 namespace App\Controller\Account;
 
 use App\Entity\Account\Account;
-use App\Entity\Participant\Contact;
-use App\Entity\Tenant;
+use App\Entity\Account\Contact;
+use App\Entity\Tenant\Tenant;
 use App\Form\Account\AccountForm;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Tenant;
 
-use App\Entity\Participant\User;
-use App\Entity\Tenant;
-use App\Form\Participant\UserForm;
-use App\Form\TenantForm;
+use App\Entity\Tenant\Tenant;
+use App\Entity\Tenant\User;
+use App\Form\Tenant\TenantForm;
+use App\Form\Tenant\UserForm;
 use App\Repository\TenantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

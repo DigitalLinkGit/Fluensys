@@ -14,22 +14,22 @@
         headers: ['Nom', 'Email','Rôles'],
         filter: true,
         sort: true,
-        add: {route: 'app_administration_new'},
+        add: {route: 'app_user_new'},
         actions: [
             {
-                route: 'app_administration_show',
+                route: 'app_user_show',
                 param_map: { id: 'id' },
                 icon: 'bi-eye',
                 label: 'Voir',
             },
             {
-                route: 'app_administration_edit',
+                route: 'app_user_edit',
                 param_map: { id: 'id' },
                 icon: 'bi-pencil',
                 label: 'Éditer',
             },
             {
-                route: 'app_administration_delete',
+                route: 'app_user_delete',
                 param_map: { id: 'id' },
                 icon: 'bi-trash',
                 label: 'Supprimer',

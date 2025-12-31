@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Account;
 
-use App\Entity\Participant\Contact;
-use App\Form\Participant\ContactForm;
+use App\Entity\Account\Contact;
+use App\Form\Account\ContactForm;
 use App\Repository\ContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
