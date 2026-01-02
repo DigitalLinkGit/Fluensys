@@ -84,32 +84,49 @@
                     <div class="mb-2">
                         <span class="col-header">Contenu :</span>
                         <div class="mx-3 mt-1">
-                            {% for field in element.fields %}
-                                <div class="row"
-                                     title="Nom : {{ field.name }}">
-                                    <div class="col-md-12 mb-1">
-                                        <span class="fw-semibold">{{ field.label }}</span>
-                                        <span class="badge bg-secondary type-badge d-inline-block me-2">
-                                        {{ field.type }}
-                                    </span>
-                                    </div>
-                                    {% if element.status.value == 'submitted' or element.status.value == 'validated' %}
-                                        <div class="mb-2 mx-2 preserve-newlines">{{ field.stringValue }}</div>
-                                    {% else %}
-                                        {# Display choice list if element is not submited or validated #}
-                                        {% set choices = attribute(field, 'getChoices', [], 'method', false) %}
-                                        {% if choices is not null and choices is not empty %}
-                                            <div class="">
-                                                <ul>
-                                                    {% for choice in choices %}
-                                                        <li>{{ choice.label }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+
+                            {# Si un formulaire de réponse est fourni pour cet élément, l'afficher inline #}
+                            {% if responseForms is defined and responseForms[element.id] is defined %}
+                                {% set formView = responseForms[element.id] %}
+                                {% set isDisabled = (capture.template) or (element.status.value in ['submitted', 'validated']) %}
+
+                                {% include 'capture/capture_element/_inline_response_form.html.twig' with {
+                                    element: element,
+                                    form: formView,
+                                    disabled: isDisabled,
+                                    actionRoute: respondRoute|default('app_capture_element_respond'),
+                                    actionParams: respondParams|default({ id: element.id })
+                                } %}
+
+                            {# Sinon, fallback sur l'affichage actuel des champs #}
+                            {% else %}
+                                {% for field in element.fields %}
+                                    <div class="row"
+                                         title="Nom : {{ field.name }}">
+                                        <div class="col-md-12 mb-1">
+                                            <span class="fw-semibold">{{ field.label }}</span>
+                                            <span class="badge bg-secondary type-badge d-inline-block me-2">
+                                            {{ field.type }}
+                                        </span>
+                                        </div>
+                                        {% if element.status.value == 'submitted' or element.status.value == 'validated' %}
+                                            <div class="mb-2 mx-2 preserve-newlines">{{ field.stringValue }}</div>
+                                        {% else %}
+                                            {# Display choice list if element is not submited or validated #}
+                                            {% set choices = attribute(field, 'getChoices', [], 'method', false) %}
+                                            {% if choices is not null and choices is not empty %}
+                                                <div class="">
+                                                    <ul>
+                                                        {% for choice in choices %}
+                                                            <li>{{ choice.label }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 {% else %}

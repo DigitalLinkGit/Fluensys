@@ -10,7 +10,10 @@
                 <div class="mb-1 row">
                     {% include 'capture/capture_element/_prototype_card.html.twig' with {
                         element: element,
-                        incomingConditions: incoming
+                        incomingConditions: incoming,
+                        responseForms: responseForms|default({}),
+                        respondRoute: respondRoute|default('app_capture_element_respond'),
+                        respondParams: respondParams|default({})
                     } %}
                 </div>
             {% endfor %}

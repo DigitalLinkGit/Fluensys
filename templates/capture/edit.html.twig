@@ -35,7 +35,9 @@
             } %}
         </div>
     </div>
-
+    {% if not capture.template %}
+        {{ form_end(form) }}
+    {% endif %}
 
     <div
         data-controller="tabs-persist"
@@ -108,7 +110,9 @@
             </div>
         {% endif %}
     </div>
-    {{ form_end(form) }}
+    {% if capture.template %}
+        {{ form_end(form) }}
+    {% endif %}
 {% endblock %}
 
 

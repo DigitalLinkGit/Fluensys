@@ -18,8 +18,8 @@ class ContactForm extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'row_attr' => ['class' => 'col-md-2'],
-                'label' => 'Nom',
+                'row_attr' => ['class' => 'col-md-3'],
+                'label' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Nom...',
@@ -27,8 +27,8 @@ class ContactForm extends AbstractType
                 'required' => true,
             ])
             ->add('function', TextType::class, [
-                'row_attr' => ['class' => 'col-md-2'],
-                'label' => 'Fonction',
+                'row_attr' => ['class' => 'col-md-3'],
+                'label' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Fonction...',
@@ -37,7 +37,7 @@ class ContactForm extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'row_attr' => ['class' => 'col-md-3'],
-                'label' => 'Email',
+                'label' => false,
                 'required' => true,
             ])
             ->add('participantRoles', EntityType::class, [

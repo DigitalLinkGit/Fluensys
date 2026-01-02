@@ -1,0 +1,30 @@
+{# templates/capture/capture_element/_inline_response_form.html.twig #}
+{# Expect: element, form (FormView), disabled (bool), actionRoute (string), actionParams (array) #}
+
+{% set isDisabled = disabled|default(false) %}
+
+{{ form_start(form, {
+    action: path(actionRoute|default('app_capture_element_respond'), actionParams|default({ id: element.id })),
+    attr: {
+        class: 'element-inline-form',
+        'data-turbo': 'false'
+    }
+}) }}
+
+{# Render all fields; apply disabled/readonly in template mode or when locked #}
+{% for child in form %}
+    {{ form_row(child, {
+        disabled: isDisabled,
+        attr: isDisabled ? { readonly: true } : {}
+    }) }}
+{% endfor %}
+
+{% if not isDisabled %}
+    <div class="mt-2 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-check"></i> Enregistrer
+        </button>
+    </div>
+{% endif %}
+
+{{ form_end(form) }}

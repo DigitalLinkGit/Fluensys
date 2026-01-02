@@ -17,12 +17,13 @@
             attrs: { autocomplete: 'off' }
         } %}
     </div>
+
     <div class="col-md-6 d-flex justify-content-end align-items-start gap-2 mt-4">
         {% else %}
-        <div class="form-container p-3">
-            {{ form_row(form.name) }}
-            {{ form_row(form.description) }}
-        </div>
+            <div class="form-container p-3">
+                {{ form_row(form.name) }}
+                {{ form_row(form.description) }}
+            </div>
         {% endif %}
         <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
             {% include 'components/button/_btn.html.twig' with {
@@ -124,7 +125,7 @@
         <div id="contacts" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-contacts">
             <div class="mx-2" data-controller="classic-collection">
 
-                {#{% include 'components/table/_table.html.twig' with {
+                {# {% include 'components/table/_table.html.twig' with {
                     items: account.contacts,
                     columns: ['name', 'function','email'],
                     headers: ['Nom', 'Fonction','email'],
@@ -151,28 +152,31 @@
                             label: 'Supprimer',
                         }
                     ]
-                } %}#}
-                <div class="row">
-                    <div class="col-md-2 col-header">
+                } %} #}
+                <div class="row mb-2 g-2">
+                    <div class="col-md-3 col-header">
                         Nom
                     </div>
-                    <div class="col-md-2 col-header">
+                    <div class="col-md-3 col-header">
                         Fonction
                     </div>
                     <div class="col-md-3 col-header">
                         Email
                     </div>
-                    <div class="col-md-2 col-header">
+                    <div class="col-md-1 col-header">
                         Rôle
                     </div>
-                    <div class="col-md-2 col-header">
+                    <div class="col-md-1 col-header">
+                        Principal
+                    </div>
+                    <div class="col-md-1 col-header">
                         Actions
                     </div>
                 </div>
 
                 {% for contactForm in form.contacts %}
                     {% set contactId = contactForm.vars.value.id %}
-                    <fieldset class="mb-3">
+                    <fieldset class="mb-2">
                         <div class="row g-2 align-items-end">
                             {{ form_row(contactForm.name) }}
                             {{ form_row(contactForm.function) }}
@@ -183,8 +187,9 @@
                             {% for c in contactForm.participantRoles %}
                                 {% if c.vars.checked %}{% set checkedCount = checkedCount + 1 %}{% endif %}
                             {% endfor %}
-                            <div class="col-md-2">
-                                <div class="dropdown roles-dropdown mx-3 mb-2">
+                            {# ROLES #}
+                            <div class="col-md-1">
+                                <div class="dropdown roles-dropdown mb-2">
                                     <button
                                         class="btn btn-link p-0 roles-dropdown__toggle"
                                         type="button"
@@ -199,8 +204,8 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="w-auto">
+                            {# DEFAULT CONTACT #}
+                            <div class="col-md-1">
                                 <label class="m-0 mb-2">
                                     <input
                                         type="radio"

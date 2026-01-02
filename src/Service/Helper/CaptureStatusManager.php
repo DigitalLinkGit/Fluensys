@@ -121,10 +121,12 @@ final readonly class CaptureStatusManager
     {
         // DRAFT/PENDING -> READY/PENDING
         if (CaptureElementStatus::DRAFT === $element->getStatus()) {
-            // TODO: add or contributor participantAssignment HasContributorRole
+            // TODO: add contributor participantAssignment HasContributorRole
             if ($this->userHasContributorRole($element, $user)) {
                 $this->transition($element, CaptureElementStatus::READY, $flush);
             } elseif ($this->assignmentHasContributorRole($element, $user)) {
+                $this->transition($element, CaptureElementStatus::READY, $flush);
+            } else {
                 $this->transition($element, CaptureElementStatus::PENDING, $flush);
             }
         }
