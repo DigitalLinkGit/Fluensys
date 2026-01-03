@@ -7,7 +7,7 @@ use App\Entity\Tenant\User;
 use App\Enum\CaptureElementStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
-final readonly class CaptureStatusManager
+final readonly class CaptureElementStatusManager
 {
     public function __construct(
         private EntityManagerInterface $em,
@@ -45,11 +45,6 @@ final readonly class CaptureStatusManager
         $this->transition($element, CaptureElementStatus::PENDING, $flush);
     }
 
-    public function validate(CaptureElement $element, bool $flush = true): void
-    {
-        // SUBMITTED -> VALIDATED
-        $this->transition($element, CaptureElementStatus::VALIDATED, $flush);
-    }
 
     private function isAllowedTransition(CaptureElementStatus $from, CaptureElementStatus $to): bool
     {
@@ -95,33 +90,25 @@ final readonly class CaptureStatusManager
     private function assignmentHasContributorRole(CaptureElement $element, User $user): bool
     {
         // ToDo: check if participantAssignments contributor role needed
-        /*$contributorRole = $element->getContributor();
+        $contributorRole = $element->getContributor();
         if (null === $contributorRole) {
             return true;
         }
 
-        foreach ($user->getParticipantRoles() as $role) {
-            if (null !== $role->getId() && null !== $contributorRole->getId()) {
-                if ($role->getId() === $contributorRole->getId()) {
-                    return true;
-                }
-                continue;
-            }
-
-            // Fallback for non-persisted entities (no id yet)
-            if ($role === $contributorRole) {
+        foreach ($element->getCapture()->getParticipantAssignments() as $assignment) {
+            if ($assignment->getRole()->getId() == $contributorRole->getId()) {
                 return true;
             }
-        }*/
+        }
 
         return false;
     }
 
     public function refresh(CaptureElement $element, User $user, bool $flush): void
     {
-        // DRAFT/PENDING -> READY/PENDING
-        if (CaptureElementStatus::DRAFT === $element->getStatus()) {
-            // TODO: add contributor participantAssignment HasContributorRole
+        if (CaptureElementStatus::VALIDATED !== $element->getStatus()
+            && CaptureElementStatus::SUBMITTED !== $element->getStatus()
+            && CaptureElementStatus::TEMPLATE !== $element->getStatus()) {
             if ($this->userHasContributorRole($element, $user)) {
                 $this->transition($element, CaptureElementStatus::READY, $flush);
             } elseif ($this->assignmentHasContributorRole($element, $user)) {
@@ -142,5 +129,11 @@ final readonly class CaptureStatusManager
     {
         // SUBMITTED -> VALIDATED
         $this->transition($element, CaptureElementStatus::VALIDATED, $flush);
+    }
+
+    public function init(CaptureElement $element, User $user, bool $flush): void
+    {
+        // TEMPLATE -> DRAFT
+        $this->transition($element, CaptureElementStatus::DRAFT, $flush);
     }
 }

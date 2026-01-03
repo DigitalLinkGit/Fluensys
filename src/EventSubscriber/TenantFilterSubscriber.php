@@ -28,7 +28,6 @@ final readonly class TenantFilterSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        dump('TENANT FILTER SUBSCRIBER HIT');
         if (!$event->isMainRequest()) {
             return;
         }

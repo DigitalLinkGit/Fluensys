@@ -23,27 +23,36 @@
 
             {# Chapter #}
             {% for element in capture.captureElements %}
-                {% if element.active %}
-                {# Conditions qui ont pour targetElement cet élément #}
-                {% set elementConditions = (capture.conditions ?? [])
-                    | filter(c => (c.targetElement is same as(element))
-                    or (c.targetElement is defined and c.targetElement.id is defined and c.targetElement.id == element.id))
-                %}
+                {% if element.template %}
 
-                {% if elementConditions|length %}
-                    <div class="mb-0 mt-2">
-                        {% for condition in elementConditions %}
-                            <div class="doc-condition">{{ condition }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                    {# Conditions which target this element #}
+                    {% set elementConditions = (capture.conditions ?? [])
+                        | filter(c => (c.targetElement is same as(element))
+                        or (c.targetElement is defined and c.targetElement.id is defined and c.targetElement.id == element.id)) %}
 
-                {% if element.chapter is not null and element.chapter.title is not null %}
-                    {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
-                {% endif %}
-                {% if element.chapter is not null and element.chapter.renderContent is not null %}
-                    <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
-                {% endif %}
+                    {% if elementConditions|length %}
+                        <div class="mb-0 mt-2">
+                            {% for condition in elementConditions %}
+                                <div class="doc-condition">{{ condition }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if element.chapter is not null and element.chapter.title is not null %}
+                        {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                    {% endif %}
+                    {% if element.chapter is not null and element.chapter.renderContent is not null %}
+                        <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+                    {% endif %}
+                {% else %}
+                    {% if element.active %}
+                        {% if element.chapter is not null and element.chapter.title is not null %}
+                            {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                        {% endif %}
+                        {% if element.chapter is not null and element.chapter.renderContent is not null %}
+                            <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+                        {% endif %}
+                    {% endif %}
                 {% endif %}
 
             {% endfor %}

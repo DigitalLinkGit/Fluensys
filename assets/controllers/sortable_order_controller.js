@@ -1,4 +1,4 @@
-// controllers/sortable-order_controller.js
+// controllers/sortable_order_controller.js
 import { Controller } from "@hotwired/stimulus";
 import Sortable from "sortablejs";
 

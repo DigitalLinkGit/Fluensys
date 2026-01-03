@@ -5,7 +5,6 @@
 namespace App\Service\Helper;
 
 use App\Entity\Capture\Condition;
-use App\Enum\CaptureElementStatus;
 
 final class ConditionToggler
 {
@@ -35,24 +34,23 @@ final class ConditionToggler
         // 1) Not answered = inactive
         if (null === $actual || '' === $actual) {
             $target->setActive(false);
+
             return;
         }
 
         // 2) EQUALS (string trim)
         $actualNorm = $this->norm($actual);
         $expectedNorm = $this->toStr($expected);
-
         if (is_array($actualNorm)) {
             $isActive = in_array($expectedNorm, $actualNorm, true);
         } else {
             $isActive = $actualNorm === $expectedNorm;
         }
+        if($field instanceof \App\Entity\Capture\Field\ChecklistField && $field->isUniqueResponse()){
+            dump($actualNorm, $expectedNorm, $isActive);
+        }
 
         $target->setActive($isActive);
-        /* a PENDING status should never be active (missing participantRole or condition) */
-        if (CaptureElementStatus::PENDING === $target->getStatus()) {
-            $target->setActive(false);
-        }
     }
 
     private function norm(mixed $v): string|array
@@ -75,6 +73,7 @@ final class ConditionToggler
 
     private function toStr(mixed $v): string
     {
-        return trim((string) $v);
+        return mb_strtolower(trim((string) $v));
     }
+
 }

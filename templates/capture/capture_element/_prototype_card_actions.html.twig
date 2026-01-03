@@ -47,8 +47,8 @@
     {% endif %}
 
     {% if element.status.value == 'ready' %}
-        {% if is_granted('ROLE_USER') and element.active %}
-            {# RESPOND ELEMENT #}
+        {#{% if is_granted('ROLE_USER') and element.active %}
+            #}{# RESPOND ELEMENT #}{#
             <a href="{{ path('app_capture_element_respond', {
                 id: element.id,
                 captureId: capture.id,
@@ -57,7 +57,7 @@
                title="Répondre" aria-label="Répondre">
                 <i class="bi bi-pencil-square"></i>
             </a>
-        {% endif %}
+        {% endif %}#}
     {% endif %}
     {% if element.status.value == 'collecting' %}
 

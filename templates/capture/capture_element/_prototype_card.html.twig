@@ -1,16 +1,16 @@
 {% if element is defined %}
     {% set collapseId = 'el_' ~ (element.id ?? loop.index) ~ '_fields' %}
 
-    <div class="mb-0 {{ 'element' ~ (element.active ? '' : ' card-inactive') }}">
-
+    <div class="mb-0 {{ 'element' ~ (element.active ? '' : ' card-inactive') }}" data-sortable-id="{{ element.id }}">
+        {# CARD HEADER #}
         <div class="element-card py-1">
             <div class="row g-0 align-items-center">
 
                 {# Handle sortable if template #}
                 {% if capture.template %}
-                    <div class="col-auto pe-2 text-muted" data-sortable-handle style="cursor: grab;">
-                        <i class="bi bi-grip-vertical"></i>
-                    </div>
+                        <div class="col-auto pe-2 text-muted" data-sortable-handle style="cursor: grab;">
+                            <i class="bi bi-grip-vertical"></i>
+                        </div>
                 {% endif %}
 
                 {# Col Name #}
@@ -56,50 +56,53 @@
 
         <div id="{{ collapseId }}" class="collapse">
             <div class="pt-3 mx-3 element-card-body">
-                <div class="row g-0 align-items-center">
-                    <span class="col-header">Contributeur :</span>
-                            <span class="text-truncate">
-                                {{ element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}
+                <div class="row g-2 align-items-center mb-2">
+                    <div class="col-3 d-flex align-items-center gap-2">
+                        <span class="col-header">Contributeur :</span>
+                        <span class="text-truncate flex-grow-1">
+                            {{ element.contributor is defined and element.contributor ? element.contributor.name : 'Aucune contribution' }}
+                        </span>
+                    </div>
+
+                    <div class="col-3 d-flex align-items-center gap-2">
+                        <span class="col-header">Validateur :</span>
+                        <span class="text-truncate flex-grow-1">
+                            {{ element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}
+                        </span>
+                    </div>
+
+                    <div class="col-auto d-flex align-items-center gap-2">
+                        <span class="col-header">Condition(s) :</span>
+
+                        {% if incomingConditions is defined and incomingConditions|length %}
+                            <span class="text-truncate flex-grow-1">
+                                {{ incomingConditions|join(' · ') }}
                             </span>
-                </div>
-                <div class="row g-0 align-items-center">
-                    <span class="col-header">Validateur :</span>
-                            <span class="text-truncate">
-                                {{ element.validator is defined and element.validator ? element.validator.name : 'Aucune validation' }}
+                        {% else %}
+                            <span class="text-truncate flex-grow-1">
+                                Aucune condition
                             </span>
+                        {% endif %}
+                    </div>
                 </div>
 
-                {% if incomingConditions is defined and incomingConditions|length %}
-                    <div class="mb-2">
-                        <span class="col-header">Condition(s) :</span>
-                        <div class="mx-3 mt-1">
-                            {% for cond in incomingConditions %}
-                                <div>{{ cond }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
 
                 {% if element.fields is defined %}
                     <div class="mb-2">
                         <span class="col-header">Contenu :</span>
                         <div class="mx-3 mt-1">
-
-                            {# Si un formulaire de réponse est fourni pour cet élément, l'afficher inline #}
-                            {% if responseForms is defined and responseForms[element.id] is defined %}
+                            {# Element form content #}
+                            {% if responseForms is defined and responseForms[element.id] is defined and element.status.value != 'template' %}
                                 {% set formView = responseForms[element.id] %}
-                                {% set isDisabled = (capture.template) or (element.status.value in ['submitted', 'validated']) %}
 
                                 {% include 'capture/capture_element/_inline_response_form.html.twig' with {
                                     element: element,
                                     form: formView,
-                                    disabled: isDisabled,
                                     actionRoute: respondRoute|default('app_capture_element_respond'),
                                     actionParams: respondParams|default({ id: element.id })
                                 } %}
-
-                            {# Sinon, fallback sur l'affichage actuel des champs #}
                             {% else %}
+                                {# Element text content #}
                                 {% for field in element.fields %}
                                     <div class="row"
                                          title="Nom : {{ field.name }}">

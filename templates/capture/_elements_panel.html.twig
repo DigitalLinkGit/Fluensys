@@ -1,0 +1,38 @@
+{# Elements order panel  #}
+<div class="mx-2 mb-3 element-card-container" {{ capture.template?'data-controller="sortable-order"':'' }}>
+    {% if capture.template %}
+        {# JSON order #}
+        <input type="hidden"
+               name="elements_order"
+               data-sortable-order-target="input"
+               value="{{ capture.captureElements|map(e => e.id)|json_encode }}">
+    {% endif %}
+
+    {% if capture.captureElements is defined and capture.captureElements|length > 0 %}
+        {% set byTarget = conditionsByTargetId|default({}) %}
+        <div class="sortable-list" data-sortable-order-target="list">
+            {% for element in capture.captureElements %}
+                {% set entity = element ?? null %}
+                {% set elementId = entity ? entity.id : null %}
+                {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
+                    {% include 'capture/capture_element/_prototype_card.html.twig' with {
+                        element: element,
+                        incomingConditions: incoming,
+                        responseForms: responseForms|default({}),
+                        respondRoute: respondRoute|default('app_capture_element_respond'),
+                        respondParams: respondParams|default({})
+                    } %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-muted small m-3">Aucun élément</div>
+    {% endif %}
+    {% if templateMode %}
+        <a class="btn btn-outline-primary mt-3"
+           href="{{ path('app_capture_element_new', { capture: form.vars.data.id }) }}">
+            <i class="bi bi-plus"></i>
+            Ajouter un élément
+        </a>
+    {% endif %}
+
+</div>

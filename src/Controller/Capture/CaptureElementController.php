@@ -14,8 +14,8 @@ use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Service\Factory\CaptureElementFactory;
 use App\Service\Helper\CaptureElementRouter;
+use App\Service\Helper\CaptureElementStatusManager;
 use App\Service\Helper\CaptureElementTypeManager;
-use App\Service\Helper\CaptureStatusManager;
 use App\Service\Helper\ConditionToggler;
 use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
@@ -106,43 +106,39 @@ final class CaptureElementController extends AbstractAppController
         ]);
     }
 
-    #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['GET', 'POST'])]
-    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureStatusManager $statusManager): Response
+    #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['POST'])]
+    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureElementStatusManager $statusManager): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();
 
-        $form = $this->createForm(CaptureElementContributorForm::class, $element);
-        $form->handleRequest($request);
         $capture = $element->getCapture();
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                $statusManager->submit($element, $user, false);
-                if (null !== $capture) {
-                    $toggler->apply($capture->getConditions()->toArray());
-                }
+        $form = $this->createForm(CaptureElementContributorForm::class, $element);
+        $form->handleRequest($request);
 
-                $entityManager->persist($element);
-                $entityManager->flush();
-                $this->addFlash('success', 'Votre réponse à bien été enregistrée');
-            } else {
-                foreach ($form->getErrors(true, true) as $error) {
-                    $this->addFlash('danger', $error->getMessage());
-                }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $statusManager->submit($element, $user, false);
+
+            if (null !== $capture) {
+                $toggler->apply($capture->getConditions()->toArray());
             }
 
-            return $this->redirectToRoute('app_capture_edit', ['id' => $capture?->getId()], 303);
+            $entityManager->persist($element);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre réponse a bien été enregistrée');
+        } else {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
         }
 
-        return $this->render('capture/capture_element/respond.html.twig', [
-            'element' => $element,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_capture_edit', ['id' => $capture?->getId()], 303);
     }
 
     #[Route('/{id}/valid', name: 'app_capture_element_valid', methods: ['GET', 'POST'])]
-    public function valid(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureStatusManager $statusManager): Response
+    public function valid(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureElementStatusManager $statusManager): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();

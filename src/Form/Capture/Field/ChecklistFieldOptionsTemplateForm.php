@@ -23,14 +23,14 @@ class ChecklistFieldOptionsTemplateForm extends AbstractType
                 'required' => false,
             ])
             ->add('choices_raw', TextareaType::class, [
-            'label' => 'Liste de choix (1 par ligne)',
-            'mapped' => false,
-            'required' => true,
-            'attr' => [
-                'rows' => 6,
-                'placeholder' => "Option A\nOption B\nOption C",
-            ],
-        ]);
+                'label' => 'Liste de choix (1 par ligne)',
+                'mapped' => false,
+                'required' => true,
+                'attr' => [
+                    'rows' => 6,
+                    'placeholder' => "Option A\nOption B\nOption C",
+                ],
+            ]);
 
         // Initialize textarea from existing choices
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {

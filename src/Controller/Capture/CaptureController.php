@@ -6,6 +6,7 @@ use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Tenant\User;
+use App\Enum\CaptureElementStatus;
 use App\Form\Capture\CaptureContributorForm;
 use App\Form\Capture\CaptureContributorNewForm;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
@@ -13,7 +14,7 @@ use App\Form\Capture\CaptureTemplateForm;
 use App\Form\Capture\CaptureTemplateNewForm;
 use App\Form\Participant\ParticipantAssignmentForm;
 use App\Repository\CaptureRepository;
-use App\Service\Helper\CaptureStatusManager;
+use App\Service\Helper\CaptureElementStatusManager;
 use App\Service\Helper\ConditionToggler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -43,7 +44,7 @@ final class CaptureController extends AbstractController
 
     #[Route('/new', name: 'app_capture_new', methods: ['GET', 'POST'])]
     #[Route('/template/new', name: 'app_capture_template_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, CaptureStatusManager $statusManager): Response
+    public function new(Request $request, EntityManagerInterface $em, CaptureElementStatusManager $statusManager): Response
     {
         $isTemplateRoute = 'app_capture_template_new' === $request->attributes->get('_route');
         /** @var User|null $user */
@@ -57,6 +58,7 @@ final class CaptureController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $em->persist($capture);
                 $em->flush();
+
                 return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()], Response::HTTP_SEE_OTHER);
             }
 
@@ -98,7 +100,7 @@ final class CaptureController extends AbstractController
     }
 
     #[Route('/{id}/assign', name: 'app_capture_participant_assign', methods: ['GET', 'POST'])]
-    public function assignParticipant(Request $request, Capture $capture, EntityManagerInterface $em, CaptureStatusManager $statusManager): Response
+    public function assignParticipant(Request $request, Capture $capture, EntityManagerInterface $em, CaptureElementStatusManager $statusManager): Response
     {
         if ($capture->isTemplate()) {
             throw new NotFoundHttpException('Assignment is not available on templates.');
@@ -140,20 +142,63 @@ final class CaptureController extends AbstractController
 
     #[Route('/{id}/edit', name: 'app_capture_edit', methods: ['GET', 'POST'])]
     #[Route('/template/{id}/edit', name: 'app_capture_template_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Capture $capture, ConditionToggler $toggler, CaptureStatusManager $statusManager, EntityManagerInterface $em): Response
+    public function edit(Request $request, Capture $capture, ConditionToggler $toggler, CaptureElementStatusManager $statusManager, EntityManagerInterface $em): Response
     {
         $isTemplateRoute = 'app_capture_template_edit' === $request->attributes->get('_route') || $capture->isTemplate();
         /** @var User|null $user */
         $user = $this->getUser();
 
+        if ($isTemplateRoute) {
+            $form = $this->createForm(CaptureTemplateForm::class, $capture);
+        } else {
+            $form = $this->createForm(CaptureContributorForm::class, $capture);
+        }
+        $form->handleRequest($request);
+
         $responseForms = [];
-        // Build inline response forms for each element (instance mode only)
+        // Build inline response forms for each element
         foreach ($capture->getCaptureElements() as $el) {
-            // Reuse the same form used in the respond action
+            $isDisabled = false;
+
+            // 1) Active flag
+            if (!$el->isActive()) {
+                $isDisabled = true;
+            }
+
+            // 2) Status
+            if (CaptureElementStatus::READY !== $el->getStatus()) {
+                $isDisabled = true;
+            }
+
             $inlineForm = $this->createForm(CaptureElementContributorForm::class, $el, [
-                'csrf_token_id' => 'respond_'.$el->getId(),
+                'disabled' => $isDisabled,
             ]);
             $responseForms[$el->getId()] = $inlineForm->createView();
+        }
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            foreach ($form->getErrors(true, true) as $error) {
+                $this->addFlash('danger', $error->getMessage());
+            }
+        }
+
+        if ($form->isSubmitted()) {
+            if($form->isValid()){
+                // update elements order
+                $raw = (string) $request->request->get('elements_order', '[]');
+                dump($raw);
+                $orderedIds = json_decode($raw, true);
+                if (is_array($orderedIds)) {
+                    foreach ($orderedIds as $index => $id) {
+                        $el = $em->getRepository(CaptureElement::class)->find((int) $id);
+                        if ($el) {
+                            $el->setPosition($index);
+                        }
+                    }
+                }
+
+                $em->flush();
+            }
         }
 
         // Reset active state and apply conditions
@@ -171,39 +216,12 @@ final class CaptureController extends AbstractController
             }
         }
 
-        if ($isTemplateRoute) {
-            $form = $this->createForm(CaptureTemplateForm::class, $capture);
-        } else {
-            $form = $this->createForm(CaptureContributorForm::class, $capture);
-        }
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && !$form->isValid()) {
-            foreach ($form->getErrors(true, true) as $error) {
-                $this->addFlash('danger', $error->getMessage());
-            }
+        // refresh elements status for instances
+        foreach ($capture->getCaptureElements() as $element) {
+            $statusManager->refresh($element, $user, true);
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // update elements order
-            $raw = (string) $request->request->get('capture_elements_order', '[]');
-            $orderedIds = json_decode($raw, true);
-            if (is_array($orderedIds)) {
-                foreach ($orderedIds as $index => $id) {
-                    $el = $em->getRepository(CaptureElement::class)->find((int) $id);
-                    if ($el) {
-                        $el->setPosition($index);
-                    }
-                }
-            }
 
-            // refresh elements status for instances
-            foreach ($capture->getCaptureElements() as $element) {
-                $statusManager->refresh($element, $user, false);
-            }
-
-            $em->flush();
-        }
 
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,

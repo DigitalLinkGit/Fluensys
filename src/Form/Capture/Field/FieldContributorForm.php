@@ -47,12 +47,25 @@ class FieldContributorForm extends AbstractType
             ];
 
             if ($field instanceof ChecklistField) {
+                $value = $field->getValue();
+
+                if ($field->isUniqueResponse() && is_array($value)) {
+                    $value = $value[0] ?? null;
+                }
+
+                if (!$field->isUniqueResponse() && !is_array($value) && null !== $value) {
+                    $value = [$value];
+                }
+
+                $opts['data'] = $value;
+
                 $opts += [
                     'choices' => $field->toSymfonyChoices(),
                     'expanded' => true,
                     'multiple' => !$field->isUniqueResponse(),
                 ];
             }
+
 
             if ($field instanceof UrlField) {
                 $opts += [
