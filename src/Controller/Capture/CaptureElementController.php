@@ -177,7 +177,7 @@ final class CaptureElementController extends AbstractAppController
             return $this->redirectToRoute('app_capture_edit', ['id' => $capture?->getId()], 303);
         }
 
-        return $this->render('capture/capture_element/respond.html.twig', [
+        return $this->render('capture/capture_element/valid.html.twig', [
             'element' => $element,
             'form' => $form,
         ]);

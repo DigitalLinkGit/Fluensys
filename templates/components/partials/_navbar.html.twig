@@ -2,7 +2,7 @@
 
     {# Fixed navbar + button #}
     <nav class="d-flex align-items-center gap-2 px-3 py-2 bg-white border-bottom shadow-sm"
-         style="height: 60px; position: fixed; top: 0; width: 100%; z-index: 1050;">
+         style="height: 60px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1050;">
 
         {% if app.user %}
             <button class="btn btn-outline-primary btn-sm btn-icon"
@@ -14,7 +14,6 @@
         <a href="{{ path('app_home') }}" class="fw-bold ms-2 app-title text-decoration-none">
             FluensyS
         </a>
-
 
         <div class="ms-auto d-flex align-items-center">
             {% if app.user %}
@@ -36,55 +35,70 @@
         </div>
     </nav>
 
+    {# Sidebar: ALWAYS visible (collapsed width), open = wider with labels #}
+    {% if app.user %}
+        <div id="sidebarPanel"
+             data-sidebar-target="panel"
+             class="position-fixed top-0 start-0 bg-white border-end shadow app-sidebar"
+             style="
+                height: 100vh;
+                z-index: 1040;
+                padding-top: 60px;
 
-    {# Sidebar #}
-    <div id="sidebarPanel"
-         data-sidebar-target="panel"
-         class="position-fixed top-0 start-0 bg-white border-end shadow"
-         style="width: 250px; height: 100vh; transform: translateX(-100%); transition: transform 0.3s; z-index: 1040; padding-top: 60px;">
-        {% if is_granted('ROLE_ADMIN') %}
-            {% include 'components/partials/_sidebar_section.html.twig' with {
-                icon: '',
-                title: 'Administration',
-                groups: [
-                    {
-                        links: [
-                        { label: 'Mon organisation', route: 'app_user_index' },
-                        { label: 'Templates de captures', route: 'app_capture_template_index' },
-                        { label: 'Rôles', route: 'app_participant_role_index' },
-                        { label: 'Comptes', route: 'app_account_index' },
+                /* hard override to prevent any previous slide-out behavior */
+                transform: none !important;
+                left: 0 !important;
+
+                /* initial collapsed width */
+                width: 64px;
+                overflow-x: hidden;
+                transition: width .2s ease;
+             ">
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                {% include 'components/partials/_sidebar_section.html.twig' with {
+                    icon: 'bi-shield-lock',
+                    title: 'Super admin',
+                    groups: [
+                        { links: [
+                            { label: 'Tenants', route: 'app_tenant_index', icon: 'bi-diagram-3' },
+                            { label: 'Eléments de captures', route: 'app_capture_element_index', icon: 'bi-ui-checks-grid' }
+                        ] }
                     ]
-                    }
-                ]
-            } %}
-        {% endif %}
-        {% if is_granted('ROLE_USER') %}
-            {% include 'components/partials/_sidebar_section.html.twig' with {
-                icon: '',
-                title: 'User',
-                groups: [
-                    {
-                        links: [
-                        { label: 'Mes captures', route: 'app_capture_index' },
-                        { label: 'Mes comptes', route: 'app_account_index' },
+                } %}
+            {% endif %}
+
+            {% if is_granted('ROLE_ADMIN') %}
+                {% include 'components/partials/_sidebar_section.html.twig' with {
+                    icon: 'bi-shield-check',
+                    title: 'Administration',
+                    groups: [
+                        { links: [
+                            { label: 'Mon organisation', route: 'app_user_index', icon: 'bi-diagram-3' },
+                            { label: 'Configuration', route: '#', icon: 'bi-gear' },
+                            { label: 'Templates de captures', route: 'app_capture_template_index', icon: 'bi-layout-text-window' },
+                            { label: 'Templates de projets', route: '#', icon: 'bi-kanban' },
+                            { label: 'Rôles', route: 'app_participant_role_index', icon: 'bi-people' },
+                            { label: 'Dashboard', route: '#', icon: 'bi-bar-chart' }
+                        ] }
                     ]
-                    }
-                ]
-            } %}
-        {% endif %}
-        {% if is_granted('ROLE_ADMIN') %}
-            {% include 'components/partials/_sidebar_section.html.twig' with {
-                icon: '',
-                title: 'Provisoire',
-                groups: [
-                    {
-                        links: [
-                        { label: 'Tenants', route: 'app_tenant_index' },
-                        { label: 'Eléments de captures', route: 'app_capture_element_index' },
+                } %}
+            {% endif %}
+
+            {% if is_granted('ROLE_USER') %}
+                {% include 'components/partials/_sidebar_section.html.twig' with {
+                    icon: 'bi-person',
+                    title: 'User',
+                    groups: [
+                        { links: [
+                            { label: 'Captures', route: 'app_capture_index', icon: 'bi-journal-text' },
+                            { label: 'Projets', route: '#', icon: 'bi-folder2-open' },
+                            { label: 'Comptes', route: 'app_account_index', icon: 'bi-person-badge' },
+                            { label: 'Mes tâches', route: '#', icon: 'bi-list-check' },
+                        ] }
                     ]
-                    }
-                ]
-            } %}
-        {% endif %}
-    </div>
+                } %}
+            {% endif %}
+
+        </div>
+    {% endif %}
 </div>

@@ -15,10 +15,12 @@ class FieldValidationForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('validated', CheckboxType::class, [
-            'label' => 'Validé',
-            'required' => false,
-            'mapped' => false,
-        ]);
+        $builder
+            ->add('validated', CheckboxType::class, [
+                'label' => 'Validé',
+                'required' => false,
+                'mapped' => false,
+            ])
+        ;
     }
 }

@@ -4,7 +4,7 @@
     --main-color-accent-dark: #006075;
     --main-color-accent-light: #54e0ff;
 
-    --main-black: #0a2239;
+    --main-black: #223042;
     --main-gray: #536878;
     --main-white: #ffffff;
 
@@ -777,6 +777,42 @@ input[name$="[url]"]:hover {
 .element-card-container{
     border-top: 2px solid var(--easy-primary);
 }
+
+
+/* NAVBAR / SIDEBAR */
+.app-sidebar{
+    width: 64px;              /* collapsed */
+    overflow-x: hidden;
+    transition: width .2s ease;
+}
+
+.app-sidebar.is-open{
+    width: 250px;             /* open */
+}
+
+/* Hide titles + labels when collapsed */
+.app-sidebar.is-collapsed .section-label{
+    display: none;
+}
+
+.app-sidebar.is-collapsed .sidebar-link-label{
+    display: none;
+}
+
+/* Center icons nicely in collapsed mode */
+.sidebar-link{
+    border-radius: 10px;
+    padding: .5rem .5rem;
+}
+
+.sidebar-link-icon{
+    width: 32px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 1.1rem;
+}
+
+
 
 
 

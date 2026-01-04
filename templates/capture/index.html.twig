@@ -3,7 +3,7 @@
 {% block title %}Capture index{% endblock %}
 
 {% block body %}
-    <h1>{{ templateMode ? 'Mes templates de captures' : 'Captures' }}</h1>
+    <h2>{{ templateMode ? 'Mes templates de captures' : 'Captures' }}</h2>
 
     {% set addRoute = templateMode ? 'app_capture_template_new' : 'app_capture_new' %}
     {% set showRoute = templateMode ? 'app_capture_template_show' : 'app_capture_show' %}

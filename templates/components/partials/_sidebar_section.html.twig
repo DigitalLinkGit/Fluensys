@@ -1,16 +1,43 @@
 <div class="navbar-section p-2 mb-1">
-	<div class="sidebar-section-title mb-2">
-		<span class="icon">{{ icon }}</span>
-		{{ title }}
-	</div>
 
-	<ul class="nav flex-column">
-		{% for group in groups %}
-			{% for link in group.links %}
-				<li>
-					<a class="nav-link" href="{{ path(link.route) }}">{{ link.label }}</a>
-				</li>
-			{% endfor %}
-		{% endfor %}
-	</ul>
+    <div class="sidebar-section-title mb-2 d-flex align-items-center gap-2">
+        <span class="icon" style="width: 32px; display: inline-grid; place-items: center; font-size: 1.1rem;">
+            {% if icon is defined and icon %}
+                <i class="bi {{ icon }}"></i>
+            {% endif %}
+        </span>
+        <span class="section-label">{{ title }}</span>
+    </div>
+
+    <ul class="nav flex-column">
+        {% for group in groups %}
+            {% for link in group.links %}
+                <li>
+                    {% set href =
+                        (link.route is defined and link.route)
+                        ? (
+                        link.route starts with '#'
+                        or link.route starts with 'http://'
+                        or link.route starts with 'https://'
+                        )
+                        ? link.route
+                        : path(link.route)
+                        : '#' %}
+
+                    <a class="nav-link sidebar-link d-flex align-items-center gap-2"
+                       href="{{ href }}"
+                       title="{{ link.label }}"
+                       {% if href == '#' %}aria-disabled="true"{% endif %}
+                       style="border-radius: 10px; padding: .5rem .5rem;">
+    <span class="sidebar-link-icon"
+          style="width: 32px; display: inline-grid; place-items: center; font-size: 1.1rem;">
+        <i class="bi {{ link.icon is defined ? link.icon : 'bi-dot' }}"></i>
+    </span>
+                        <span class="sidebar-link-label">{{ link.label }}</span>
+                    </a>
+
+                </li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
 </div>

@@ -3,7 +3,7 @@
 {% block title %}{{ templateMode ? 'Nouveau template de capture' : 'New Capture' }}{% endblock %}
 
 {% block body %}
-    <h1>{{ templateMode ? 'Nouveau template de capture' : 'Nouvelle capture' }}</h1>
+    <h2>{{ templateMode ? 'Nouveau template de capture' : 'Nouvelle capture' }}</h2>
     {{ form_start(form) }}
     {{ form_widget(form) }}
 

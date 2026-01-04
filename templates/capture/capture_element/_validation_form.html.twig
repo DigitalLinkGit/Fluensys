@@ -1,0 +1,54 @@
+{{ form_start(form) }}
+
+{% for fieldForm in form.fields %}
+    <div class="row mb-3">
+        <div class="col-6">
+            {{ form_label(fieldForm.value) }}
+            {{ form_widget(fieldForm.value) }}
+            {{ form_errors(fieldForm.value) }}
+        </div>
+
+        <div class="col-6 mt-3">
+            {{ form_row(fieldForm.validated) }}
+        </div>
+    </div>
+{% endfor %}
+
+
+
+{% if is_granted('ROLE_USER') and not element.capture.template %}
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                label: 'Retour',
+                param_map: { id: 'element.capture.id' },
+                icon: 'bi-arrow-left',
+                route: 'app_capture_edit',
+                class: 'btn btn-outline-primary'
+            },
+            save: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        }
+    } %}
+{% endif %}
+{% if is_granted('ROLE_ADMIN') and element.capture.template %}
+    {% include 'components/button/_btn_bar.html.twig' with {
+        buttons: {
+            back: {
+                type: 'link',
+                label: 'Retour',
+                param_map: { id: 'element.capture.id' },
+                icon: 'bi-arrow-left',
+                route: 'app_capture_template_edit',
+                class: 'btn btn-outline-primary'
+            },
+        }
+    } %}
+{% endif %}
+
+{{ form_end(form) }}

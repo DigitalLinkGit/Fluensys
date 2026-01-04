@@ -1,0 +1,90 @@
+<div data-controller="sidebar">
+
+    {# Fixed navbar + button #}
+    <nav class="d-flex align-items-center gap-2 px-3 py-2 bg-white border-bottom shadow-sm"
+         style="height: 60px; position: fixed; top: 0; width: 100%; z-index: 1050;">
+
+        {% if app.user %}
+            <button class="btn btn-outline-primary btn-sm btn-icon"
+                    data-sidebar-target="toggle"
+                    data-action="click->sidebar#toggle">☰
+            </button>
+        {% endif %}
+
+        <a href="{{ path('app_home') }}" class="fw-bold ms-2 app-title text-decoration-none">
+            FluensyS
+        </a>
+
+
+        <div class="ms-auto d-flex align-items-center">
+            {% if app.user %}
+                <div>
+                    <span class="d-block me-2 small col-header">{{ app.user.tenant.name }}</span>
+                    <span class="d-block me-2 small text-muted">{{ app.user.username }}</span>
+                </div>
+                <a href="{{ path('app_logout') }}" class="btn btn-icon btn-outline-primary" title="Déconnexion">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            {% else %}
+                <a href="{{ path('app_login') }}"
+                   class="btn btn-icon btn-outline-primary"
+                   title="Connexion"
+                   aria-label="Connexion">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+
+    {# Sidebar #}
+    <div id="sidebarPanel"
+         data-sidebar-target="panel"
+         class="position-fixed top-0 start-0 bg-white border-end shadow"
+         style="width: 250px; height: 100vh; transform: translateX(-100%); transition: transform 0.3s; z-index: 1040; padding-top: 60px;">
+        {% if is_granted('ROLE_ADMIN') %}
+            {% include 'components/partials/_sidebar_section.html.twig' with {
+                icon: '',
+                title: 'Administration',
+                groups: [
+                    {
+                        links: [
+                        { label: 'Mon organisation', route: 'app_user_index' },
+                        { label: 'Templates de captures', route: 'app_capture_template_index' },
+                        { label: 'Rôles', route: 'app_participant_role_index' },
+                        { label: 'Comptes', route: 'app_account_index' },
+                    ]
+                    }
+                ]
+            } %}
+        {% endif %}
+        {% if is_granted('ROLE_USER') %}
+            {% include 'components/partials/_sidebar_section.html.twig' with {
+                icon: '',
+                title: 'User',
+                groups: [
+                    {
+                        links: [
+                        { label: 'Mes captures', route: 'app_capture_index' },
+                        { label: 'Mes comptes', route: 'app_account_index' },
+                    ]
+                    }
+                ]
+            } %}
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') %}
+            {% include 'components/partials/_sidebar_section.html.twig' with {
+                icon: '',
+                title: 'Provisoire',
+                groups: [
+                    {
+                        links: [
+                        { label: 'Tenants', route: 'app_tenant_index' },
+                        { label: 'Eléments de captures', route: 'app_capture_element_index' },
+                    ]
+                    }
+                ]
+            } %}
+        {% endif %}
+    </div>
+</div>
