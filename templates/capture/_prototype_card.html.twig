@@ -1,7 +1,7 @@
 {% if capture is defined %}
     {% set collapseId = 'capture_' ~ (capture.id ?? loop.index) %}
     <div class="mb-0 {{ 'element' }}" data-sortable-id="{{ capture.id }}">
-    {#<div class="mb-0 {{ 'capture' ~ (capture.active ? '' : ' card-inactive') }}" data-sortable-id="{{ capture.id }}">#}
+        {# <div class="mb-0 {{ 'capture' ~ (capture.active ? '' : ' card-inactive') }}" data-sortable-id="{{ capture.id }}"> #}
         {# CARD HEADER #}
         <div class="element-card py-1">
             <div class="row g-0 align-items-center">
@@ -30,32 +30,46 @@
                         {# Actions buttons #}
                         <div class="d-flex justify-content-end gap-1 pe-2">
                             {% if is_granted('ROLE_ADMIN') %}
-                                 {#EDIT TEMPLATE #}
+                                {% if project.template or project.draft %}
+                                    {# EDIT TEMPLATE #}
+                                    <a href="{{ path('app_capture_template_edit', {
+                                        id: capture.id,
+                                        projectId: project.id,
+                                    }) }}"
+                                       class="btn btn-outline-primary btn-sm"
+                                       title="Editer la capture" aria-label="Editer la capture">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
 
-                                <a href="{{ path('app_capture_template_edit', {
-                                    id: capture.id,
-                                    projectId: project.id,
-                                }) }}"
-                                   class="btn btn-outline-primary btn-sm"
-                                   title="Editer la capture" aria-label="Editer la capture">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-
-                                 {#DELETE ELEMENT TEMPLATE#}
-                            <button
-                                type="button"
-                                class="btn btn-outline-danger btn-sm"
-                                data-action="click->modal-confirmation#open"
-                                data-modal-confirmation-action-value="{{ path('app_project_template_delete_capture', {
-                                    projectId: project.id,
-                                    id: capture.id,
-                                    kind: kind
-                                }) }}"
-                                data-modal-confirmation-token-value="{{ csrf_token('detach_capture' ~ project.id ~ '_' ~ capture.id ~ '_' ~ kind) }}"
-                                data-modal-confirmation-message-value="Confirmer le détachement de cette capture du projet ?"
-                                title="Détacher cette capture">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                                    {# DELETE TEMPLATE #}
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-danger btn-sm"
+                                        data-action="click->modal-confirmation#open"
+                                        data-modal-confirmation-action-value="{{ path('app_project_template_delete_capture', {
+                                            projectId: project.id,
+                                            id: capture.id,
+                                            kind: kind
+                                        }) }}"
+                                        data-modal-confirmation-token-value="{{ csrf_token('detach_capture' ~ project.id ~ '_' ~ capture.id ~ '_' ~ kind) }}"
+                                        data-modal-confirmation-message-value="Confirmer le détachement de cette capture du projet ?"
+                                        title="Détacher cette capture">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                {% endif %}
+                            {% endif %}
+                            {% if project.ready %}
+                                {% if is_granted('ROLE_USER') %}
+                                    {# RESPOND #}
+                                    <a href="{{ path('app_capture_edit', {
+                                        id: capture.id,
+                                        projectId: project.id,
+                                    }) }}"
+                                       class="btn btn-outline-primary btn-sm"
+                                       title="Répondre" aria-label="Répondre">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                {% endif %}
                             {% endif %}
 
                         </div>
@@ -101,7 +115,7 @@
                     <div class="col-auto d-flex align-items-center gap-2">
                         <span class="col-header">Condition(s) :</span>
 
-                         {% if incomingConditions is defined and incomingConditions|length %}
+                        {% if incomingConditions is defined and incomingConditions|length %}
                             <span class="text-truncate flex-grow-1">
                                 {{ incomingConditions|join(' · ') }}
                             </span>

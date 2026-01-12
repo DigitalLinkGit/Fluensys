@@ -5,6 +5,7 @@ namespace App\Controller\Capture;
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Project;
 use App\Entity\Tenant\User;
 use App\Enum\LivecycleStatus;
 use App\Form\Capture\CaptureContributorForm;
@@ -12,7 +13,6 @@ use App\Form\Capture\CaptureContributorNewForm;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
 use App\Form\Capture\CaptureTemplateForm;
 use App\Form\Capture\CaptureTemplateNewForm;
-use App\Form\Participant\ParticipantAssignmentForm;
 use App\Repository\CaptureRepository;
 use App\Service\Helper\ConditionToggler;
 use App\Service\Helper\LivecycleStatusManager;
@@ -84,6 +84,45 @@ final class CaptureController extends AbstractController
         return $this->render('capture/new.html.twig', [
             'form' => $form,
             'templateMode' => false,
+        ]);
+    }
+
+    #[Route('/new/recurring', name: 'app_capture_recurring_new', methods: ['GET', 'POST'])]
+    public function newRecurringCapture(Request $request, EntityManagerInterface $em): Response
+    {
+        $accountId = $request->query->getInt('accountId');
+        $templateId = $request->query->getInt('templateId');
+        $projectId = $request->query->getInt('projectId');
+
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        /** @var Account|null $account */
+        $account = $em->getRepository(Account::class)->find($accountId);
+        if (!$account) {
+            throw $this->createNotFoundException('Account not found.');
+        }
+
+        /** @var Capture|null $template */
+        $template = $em->getRepository(Capture::class)->find($templateId);
+        if (!$template) {
+            throw $this->createNotFoundException('Template not found.');
+        }
+
+        /** @var Project|null $project */
+        $project = $em->getRepository(Project::class)->find($projectId);
+        if (!$project) {
+            throw $this->createNotFoundException('project not found.');
+        }
+
+        $clone = $this->cloneCaptureFromTemplate($template, $account, null, null);
+        $clone->setResponsible($user);
+        $project->addRecurringCapture($clone);
+        $em->persist($clone);
+        $em->flush();
+
+        return $this->redirectToRoute('app_project_edit', [
+            'id' => $projectId,
         ]);
     }
 

@@ -46,14 +46,18 @@
                     captures: project.captures,
                     kind: 'standard'
                 } %}
-
-                <a class="btn btn-outline-primary mt-3"
-                   href="{{ path('app_project_template_select_capture', { projectId: project.id, kind: 'standard' }) }}">
-                    <i class="bi bi-plus"></i>
-                    Ajouter une capture
-                </a>
+                {% if project.template or project.draft %}
+                    <a class="btn btn-outline-primary mt-3"
+                       href="{{ path('app_project_template_select_capture', { projectId: project.id, kind: 'standard' }) }}">
+                        <i class="bi bi-plus"></i>
+                        Ajouter une capture
+                    </a>
+                {% endif %}
             </div>
             <div id="recurring-captures" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-recurring-captures">
+                {% if not project.draft and not project.template %}
+                    {% include 'project/_add_recurring_capture.html.twig' %}
+                {% endif %}
                 <div class="row mx-2 mt-2 px-0 g-0 col-header">
                     <div class="col-auto pe-2 text-muted">
                         <i class="bi bi-grip-vertical"></i>
@@ -61,15 +65,23 @@
                     <div class="col-3">Nom</div>
                     <div class="col-3">Description</div>
                 </div>
-                {% include 'project/_captures_panel.html.twig' with {
-                    captures: project.recurringCaptures,
-                    kind: 'recurring'
-                } %}
-                <a class="btn btn-outline-primary mt-3"
-                   href="{{ path('app_project_template_select_capture', { projectId: project.id, kind: 'recurring' }) }}">
-                    <i class="bi bi-plus"></i>
-                    Ajouter une capture
-                </a>
+                {% if project.draft or project.template %}
+                    {% include 'project/_captures_panel.html.twig' with {
+                        captures: project.recurringCapturesTemplates,
+                        kind: 'recurring'
+                    } %}
+                        <a class="btn btn-outline-primary mt-3"
+                           href="{{ path('app_project_template_select_capture', { projectId: project.id, kind: 'recurring' }) }}">
+                            <i class="bi bi-plus"></i>
+                            Ajouter une capture
+                        </a>
+                {% endif %}
+                {% if not project.draft and not project.template %}
+                    {% include 'project/_captures_panel.html.twig' with {
+                        captures: project.recurringCaptures,
+                        kind: 'recurring'
+                    } %}
+                {% endif %}
             </div>
             <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
                 {% if not project.template %}

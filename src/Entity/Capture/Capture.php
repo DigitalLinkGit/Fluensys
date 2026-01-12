@@ -71,6 +71,9 @@ class Capture implements TenantAwareInterface, LivecycleStatusAwareInterface
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'recurringCaptures')]
     private Collection $recurringCaptureProjects;
 
+    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'recurringCapturesTemplates')]
+    private Collection $recurringCaptureTemplateProjects;
+
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
@@ -376,6 +379,30 @@ class Capture implements TenantAwareInterface, LivecycleStatusAwareInterface
     {
         if ($this->recurringCaptureProjects->removeElement($recurringCaptureProject)) {
             $recurringCaptureProject->removeRecurringCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function getRecurringCaptureTemplateProjects(): Collection
+    {
+        return $this->recurringCaptureTemplateProjects;
+    }
+
+    public function addRecurringCaptureTemplateProjects(Project $recurringCaptureTemplateProjects): static
+    {
+        if (!$this->recurringCaptureTemplateProjects->contains($recurringCaptureTemplateProjects)) {
+            $this->recurringCaptureTemplateProjects->add($recurringCaptureTemplateProjects);
+            $recurringCaptureTemplateProjects->addRecurringCapturesTemplates($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecurringCaptureTemplateProjects(Project $recurringCaptureTemplateProjects): static
+    {
+        if ($this->recurringCaptureTemplateProjects->removeElement($recurringCaptureTemplateProjects)) {
+            $recurringCaptureTemplateProjects->removeRecurringCapture($this);
         }
 
         return $this;

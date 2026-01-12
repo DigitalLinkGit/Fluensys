@@ -41,9 +41,13 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
     /**
      * @var Collection<int, Capture>
      */
-    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureProjects')]
+    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureProjects', cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'project_recurring_capture')]
     private Collection $recurringCaptures;
+
+    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureTemplateProjects')]
+    #[ORM\JoinTable(name: 'project_recurring_capture_templates')]
+    private Collection $recurringCapturesTemplates;
 
     #[ORM\ManyToOne(inversedBy: 'projects')]
     private ?Account $account = null;
@@ -152,6 +156,28 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
         return $this;
     }
 
+    public function getRecurringCapturesTemplates(): Collection
+    {
+        return $this->recurringCapturesTemplates;
+    }
+
+    public function addRecurringCapturesTemplates(Capture $recurringCaptureTemplate): static
+    {
+        if (!$this->recurringCapturesTemplates->contains($recurringCaptureTemplate)) {
+            $this->recurringCapturesTemplates->add($recurringCaptureTemplate);
+        }
+
+        return $this;
+    }
+
+    public function removeRecurringCapturesTemplates(Capture $recurringCaptureTemplate): static
+    {
+        $this->recurringCapturesTemplates->removeElement($recurringCaptureTemplate);
+        $recurringCaptureTemplate->removeProject($this);
+
+        return $this;
+    }
+
     public function getContributorRoles(): array
     {
         $u = [];
@@ -162,7 +188,7 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
             }
         }
 
-        foreach ($this->getRecurringCaptures() as $capture) {
+        foreach ($this->getRecurringCapturesTemplates() as $capture) {
             foreach ($capture->getContributorRoles() as $r) {
                 $u[$r->getId()] = $r;
             }
@@ -180,7 +206,7 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
             }
         }
 
-        foreach ($this->getRecurringCaptures() as $capture) {
+        foreach ($this->getRecurringCapturesTemplates() as $capture) {
             foreach ($capture->getValidatorRoles() as $r) {
                 $u[$r->getId()] = $r;
             }

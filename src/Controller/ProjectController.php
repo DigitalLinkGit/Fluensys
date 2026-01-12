@@ -26,8 +26,7 @@ final class ProjectController extends AbstractController
 {
     public function __construct(
         private readonly LivecycleStatusManager $statusManager,
-    )
-    {
+    ) {
     }
 
     #[Route(name: 'app_project_index', methods: ['GET'])]
@@ -69,6 +68,7 @@ final class ProjectController extends AbstractController
         return $this->render('project/new.html.twig', [
             'project' => $project,
             'form' => $form,
+            'templateMode' => true,
         ]);
     }
 
@@ -88,9 +88,13 @@ final class ProjectController extends AbstractController
             $name = (string) $form->get('name')->getData();
             $description = $form->get('description')->getData();
 
-            $clone = $this->cloneCaptureFromTemplate($template, $account, $name, $description);
+            $clone = $this->cloneProjectFromTemplate($template, $account, $name, $description);
             $clone->setResponsible($user);
-
+            foreach ($clone->getCaptures() as $capture) {
+                $capture->setResponsible($user);
+                $capture->setAccount($account);
+            }
+            $this->statusManager->init($clone, $user, false);
             $entityManager->persist($clone);
             $entityManager->flush();
 
@@ -122,10 +126,6 @@ final class ProjectController extends AbstractController
 
             return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
         }
-        /*dd(
-            $entityManager->getClassMetadata(Project::class)->associationMappings['participantAssignments'] ?? 'NO_MAPPING'
-        );*/
-
 
         return $this->render('project/edit.html.twig', [
             'project' => $project,
@@ -168,7 +168,7 @@ final class ProjectController extends AbstractController
     public function addCapture(#[MapEntity(id: 'projectId')] Project $project, Capture $capture, string $kind, EntityManagerInterface $em): Response
     {
         if ('recurring' === $kind) {
-            $project->addRecurringCapture($capture);
+            $project->addRecurringCapturesTemplates($capture);
         } elseif ('standard' === $kind) {
             $project->addCapture($capture);
         } else {
@@ -183,7 +183,7 @@ final class ProjectController extends AbstractController
     public function removeCapture(#[MapEntity(id: 'projectId')] Project $project, Capture $capture, string $kind, EntityManagerInterface $em): Response
     {
         if ('recurring' === $kind) {
-            $project->removeRecurringCapture($capture);
+            $project->removeRecurringCapturesTemplates($capture);
         } elseif ('standard' === $kind) {
             $project->removeCapture($capture);
         } else {
@@ -200,11 +200,15 @@ final class ProjectController extends AbstractController
         if (!\in_array($kind, ['standard', 'recurring'], true)) {
             throw $this->createNotFoundException();
         }
+        $all = $captureRepository->findAll();
+        $captures = array_filter($all, function (Capture $el) {
+            return \in_array($el->getStatus(), [LivecycleStatus::TEMPLATE], true);
+        });
 
         return $this->render('project/select_capture_template.html.twig', [
             'projectId' => $projectId,
             'kind' => $kind,
-            'captures' => $captureRepository->findAll(),
+            'captures' => $captures,
         ]);
     }
 
@@ -224,7 +228,7 @@ final class ProjectController extends AbstractController
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 
-    private function cloneCaptureFromTemplate(Project $template, Account $account, string $name, mixed $description): Project
+    private function cloneProjectFromTemplate(Project $template, Account $account, string $name, mixed $description): Project
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -234,7 +238,6 @@ final class ProjectController extends AbstractController
         }
         $clone = clone $template;
         $clone->setAccount($account);
-        $this->statusManager->init($clone, $user, false);
         if (null !== $name && '' !== trim($name)) {
             $clone->setName($name);
         }

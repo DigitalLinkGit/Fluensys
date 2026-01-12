@@ -27,13 +27,19 @@ trait LivecycleStatusTrait
         return $this->status->getLabel();
     }
 
+    public function isDraft(): bool
+    {
+        return LivecycleStatus::DRAFT === $this->status;
+    }
     public function isTemplate(): bool
     {
         return LivecycleStatus::TEMPLATE === $this->status;
     }
 
-    public function isDraft(): bool
+    public function isReady(): bool
     {
-        return LivecycleStatus::DRAFT === $this->status;
+        return LivecycleStatus::READY === $this->status;
     }
+
+
 }

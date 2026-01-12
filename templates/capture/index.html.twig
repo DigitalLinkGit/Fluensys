@@ -12,8 +12,8 @@
 
     {% include 'components/table/_table.html.twig' with {
         items: captures,
-        columns: ['name', 'description','statusLabel'],
-        headers: ['Nom','Description','Statut'],
+        columns: templateMode ? ['name', 'description','statusLabel']:['account.name', 'name', 'description','statusLabel'],
+        headers: templateMode ? ['Nom','Description','Statut']:['Compte','Nom','Description','Statut'],
         filter: true,
         sort: true,
         add: {route: addRoute},
