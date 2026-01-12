@@ -7,35 +7,63 @@
     {% include 'capture/_header.html.twig' with { capture: capture, templateMode: templateMode } %}
     <div class="row align-items-start">
         {% include 'capture/_capture_form.html.twig' with { form: form } %}
-        <div>
-            {% include 'components/button/_btn_bar.html.twig' with {
-                buttons: {
-                    preview_render: {
+        <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+            {% if capture.draft %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    route: 'app_capture_template_publish',
+                    param_map: { id: 'capture.id' },
+                    icon: 'bi-box-arrow-up',
+                    label: 'Publier',
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
+            {% endif %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    route: templateMode ? 'app_capture_template_render_text_preview' : 'app_capture_render_text_preview',
+                    param_map: { id: 'capture.id' },
+                    icon: 'bi-pencil',
+                    label: 'Aperçu du rendu',
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
+            {% if projectId is defined and projectId is not null %}
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
                         type: 'link',
-                        route: templateMode ? 'app_capture_template_render_text_preview' : 'app_capture_render_text_preview',
-                        param_map: { id: 'capture.id' },
-                        icon: 'bi-pencil',
-                        label: 'Aperçu du rendu',
-                        class: 'btn btn-outline-primary btn-sm'
-                    },
-                    back: {
+                        label: 'Retour',
+                        icon: 'bi-arrow-left',
+                        route: 'app_project_template_edit',
+                        param_map: { id: 'projectId' },
+                        class: 'btn btn-outline-primary'
+                    }
+                } %}
+            {% else %}
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
                         type: 'link',
                         label: 'Retour',
                         icon: 'bi-arrow-left',
                         route: templateMode ? 'app_capture_template_index' : 'app_capture_index',
                         class: 'btn btn-outline-primary'
-                    },
-                    save: {
-                        type: 'submit',
-                        label: 'Enregistrer',
-                        icon: 'bi-check',
-                        class: 'btn btn-primary'
                     }
+                } %}
+            {% endif %}
+
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'submit',
+                    label: 'Enregistrer',
+                    icon: 'bi-check',
+                    class: 'btn btn-primary'
                 }
             } %}
         </div>
     </div>
-    {% if not capture.template %}
+    {% if not capture.template and not capture.draft %}
         {{ form_end(form) }}
     {% endif %}
 
@@ -74,7 +102,7 @@
     <div class="tab-content">
         <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
             <div class="row mx-2 mt-2 px-0 g-0 col-header">
-                {% if capture.template %}
+                {% if capture.template or capture.draft %}
                     <div class="col-auto pe-2 text-muted">
                         <i class="bi bi-grip-vertical"></i>
                     </div>
@@ -90,9 +118,30 @@
             } %}
         </div>
         <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
-            {% include 'capture/_assignment_panel.html.twig' with { form: form } %}
+            {% if not capture.template and not capture.draft %}
+                <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="col-header">Responsable :</div>
+                        {% if capture.responsible is defined and capture.responsible is not null %}
+                            <div class="fw-semibold">{{ capture.responsible.username }}</div>
+                        {% endif %}
+                    </div>
+
+                    <a href="{{ path('app_capture_participant_assign', { id: capture.id }) }}"
+                       class="btn btn-outline-primary btn-sm"
+                       title="Paramètres">
+                        <i class="bi bi-gear"></i>
+                    </a>
+                </div>
+            {% endif %}
+            {% include 'capture/_roles_panel.html.twig' with {
+                contributorRoles: capture.getContributorRoles(),
+                validatorRoles: capture.getValidatorRoles(),
+                participantAssignments: capture.getParticipantAssignments()
+            } %}
+
         </div>
-        {% if capture.template %}
+        {% if capture.template or capture.draft %}
             <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
                 {% include 'capture/_conditions_panel.html.twig' with { form: form } %}
             </div>
@@ -110,7 +159,7 @@
             </div>
         {% endif %}
     </div>
-    {% if capture.template %}
+    {% if capture.template or capture.draft %}
         {{ form_end(form) }}
     {% endif %}
 {% endblock %}

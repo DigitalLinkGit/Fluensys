@@ -3,7 +3,10 @@
 namespace App\Entity\Tenant;
 
 use App\Entity\Capture\Capture;
+use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Participant\ParticipantRole;
+use App\Entity\Project;
+use App\Entity\Trait\TenantAwareTrait;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -52,10 +55,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TenantA
     #[ORM\OneToMany(targetEntity: Capture::class, mappedBy: 'responsible')]
     private Collection $captures;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'responsible')]
+    private Collection $projects;
+
     public function __construct()
     {
         $this->participantRoles = new ArrayCollection();
         $this->captures = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -203,6 +213,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TenantA
             // set the owning side to null (unless already changed)
             if ($capture->getResponsible() === $this) {
                 $capture->setResponsible(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->setResponsible($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getResponsible() === $this) {
+                $project->setResponsible(null);
             }
         }
 

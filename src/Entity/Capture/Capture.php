@@ -5,12 +5,15 @@ namespace App\Entity\Capture;
 use App\Entity\Account\Account;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\Rendering\Title;
+use App\Entity\Interface\LivecycleStatusAwareInterface;
+use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Participant\ParticipantAssignment;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\Tenant\TenantAwareInterface;
-use App\Entity\Tenant\TenantAwareTrait;
+use App\Entity\Project;
 use App\Entity\Tenant\User;
-use App\Enum\CaptureElementStatus;
+use App\Entity\Trait\LivecycleStatusTrait;
+use App\Entity\Trait\TenantAwareTrait;
+use App\Enum\LivecycleStatus;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,9 +23,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CaptureRepository::class)]
 #[ORM\Table(name: 'capture')]
-class Capture implements TenantAwareInterface
+class Capture implements TenantAwareInterface, LivecycleStatusAwareInterface
 {
     use TenantAwareTrait;
+    use LivecycleStatusTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,9 +41,6 @@ class Capture implements TenantAwareInterface
     #[ORM\OneToMany(targetEntity: CaptureElement::class, mappedBy: 'capture', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $captureElements;
-
-    #[ORM\Column]
-    private ?bool $template = true;
 
     #[ORM\OneToOne(targetEntity: Title::class, cascade: ['persist', 'remove'], fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
@@ -58,12 +59,25 @@ class Capture implements TenantAwareInterface
     #[ORM\OneToMany(targetEntity: ParticipantAssignment::class, mappedBy: 'capture', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $participantAssignments;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'captures')]
+    private Collection $projects;
+
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'recurringCaptures')]
+    private Collection $recurringCaptureProjects;
+
     public function __construct()
     {
         $this->captureElements = new ArrayCollection();
-        $this->template = true;
         $this->conditions = new ArrayCollection();
         $this->participantAssignments = new ArrayCollection();
+        $this->projects = new ArrayCollection();
+        $this->recurringCaptureProjects = new ArrayCollection();
     }
 
     public function __clone()
@@ -78,7 +92,6 @@ class Capture implements TenantAwareInterface
 
         foreach ($originalElements as $el) {
             $cl = clone $el;
-            $cl->setStatus(CaptureElementStatus::DRAFT);
             $this->addCaptureElement($cl);
 
             $elementMap[$el->getId()] = $cl;
@@ -222,18 +235,6 @@ class Capture implements TenantAwareInterface
         return $rows;
     }
 
-    public function isTemplate(): ?bool
-    {
-        return $this->template;
-    }
-
-    public function setTemplate(bool $template): static
-    {
-        $this->template = $template;
-
-        return $this;
-    }
-
     public function getTitle(): ?Title
     {
         return $this->title;
@@ -316,7 +317,66 @@ class Capture implements TenantAwareInterface
 
     public function removeParticipantAssignment(ParticipantAssignment $participantAssignment): static
     {
-        $this->participantAssignments->removeElement($participantAssignment);
+        if ($this->participantAssignments->removeElement($participantAssignment)) {
+            if ($participantAssignment->getCapture() === $this) {
+                $participantAssignment->setCapture(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->addCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            $project->removeCapture($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getRecurringCaptureProjects(): Collection
+    {
+        return $this->recurringCaptureProjects;
+    }
+
+    public function addRecurringCaptureProject(Project $recurringCaptureProject): static
+    {
+        if (!$this->recurringCaptureProjects->contains($recurringCaptureProject)) {
+            $this->recurringCaptureProjects->add($recurringCaptureProject);
+            $recurringCaptureProject->addRecurringCapture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecurringCaptureProject(Project $recurringCaptureProject): static
+    {
+        if ($this->recurringCaptureProjects->removeElement($recurringCaptureProject)) {
+            $recurringCaptureProject->removeRecurringCapture($this);
+        }
 
         return $this;
     }

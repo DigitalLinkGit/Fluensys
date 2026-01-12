@@ -4,9 +4,9 @@ namespace App\Entity\Participant;
 
 use App\Entity\Account\Contact;
 use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Entity\Tenant\TenantAwareInterface;
-use App\Entity\Tenant\TenantAwareTrait;
+use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Tenant\User;
+use App\Entity\Trait\TenantAwareTrait;
 use App\Repository\ParticipantRoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

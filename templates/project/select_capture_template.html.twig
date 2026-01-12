@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Captureselect{% endblock %}
+
+{% block body %}
+    <h2>Sélectionner une capture</h2>
+
+    {% include 'components/table/_table.html.twig' with {
+        items: captures,
+        columns: ['name', 'description'],
+        headers: ['Nom', 'Description'],
+        filter: true,
+        sort: true,
+        actions: [
+            {
+                route: 'app_project_template_add_capture',
+                params: { projectId: projectId, kind:kind },
+                param_map: { id: 'id' },
+                icon: 'bi-box-arrow-in-right',
+                label: 'Sélectionner',
+            }
+        ]
+    } %}
+
+{% endblock %}

@@ -5,6 +5,19 @@
 {% block body %}
     <h2>Affectation des participants</h2>
 
+    {# source: project OU capture #}
+    {% set contributorRoles =
+        project is defined and project ? project.getContributorRoles() :
+        capture is defined and capture ? capture.getContributorRoles() :
+        []
+    %}
+
+    {% set validatorRoles =
+        project is defined and project ? project.getValidatorRoles() :
+        capture is defined and capture ? capture.getValidatorRoles() :
+        []
+    %}
+
     {{ form_start(form) }}
 
     <div class="d-flex align-item-center gap-2 mt-3 g-3">
@@ -13,14 +26,15 @@
         </div>
         <div class="col-auto">{{ form_row(form.responsible) }}</div>
     </div>
+
     <div class="row g-3">
         <div class="col-md-6">
             <div class="mb-3 col-header">Contributeurs</div>
 
-            {% for role in capture.getContributorRoles() %}
+            {% for role in contributorRoles %}
                 {% set fieldName = 'contrib_role_' ~ role.id %}
                 <div class="mb-3">
-                    {% include 'participant_role/_role_badge.html.twig' %}
+                    {% include 'participant_role/_role_badge.html.twig' with { role: role } %}
                     <label class="form-label fw-semibold">{{ role.name }}</label>
                     {{ form_widget(attribute(form, fieldName), { attr: { class: 'form-select' } }) }}
                     {{ form_errors(attribute(form, fieldName)) }}
@@ -31,10 +45,10 @@
         <div class="col-md-6">
             <div class="mb-3 col-header">Validateurs</div>
 
-            {% for role in capture.getValidatorRoles() %}
+            {% for role in validatorRoles %}
                 {% set fieldName = 'valid_role_' ~ role.id %}
                 <div class="mb-3">
-                    {% include 'participant_role/_role_badge.html.twig' %}
+                    {% include 'participant_role/_role_badge.html.twig' with { role: role } %}
                     <label class="form-label fw-semibold">{{ role.name }}</label>
                     {{ form_widget(attribute(form, fieldName), { attr: { class: 'form-select' } }) }}
                     {{ form_errors(attribute(form, fieldName)) }}
@@ -42,6 +56,7 @@
             {% endfor %}
         </div>
     </div>
+
     <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
         {% include 'components/button/_btn.html.twig' with {
             btn: {
@@ -62,5 +77,6 @@
             }
         } %}
     </div>
+
     {{ form_end(form) }}
 {% endblock %}

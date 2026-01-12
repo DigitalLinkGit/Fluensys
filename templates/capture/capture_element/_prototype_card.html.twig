@@ -7,7 +7,7 @@
             <div class="row g-0 align-items-center">
 
                 {# Handle sortable if template #}
-                {% if capture.template %}
+                {% if capture.template or capture.draft %}
                         <div class="col-auto pe-2 text-muted" data-sortable-handle style="cursor: grab;">
                             <i class="bi bi-grip-vertical"></i>
                         </div>

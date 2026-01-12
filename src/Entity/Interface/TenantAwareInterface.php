@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Entity\Tenant;
+namespace App\Entity\Interface;
+
+use App\Entity\Tenant\Tenant;
 
 interface TenantAwareInterface
 {

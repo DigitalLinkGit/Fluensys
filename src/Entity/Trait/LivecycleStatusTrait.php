@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Entity\Trait;
+
+use App\Enum\LivecycleStatus;
+use Doctrine\ORM\Mapping as ORM;
+
+trait LivecycleStatusTrait
+{
+    #[ORM\Column(enumType: LivecycleStatus::class, options: ['default' => LivecycleStatus::DRAFT])]
+    private LivecycleStatus $status = LivecycleStatus::DRAFT;
+
+    public function getStatus(): LivecycleStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(LivecycleStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatusLabel(): string
+    {
+        return $this->status->getLabel();
+    }
+
+    public function isTemplate(): bool
+    {
+        return LivecycleStatus::TEMPLATE === $this->status;
+    }
+
+    public function isDraft(): bool
+    {
+        return LivecycleStatus::DRAFT === $this->status;
+    }
+}

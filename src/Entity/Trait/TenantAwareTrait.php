@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Entity\Tenant;
+namespace App\Entity\Trait;
 
+use App\Entity\Tenant\Tenant;
 use Doctrine\ORM\Mapping as ORM;
 
 trait TenantAwareTrait
 {
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Tenant\Tenant::class)]
+    #[ORM\ManyToOne(targetEntity: Tenant::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private ?Tenant $tenant = null;
 
@@ -15,7 +16,7 @@ trait TenantAwareTrait
         return $this->tenant;
     }
 
-    public function setTenant(\App\Entity\Tenant\Tenant $tenant): self
+    public function setTenant(Tenant $tenant): self
     {
         $this->tenant = $tenant;
 

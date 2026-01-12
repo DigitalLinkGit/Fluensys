@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Capture index{% endblock %}
+{% block title %}Project index{% endblock %}
 
 {% block body %}
-    <h2>{{ templateMode ? 'Templates de captures' : 'Captures' }}</h2>
+    <h2>{{ templateMode ? 'Templates de projets' : 'Projets' }}</h2>
 
-    {% set addRoute = templateMode ? 'app_capture_template_new' : 'app_capture_new' %}
-    {% set showRoute = templateMode ? 'app_capture_template_show' : 'app_capture_show' %}
-    {% set editRoute = templateMode ? 'app_capture_template_edit' : 'app_capture_edit' %}
-    {% set deleteRoute = templateMode ? 'app_capture_template_delete' : 'app_capture_delete' %}
+    {% set addRoute = templateMode ? 'app_project_template_new' : 'app_project_new' %}
+    {% set showRoute = 'app_project_show' %}
+    {% set editRoute = templateMode ? 'app_project_template_edit' : 'app_project_edit' %}
+    {% set deleteRoute = 'app_project_delete' %}
 
     {% include 'components/table/_table.html.twig' with {
-        items: captures,
+        items: projects,
         columns: ['name', 'description','statusLabel'],
         headers: ['Nom','Description','Statut'],
         filter: true,

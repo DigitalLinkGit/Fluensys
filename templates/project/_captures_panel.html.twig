@@ -1,0 +1,20 @@
+<div class="mx-2 mb-3 element-card-container" data-controller="sortable-order">
+
+    <input type="hidden"
+           name="captures_order"
+           data-sortable-order-target="input"
+           value="{{ captures|map(e => e.id)|json_encode }}">
+
+    {% if captures is defined and captures|length > 0 %}
+        <div class="sortable-list" data-sortable-order-target="list">
+            {% for capture in captures %}
+                {% include 'capture/_prototype_card.html.twig' with {
+                    capture: capture,
+                    kind: kind
+                } %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-muted small m-3">Aucune capture</div>
+    {% endif %}
+</div>

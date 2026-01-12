@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Doctrine\EventSubscriber;
 
-use App\Entity\Tenant\TenantAwareInterface;
+use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Tenant\User;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PrePersistEventArgs;

@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum CaptureElementStatus: string
+enum LivecycleStatus: string
 {
     case TEMPLATE = 'template';
     case DRAFT = 'draft';

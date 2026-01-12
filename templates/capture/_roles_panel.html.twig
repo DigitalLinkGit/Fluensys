@@ -1,0 +1,79 @@
+{# templates/capture/_roles_panel.html.twig #}
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="mb-3 col-header">Contributeurs</div>
+        {% for role in contributorRoles %}
+            {% set assignedUser = null %}
+            {% set assignedContact = null %}
+
+            {% if participantAssignments is defined and participantAssignments is iterable and (participantAssignments|length) > 0 %}
+                {# Contributeurs #}
+                {% for a in participantAssignments %}
+                    {% if a.role and a.role.id == role.id and a.purpose.value == 'contributor' %}
+                        {% set assignedUser = a.user %}
+                        {% set assignedContact = a.contact %}
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    {% include 'participant_role/_role_badge.html.twig' %}
+                    <div class="text-muted">{{ role.name }}</div>
+                </div>
+
+                {% if participantAssignments is defined and participantAssignments is iterable and (participantAssignments|length) > 0 %}
+                    <div class="mx-3">
+                        {% if assignedUser %}
+                            <div class="fw-semibold">{{ assignedUser.username }}</div>
+                        {% elseif assignedContact %}
+                            <div class="fw-semibold">{{ assignedContact.name }}</div>
+                        {% else %}
+                            <div class="fw-semibold text-danger">Non assigné</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3 col-header">Validateurs</div>
+
+        {% for role in validatorRoles %}
+            {% set assignedUser = null %}
+            {% set assignedContact = null %}
+
+            {% if participantAssignments is defined and participantAssignments is iterable and (participantAssignments|length) > 0 %}
+                {# Validateurs #}
+                {% for a in participantAssignments %}
+                    {% if a.role and a.role.id == role.id and a.purpose.value == 'validator' %}
+                        {% set assignedUser = a.user %}
+                        {% set assignedContact = a.contact %}
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    {% include 'participant_role/_role_badge.html.twig' %}
+                    <div class="text-muted">{{ role.name }}</div>
+                </div>
+
+                {% if participantAssignments is defined and participantAssignments is iterable and (participantAssignments|length) > 0 %}
+                    <div class="mx-3">
+                        {% if assignedUser %}
+                            <div class="fw-semibold">{{ assignedUser.username }}</div>
+                        {% elseif assignedContact %}
+                            <div class="fw-semibold">{{ assignedContact.name }}</div>
+                        {% else %}
+                            <div class="fw-semibold text-danger">Non assigné</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>

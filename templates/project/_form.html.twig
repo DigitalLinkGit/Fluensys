@@ -1,0 +1,54 @@
+{{ form_start(form) }}
+    {% if project is defined and project.id is not null %}
+        <div class="col-md-4" data-controller="ghost-field">
+            {% include 'components/form/_ghost_field.html.twig' with {
+                field: form.name,
+                placeholder: 'Nom…',
+                class: 'title-input',
+                attrs: { autocomplete: 'off' }
+            } %}
+
+            {% include 'components/form/_ghost_field.html.twig' with {
+                field: form.description,
+                placeholder: 'Description…',
+                class: 'subtitle-textarea',
+                attrs: { autocomplete: 'off' }
+            } %}
+        </div>
+    {% else %}
+        {{ form_widget(form) }}
+    {% endif %}
+{% if is_granted('ROLE_ADMIN') %}
+<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+    {% if project.isDraft() %}
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                route: 'app_project_template_publish',
+                param_map: { id: 'project.id' },
+                icon: 'bi-box-arrow-up',
+                label: 'Publier',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+    {% endif %}
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'link',
+            label: 'Retour',
+            icon: 'bi-arrow-left',
+            route: 'app_project_index',
+            class: 'btn btn-outline-primary'
+        }
+    } %}
+    {% include 'components/button/_btn.html.twig' with {
+        btn: {
+            type: 'submit',
+            label: 'Enregistrer',
+            icon: 'bi-check',
+            class: 'btn btn-primary'
+        }
+    } %}
+</div>
+{% endif %}
+{{ form_end(form) }}

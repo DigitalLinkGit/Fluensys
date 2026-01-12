@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Doctrine\Filter;
 
-use App\Entity\Tenant\TenantAwareInterface;
+use App\Entity\Interface\TenantAwareInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 
@@ -18,7 +18,6 @@ final class TenantFilter extends SQLFilter
         }
 
         // Assume join column is named "tenant_id"
-        // setParameter('tenant_id', '<id>') must be done when enabling the filter.
         return sprintf('%s.tenant_id = %s', $targetTableAlias, $this->getParameter('tenant_id'));
     }
 }

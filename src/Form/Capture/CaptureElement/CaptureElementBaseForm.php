@@ -62,6 +62,8 @@ class CaptureElementBaseForm extends AbstractType
                 'required' => false,
                 'query_builder' => function (ParticipantRoleRepository $r) {
                     return $r->createQueryBuilder('role')
+                        ->andWhere('role.internal = :internal')
+                        ->setParameter('internal', true)
                         ->orderBy('role.name', 'ASC');
                 },
                 'placeholder' => 'Aucune validation',

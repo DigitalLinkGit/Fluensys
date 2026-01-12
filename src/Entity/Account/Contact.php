@@ -2,9 +2,9 @@
 
 namespace App\Entity\Account;
 
+use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\Tenant\TenantAwareInterface;
-use App\Entity\Tenant\TenantAwareTrait;
+use App\Entity\Trait\TenantAwareTrait;
 use App\Entity\Truc;
 use App\Repository\ContactRepository;
 use Doctrine\Common\Collections\ArrayCollection;

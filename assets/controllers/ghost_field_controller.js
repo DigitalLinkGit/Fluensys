@@ -8,13 +8,17 @@ export default class extends Controller {
         // Keep per-element listeners to properly clean them up
         this._handlers = new WeakMap();
         this._onContainerClick = (e) => {
-            const el = e.target.closest('[data-ghost-field-target="input"]');
-            if (el && this.element.contains(el)) {
-                el.focus();
-            }
-        };
-    }
+            const wrapper = e.target.closest(".ghost-field");
+            if (!wrapper || !this.element.contains(wrapper)) return;
 
+            const el = wrapper.querySelector('[data-ghost-field-target="input"]');
+            if (!el) return;
+
+            el.classList.add("is-active"); // enable pointer-events
+            el.focus();
+        };
+
+    }
     connect() {
         // Delegate clicks to focus inputs when clicking their wrapper
         this.element.addEventListener("click", this._onContainerClick);

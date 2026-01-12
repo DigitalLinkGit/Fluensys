@@ -6,7 +6,9 @@ use App\Entity\Account\Contact;
 use App\Entity\Capture\Capture;
 use App\Entity\Participant\ParticipantAssignment;
 use App\Entity\Participant\ParticipantRole;
+use App\Entity\Project;
 use App\Entity\Tenant\User;
+use App\Enum\ParticipantAssignmentPurpose;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -18,18 +20,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ParticipantAssignmentForm extends AbstractType
 {
-    public function __construct()
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Capture $capture */
-        $capture = $builder->getData();
-
         $builder->add('responsible', EntityType::class, [
-            'class' => \App\Entity\Tenant\User::class,
-            'choice_label' => fn (\App\Entity\Tenant\User $u) => $u->getUsername(),
+            'class' => User::class,
+            'choice_label' => fn (User $u) => $u->getUsername(),
             'placeholder' => 'Sélectionner un responsable',
             'required' => true,
             'label' => false,
@@ -38,45 +33,85 @@ class ParticipantAssignmentForm extends AbstractType
             ],
         ]);
 
-        $contributorRoles = $capture->getContributorRoles();
-        $validatorRoles = $capture->getValidatorRoles();
-
-        // Build dynamic selects (mapped = false): one select per expected role.
-        foreach ($contributorRoles as $role) {
-            \assert($role instanceof ParticipantRole);
-            $this->addRoleSelectField($builder, $capture, $role, 'contrib_role_'.(string) $role->getId());
-        }
-
-        foreach ($validatorRoles as $role) {
-            \assert($role instanceof ParticipantRole);
-            $this->addRoleSelectField($builder, $capture, $role, 'valid_role_'.(string) $role->getId());
-        }
-
-        // Sync ParticipantAssignment collection from the dynamic fields.
-        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($contributorRoles, $validatorRoles): void {
-            /** @var Capture $capture */
-            $capture = $event->getData();
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $owner = $event->getData();
             $form = $event->getForm();
 
-            $this->syncAssignments($capture, $form, $contributorRoles, 'contrib_role_');
-            $this->syncAssignments($capture, $form, $validatorRoles, 'valid_role_');
+            if (!$owner instanceof Capture && !$owner instanceof Project) {
+                return;
+            }
+
+            foreach ($owner->getContributorRoles() as $role) {
+                \assert($role instanceof ParticipantRole);
+                $this->addRoleSelectField(
+                    $form,
+                    $owner,
+                    $role,
+                    'contrib_role_'.$role->getId(),
+                    ParticipantAssignmentPurpose::CONTRIBUTOR
+                );
+            }
+
+            foreach ($owner->getValidatorRoles() as $role) {
+                \assert($role instanceof ParticipantRole);
+                $this->addRoleSelectField(
+                    $form,
+                    $owner,
+                    $role,
+                    'valid_role_'.$role->getId(),
+                    ParticipantAssignmentPurpose::VALIDATOR
+                );
+            }
+        });
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
+            $owner = $event->getData();
+            $form = $event->getForm();
+
+            if (!$owner instanceof Capture && !$owner instanceof Project) {
+                return;
+            }
+
+            $this->syncAssignments(
+                $owner,
+                $form,
+                $owner->getContributorRoles(),
+                'contrib_role_',
+                ParticipantAssignmentPurpose::CONTRIBUTOR
+            );
+
+            $this->syncAssignments(
+                $owner,
+                $form,
+                $owner->getValidatorRoles(),
+                'valid_role_',
+                ParticipantAssignmentPurpose::VALIDATOR
+            );
         });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Capture::class]);
+        $resolver->setDefaults([
+            'data_class' => null,
+        ]);
     }
 
-    private function addRoleSelectField(FormBuilderInterface $builder, Capture $capture, ParticipantRole $role, string $fieldName): void
-    {
 
-        $assignment = $this->findAssignment($capture, $role);
+
+    private function addRoleSelectField(
+        FormInterface $form,
+        Capture|Project $owner,
+        ParticipantRole $role,
+        string $fieldName,
+        ParticipantAssignmentPurpose $purpose,
+    ): void {
+        $assignment = $this->findAssignment($owner, $role, $purpose);
 
         if ((bool) $role->isInternal()) {
-            $builder->add($fieldName, EntityType::class, [
+            $form->add($fieldName, EntityType::class, [
                 'class' => User::class,
-                'choice_label' => fn (\App\Entity\Tenant\User $u) => $u->getUsername(),
+                'choice_label' => fn (User $u) => $u->getUsername(),
                 'placeholder' => 'Sélectionner un utilisateur',
                 'required' => false,
                 'mapped' => false,
@@ -93,10 +128,10 @@ class ParticipantAssignmentForm extends AbstractType
             return;
         }
 
-        $account = $capture->getAccount();
+        $account = method_exists($owner, 'getAccount') ? $owner->getAccount() : null;
 
-        $builder->add($fieldName, EntityType::class, [
-            'class' => \App\Entity\Account\Contact::class,
+        $form->add($fieldName, EntityType::class, [
+            'class' => Contact::class,
             'choice_label' => fn (Contact $c) => $c->getName(),
             'placeholder' => 'Sélectionner un contact',
             'required' => false,
@@ -120,8 +155,13 @@ class ParticipantAssignmentForm extends AbstractType
         ]);
     }
 
-    private function syncAssignments(Capture $capture, FormInterface $form, array $roles, string $prefix): void
-    {
+    private function syncAssignments(
+        Capture|Project $owner,
+        FormInterface $form,
+        array $roles,
+        string $prefix,
+        ParticipantAssignmentPurpose $purpose,
+    ): void {
         foreach ($roles as $role) {
             \assert($role instanceof ParticipantRole);
 
@@ -132,20 +172,27 @@ class ParticipantAssignmentForm extends AbstractType
             }
 
             $selected = $form->get($fieldName)->getData();
-            $assignment = $this->findAssignment($capture, $role);
+            $assignment = $this->findAssignment($owner, $role, $purpose);
 
             if (null === $selected) {
                 if (null !== $assignment) {
-                    $capture->removeParticipantAssignment($assignment);
+                    $owner->removeParticipantAssignment($assignment);
                 }
                 continue;
             }
 
             if (null === $assignment) {
                 $assignment = new ParticipantAssignment();
-                $assignment->setCapture($capture);
                 $assignment->setRole($role);
-                $capture->addParticipantAssignment($assignment);
+                $assignment->setPurpose($purpose);
+
+                if ($owner instanceof Capture) {
+                    $assignment->setCapture($owner);
+                } else {
+                    $assignment->setProject($owner);
+                }
+
+                $owner->addParticipantAssignment($assignment);
             }
 
             if ((bool) $role->isInternal()) {
@@ -160,10 +207,16 @@ class ParticipantAssignmentForm extends AbstractType
         }
     }
 
-    private function findAssignment(Capture $capture, ParticipantRole $role): ?ParticipantAssignment
-    {
-        foreach ($capture->getParticipantAssignments() as $assignment) {
-            if ($assignment->getRole()?->getId() === $role->getId()) {
+    private function findAssignment(
+        Capture|Project $owner,
+        ParticipantRole $role,
+        ParticipantAssignmentPurpose $purpose,
+    ): ?ParticipantAssignment {
+        foreach ($owner->getParticipantAssignments() as $assignment) {
+            if (
+                $assignment->getRole()?->getId() === $role->getId()
+                && $assignment->getPurpose() === $purpose
+            ) {
                 return $assignment;
             }
         }

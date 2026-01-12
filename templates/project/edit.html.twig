@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Project{% endblock %}
+
+{% block body %}
+    {% include 'project/_header.html.twig' with { project: project, templateMode: templateMode } %}
+
+    {{ include('project/_form.html.twig') }}
+
+    <div
+        data-controller="tabs-persist"
+        data-tabs-persist-default-tab-value="#captures"
+        data-tabs-persist-storage-key-value="projectTabs"
+        data-tabs-persist-mode-value="storage"
+    >
+        <ul class="tabs tabs--primary my-3 nav" role="tablist">
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-captures" class="tab__link nav-link" data-bs-toggle="tab" href="#captures"
+                   role="tab"
+                   aria-controls="captures"
+                   aria-selected="false">Captures</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-recurring-captures" class="tab__link nav-link" data-bs-toggle="tab"
+                   href="#recurring-captures" role="tab"
+                   aria-controls="recurring-captures"
+                   aria-selected="true">Captures récurrentes</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+                   aria-controls="roles"
+                   aria-selected="true">Rôles</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="captures" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-captures">
+                <div class="row mx-2 mt-2 px-0 g-0 col-header">
+                    <div class="col-auto pe-2 text-muted">
+                        <i class="bi bi-grip-vertical"></i>
+                    </div>
+                    <div class="col-3">Nom</div>
+                    <div class="col-3">Description</div>
+                </div>
+                {% include 'project/_captures_panel.html.twig' with {
+                    captures: project.captures,
+                    kind: 'standard'
+                } %}
+
+                <a class="btn btn-outline-primary mt-3"
+                   href="{{ path('app_project_template_select_capture', { projectId: project.id, kind: 'standard' }) }}">
+                    <i class="bi bi-plus"></i>
+                    Ajouter une capture
+                </a>
+            </div>
+            <div id="recurring-captures" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-recurring-captures">
+                <div class="row mx-2 mt-2 px-0 g-0 col-header">
+                    <div class="col-auto pe-2 text-muted">
+                        <i class="bi bi-grip-vertical"></i>
+                    </div>
+                    <div class="col-3">Nom</div>
+                    <div class="col-3">Description</div>
+                </div>
+                {% include 'project/_captures_panel.html.twig' with {
+                    captures: project.recurringCaptures,
+                    kind: 'recurring'
+                } %}
+                <a class="btn btn-outline-primary mt-3"
+                   href="{{ path('app_project_template_select_capture', { projectId: project.id, kind: 'recurring' }) }}">
+                    <i class="bi bi-plus"></i>
+                    Ajouter une capture
+                </a>
+            </div>
+            <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+                {% if not project.template %}
+                    <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="col-header">Responsable :</div>
+                            {% if project.responsible is defined and project.responsible is not null %}
+                                <div class="fw-semibold">{{ project.responsible.username }}</div>
+                            {% endif %}
+                        </div>
+
+                        <a href="{{ path('app_project_participant_assign', { id: project.id }) }}"
+                           class="btn btn-outline-primary btn-sm"
+                           title="Paramètres">
+                            <i class="bi bi-gear"></i>
+                        </a>
+                    </div>
+                {% endif %}
+                {% include 'capture/_roles_panel.html.twig' with {
+                    contributorRoles: project.getContributorRoles(),
+                    validatorRoles: project.getValidatorRoles(),
+                    participantAssignments : project.getParticipantAssignments()
+                } %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

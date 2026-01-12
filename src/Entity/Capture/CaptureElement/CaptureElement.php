@@ -6,10 +6,11 @@ use App\Entity\Capture\Capture;
 use App\Entity\Capture\Field\CalculatedVariable;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Rendering\Chapter;
+use App\Entity\Interface\LivecycleStatusAwareInterface;
+use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Participant\ParticipantRole;
-use App\Entity\Tenant\TenantAwareInterface;
-use App\Entity\Tenant\TenantAwareTrait;
-use App\Enum\CaptureElementStatus;
+use App\Entity\Trait\LivecycleStatusTrait;
+use App\Entity\Trait\TenantAwareTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,9 +22,10 @@ use Doctrine\ORM\Mapping as ORM;
     'flex' => FlexCaptureElement::class,
     'listable_field' => ListableFieldCaptureElement::class,
 ])]
-abstract class CaptureElement implements TenantAwareInterface
+abstract class CaptureElement implements TenantAwareInterface, LivecycleStatusAwareInterface
 {
     use TenantAwareTrait;
+    use LivecycleStatusTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -35,9 +37,6 @@ abstract class CaptureElement implements TenantAwareInterface
 
     #[ORM\Column(length: 255)]
     protected ?string $description = null;
-
-    #[ORM\Column(enumType: CaptureElementStatus::class, options: ['default' => CaptureElementStatus::TEMPLATE])]
-    private CaptureElementStatus $status = CaptureElementStatus::TEMPLATE;
 
     #[ORM\OrderBy(['position' => 'ASC'])]
     #[ORM\OneToMany(targetEntity: Field::class, mappedBy: 'captureElement', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -53,9 +52,6 @@ abstract class CaptureElement implements TenantAwareInterface
     #[ORM\ManyToOne(inversedBy: 'validatorCaptureElements')]
     #[ORM\JoinColumn(nullable: true)]
     private ?ParticipantRole $validator = null;
-
-    #[ORM\Column(type: 'boolean', options: ['default' => true])]
-    private ?bool $template = true;
 
     #[ORM\OneToOne(inversedBy: 'captureElement', cascade: ['persist', 'remove'])]
     private ?Chapter $chapter = null;
@@ -110,8 +106,6 @@ abstract class CaptureElement implements TenantAwareInterface
         }
         $this->calculatedvariables = $newCvs;
 
-        // template
-        $this->template = false;
     }
 
     public function getId(): ?int
@@ -142,22 +136,6 @@ abstract class CaptureElement implements TenantAwareInterface
 
         return $this;
     }
-    public function getStatus(): CaptureElementStatus
-    {
-        return $this->status;
-    }
-
-    public function setStatus(CaptureElementStatus $status): static
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getStatusLabel(): string
-    {
-        return $this->status->getLabel();
-    }
 
     public function getFields(): Collection
     {
@@ -171,6 +149,7 @@ abstract class CaptureElement implements TenantAwareInterface
             $field->setCaptureElement($this);
             $field->setPosition($this->fields->count());
         }
+
         return $this;
     }
 
@@ -181,6 +160,7 @@ abstract class CaptureElement implements TenantAwareInterface
                 $field->setCaptureElement(null);
             }
         }
+
         return $this;
     }
 
@@ -230,18 +210,6 @@ abstract class CaptureElement implements TenantAwareInterface
     public function setValidator(?ParticipantRole $validator): static
     {
         $this->validator = $validator;
-
-        return $this;
-    }
-
-    public function isTemplate(): ?bool
-    {
-        return $this->template;
-    }
-
-    public function setTemplate(bool $template): static
-    {
-        $this->template = $template;
 
         return $this;
     }

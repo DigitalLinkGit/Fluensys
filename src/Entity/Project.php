@@ -2,18 +2,24 @@
 
 namespace App\Entity;
 
+use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Entity\Tenant\TenantAwareInterface;
-use App\Entity\Tenant\TenantAwareTrait;
+use App\Entity\Interface\LivecycleStatusAwareInterface;
+use App\Entity\Interface\TenantAwareInterface;
+use App\Entity\Participant\ParticipantAssignment;
+use App\Entity\Tenant\User;
+use App\Entity\Trait\LivecycleStatusTrait;
+use App\Entity\Trait\TenantAwareTrait;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project implements TenantAwareInterface
+class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
 {
     use TenantAwareTrait;
+    use LivecycleStatusTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -28,21 +34,45 @@ class Project implements TenantAwareInterface
     /**
      * @var Collection<int, Capture>
      */
-    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'projects')]
+    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'projects', cascade: ['persist', 'remove'])]
+    #[ORM\JoinTable(name: 'project_capture')]
     private Collection $captures;
 
     /**
      * @var Collection<int, Capture>
      */
     #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureProjects')]
-    private Collection $recurringCapture;
+    #[ORM\JoinTable(name: 'project_recurring_capture')]
+    private Collection $recurringCaptures;
+
+    #[ORM\ManyToOne(inversedBy: 'projects')]
+    private ?Account $account = null;
+
+    #[ORM\ManyToOne(inversedBy: 'projects')]
+    private ?User $responsible = null;
+
+    #[ORM\OneToMany(targetEntity: ParticipantAssignment::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $participantAssignments;
 
     public function __construct()
     {
         $this->captures = new ArrayCollection();
-        $this->recurringCapture = new ArrayCollection();
+        $this->recurringCaptures = new ArrayCollection();
+        $this->participantAssignments = new ArrayCollection();
     }
 
+    public function __clone()
+    {
+        $this->id = null;
+
+        $originalCaptures = $this->captures;
+        $this->captures = new ArrayCollection();
+
+        foreach ($originalCaptures as $el) {
+            $cl = clone $el;
+            $this->addCapture($cl);
+        }
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +122,7 @@ class Project implements TenantAwareInterface
     public function removeCapture(Capture $capture): static
     {
         $this->captures->removeElement($capture);
+        $capture->removeProject($this);
 
         return $this;
     }
@@ -99,15 +130,15 @@ class Project implements TenantAwareInterface
     /**
      * @return Collection<int, Capture>
      */
-    public function getRecurringCapture(): Collection
+    public function getRecurringCaptures(): Collection
     {
-        return $this->recurringCapture;
+        return $this->recurringCaptures;
     }
 
     public function addRecurringCapture(Capture $recurringCapture): static
     {
-        if (!$this->recurringCapture->contains($recurringCapture)) {
-            $this->recurringCapture->add($recurringCapture);
+        if (!$this->recurringCaptures->contains($recurringCapture)) {
+            $this->recurringCaptures->add($recurringCapture);
         }
 
         return $this;
@@ -115,8 +146,97 @@ class Project implements TenantAwareInterface
 
     public function removeRecurringCapture(Capture $recurringCapture): static
     {
-        $this->recurringCapture->removeElement($recurringCapture);
+        $this->recurringCaptures->removeElement($recurringCapture);
+        $recurringCapture->removeProject($this);
 
         return $this;
     }
+
+    public function getContributorRoles(): array
+    {
+        $u = [];
+
+        foreach ($this->getCaptures() as $capture) {
+            foreach ($capture->getContributorRoles() as $r) {
+                $u[$r->getId()] = $r;
+            }
+        }
+
+        foreach ($this->getRecurringCaptures() as $capture) {
+            foreach ($capture->getContributorRoles() as $r) {
+                $u[$r->getId()] = $r;
+            }
+        }
+
+        return array_values($u);
+    }
+    public function getValidatorRoles(): array
+    {
+        $u = [];
+
+        foreach ($this->getCaptures() as $capture) {
+            foreach ($capture->getValidatorRoles() as $r) {
+                $u[$r->getId()] = $r;
+            }
+        }
+
+        foreach ($this->getRecurringCaptures() as $capture) {
+            foreach ($capture->getValidatorRoles() as $r) {
+                $u[$r->getId()] = $r;
+            }
+        }
+
+        return array_values($u);
+    }
+
+    public function getAccount(): ?Account
+    {
+        return $this->account;
+    }
+
+    public function setAccount(?Account $account): static
+    {
+        $this->account = $account;
+
+        return $this;
+    }
+
+    public function getResponsible(): ?User
+    {
+        return $this->responsible;
+    }
+
+    public function setResponsible(?User $responsible): static
+    {
+        $this->responsible = $responsible;
+
+        return $this;
+    }
+
+    public function getParticipantAssignments(): Collection
+    {
+        return $this->participantAssignments;
+    }
+
+    public function addParticipantAssignment(ParticipantAssignment $participantAssignment): static
+    {
+        if (!$this->participantAssignments->contains($participantAssignment)) {
+            $this->participantAssignments->add($participantAssignment);
+            $participantAssignment->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipantAssignment(ParticipantAssignment $participantAssignment): static
+    {
+        if ($this->participantAssignments->removeElement($participantAssignment)) {
+            if ($participantAssignment->getCapture() === $this) {
+                $participantAssignment->setCapture(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

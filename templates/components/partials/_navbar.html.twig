@@ -35,7 +35,7 @@
         </div>
     </nav>
 
-    {# Sidebar: ALWAYS visible (collapsed width), open = wider with labels #}
+    {# Sidebar #}
     {% if app.user %}
         <div id="sidebarPanel"
              data-sidebar-target="panel"
@@ -54,14 +54,13 @@
                 overflow-x: hidden;
                 transition: width .2s ease;
              ">
-            {% if is_granted('ROLE_SUPER_ADMIN') %}
+            {% if is_granted('ROLE_ADMIN') %}
                 {% include 'components/partials/_sidebar_section.html.twig' with {
                     icon: 'bi-shield-lock',
                     title: 'Super admin',
                     groups: [
                         { links: [
                             { label: 'Tenants', route: 'app_tenant_index', icon: 'bi-diagram-3' },
-                            { label: 'Eléments de captures', route: 'app_capture_element_index', icon: 'bi-ui-checks-grid' }
                         ] }
                     ]
                 } %}
@@ -76,7 +75,7 @@
                             { label: 'Mon organisation', route: 'app_user_index', icon: 'bi-diagram-3' },
                             { label: 'Configuration', route: '#', icon: 'bi-gear' },
                             { label: 'Templates de captures', route: 'app_capture_template_index', icon: 'bi-layout-text-window' },
-                            { label: 'Templates de projets', route: '#', icon: 'bi-kanban' },
+                            { label: 'Templates de projets', route: 'app_project_template_index', icon: 'bi-kanban' },
                             { label: 'Rôles', route: 'app_participant_role_index', icon: 'bi-people' },
                             { label: 'Dashboard', route: '#', icon: 'bi-bar-chart' }
                         ] }
@@ -91,7 +90,7 @@
                     groups: [
                         { links: [
                             { label: 'Captures', route: 'app_capture_index', icon: 'bi-journal-text' },
-                            { label: 'Projets', route: '#', icon: 'bi-folder2-open' },
+                            { label: 'Projets', route: 'app_project_index', icon: 'bi-folder2-open' },
                             { label: 'Comptes', route: 'app_account_index', icon: 'bi-person-badge' },
                             { label: 'Mes tâches', route: '#', icon: 'bi-list-check' },
                         ] }

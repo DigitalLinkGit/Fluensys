@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ templateMode ? 'Nouveau template de projet' : 'Nouveau projet' }}{% endblock %}
+
+{% block body %}
+    <h2>{{ templateMode ? 'Nouveau template de project' : 'Nouveau projet' }}</h2>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% set backRoute = templateMode ? 'app_project_template_index' : 'app_project_index' %}
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                label: 'Retour',
+                icon: 'bi-arrow-left',
+                route: backRoute,
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        } %}
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

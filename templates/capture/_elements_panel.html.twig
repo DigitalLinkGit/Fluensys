@@ -1,6 +1,8 @@
 {# Elements order panel  #}
-<div class="mx-2 mb-3 element-card-container" {{ capture.template?'data-controller="sortable-order"':'' }}>
-    {% if capture.template %}
+<div class="mx-2 mb-3 element-card-container"
+    {{ (capture.isTemplate() or capture.isDraft()) ? 'data-controller="sortable-order"' : '' }}>
+
+    {% if capture.template or capture.draft %}
         {# JSON order #}
         <input type="hidden"
                name="elements_order"

@@ -3,8 +3,9 @@
 namespace App\Entity\Account;
 
 use App\Entity\Capture\Capture;
-use App\Entity\Tenant\TenantAwareInterface;
-use App\Entity\Tenant\TenantAwareTrait;
+use App\Entity\Interface\TenantAwareInterface;
+use App\Entity\Project;
+use App\Entity\Trait\TenantAwareTrait;
 use App\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -45,10 +46,17 @@ class Account implements TenantAwareInterface
     #[ORM\ManyToOne(targetEntity: Contact::class)]
     private ?Contact $defaultContact = null;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'account')]
+    private Collection $projects;
+
     public function __construct()
     {
         $this->contacts = new ArrayCollection();
         $this->captures = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -160,6 +168,36 @@ class Account implements TenantAwareInterface
     public function setDefaultContact(?Contact $defaultContact): static
     {
         $this->defaultContact = $defaultContact;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->setAccount($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            // set the owning side to null (unless already changed)
+            if ($project->getAccount() === $this) {
+                $project->setAccount(null);
+            }
+        }
 
         return $this;
     }

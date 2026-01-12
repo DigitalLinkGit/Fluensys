@@ -1,15 +1,15 @@
 
     {#
                 ----- STATUTS -----
+    draft : instance créée, non publiée
     template : stade “bibliothèque / modèle”
-    draft : instance créée, paramétrage incomplet
     ready : prêt à lancer (rôles/assignations OK)
     collecting : collecte lancée (équivalent de ton started)
     pending : lancé mais bloqué / en attente d’une action (nouveau rôle requis, activation d’un élément, etc.)
     submitted : formulaire soumis (équivalent de ton answered)
     validated : réponses validées
     #}
-    {% if element.status.value == 'template' %}
+    {% if element.status.value == 'template' or element.status.value == 'draft' %}
         {% if is_granted('ROLE_ADMIN') %}
             {# EDIT ELEMENT RENDER TEXTE TEMPLATE #}
             <a href="{{ path('app_capture_element_render_text_edit', {
@@ -41,9 +41,6 @@
                 <i class="bi bi-trash"></i>
             </button>
         {% endif %}
-    {% endif %}
-    {% if element.status.value == 'draft' %}
-        // nothing can be done on a draft
     {% endif %}
 
     {% if element.status.value == 'ready' %}

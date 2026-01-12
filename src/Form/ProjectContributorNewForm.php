@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Form\Capture;
+namespace App\Form;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
+use App\Entity\Project;
 use App\Enum\LivecycleStatus;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -13,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CaptureContributorNewForm extends AbstractType
+class ProjectContributorNewForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -30,7 +31,7 @@ class CaptureContributorNewForm extends AbstractType
             ])
 
             ->add('template', EntityType::class, [
-                'class' => Capture::class,
+                'class' => Project::class,
                 'choice_label' => 'name',
                 'mapped' => false,
                 'required' => true,
@@ -47,7 +48,7 @@ class CaptureContributorNewForm extends AbstractType
                 'label' => 'Nom',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Nom de la capture_template...',
+                    'placeholder' => 'Nom du projet...',
                 ],
                 'required' => false,
             ])
@@ -57,7 +58,7 @@ class CaptureContributorNewForm extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 3,
-                    'placeholder' => 'Description de la capture_template...',
+                    'placeholder' => 'Description du projet...',
                 ],
             ])
         ;

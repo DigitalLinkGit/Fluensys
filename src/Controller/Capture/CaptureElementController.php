@@ -14,7 +14,7 @@ use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Service\Factory\CaptureElementFactory;
 use App\Service\Helper\CaptureElementRouter;
-use App\Service\Helper\CaptureElementStatusManager;
+use App\Service\Helper\LivecycleStatusManager;
 use App\Service\Helper\CaptureElementTypeManager;
 use App\Service\Helper\ConditionToggler;
 use App\Service\Rendering\TemplateInterpolator;
@@ -107,7 +107,7 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureElementStatusManager $statusManager): Response
+    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, LivecycleStatusManager $statusManager): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -138,7 +138,7 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/valid', name: 'app_capture_element_valid', methods: ['GET', 'POST'])]
-    public function valid(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, CaptureElementStatusManager $statusManager): Response
+    public function valid(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, LivecycleStatusManager $statusManager): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -160,7 +160,7 @@ final class CaptureElementController extends AbstractAppController
                     }
                 }
                 if ($isValidated) {
-                    $statusManager->valid($element, $user, false);
+                    $statusManager->validate($element, $user, false);
                     $this->addFlash('success', 'Enregistrement réussi. L\'élément à été validé');
                 } else {
                     $this->addFlash('warning', 'Enregistrement réussi. L\'élément n\'est pas valide');

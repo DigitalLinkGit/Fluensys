@@ -1,20 +1,20 @@
 {# Header: title + account breadcrumb/info #}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>{{ templateMode ? 'Template de capture : ' : 'Capture : ' }}</h2>
+    <h2>{{ templateMode ? 'Template de projet : ' : 'Projet : ' }}</h2>
     <div class="d-flex justify-content-end gap-3">
-        {% if capture.account is defined and capture.account is not null %}
+        {% if project.account is defined and project.account is not null %}
             <div>
                 <span class="text-muted">Compte :</span>
-                <a href="{{ path('app_account_edit', { id: capture.account.id }) }}"
+                <a href="{{ path('app_account_edit', { id: project.account.id }) }}"
                    class="col-header text-decoration-none">
-                    {{ capture.account.name }}
+                    {{ project.account.name }}
                 </a>
             </div>
         {% endif %}
         {# {% if capture.template or capture.draft %} #}
         <div>
             <span class="badge bg-secondary type-badge">
-                {{ capture.statusLabel }}
+                {{ project.statusLabel }}
             </span>
         </div>
         {# {% endif %} #}
