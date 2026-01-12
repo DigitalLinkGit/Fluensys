@@ -124,7 +124,9 @@ final class ProjectController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_project_edit', [
+                'id' => $project->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('project/edit.html.twig', [
@@ -134,7 +136,7 @@ final class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_project_template_edit', methods: ['GET', 'POST'])]
+    #[Route('/template/{id}/edit', name: 'app_project_template_edit', methods: ['GET', 'POST'])]
     public function editTemplate(Request $request, Project $project, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ProjectTemplateForm::class, $project);
@@ -143,7 +145,9 @@ final class ProjectController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_project_template_edit', [
+                'id' => $project->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('project/edit.html.twig', [

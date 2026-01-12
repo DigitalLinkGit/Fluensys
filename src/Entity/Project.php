@@ -34,18 +34,18 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
     /**
      * @var Collection<int, Capture>
      */
-    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'projects', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'projects', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'project_capture')]
     private Collection $captures;
 
     /**
      * @var Collection<int, Capture>
      */
-    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureProjects', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureProjects', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'project_recurring_capture')]
     private Collection $recurringCaptures;
 
-    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureTemplateProjects')]
+    #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureTemplateProjects', cascade: ['persist'])]
     #[ORM\JoinTable(name: 'project_recurring_capture_templates')]
     private Collection $recurringCapturesTemplates;
 
