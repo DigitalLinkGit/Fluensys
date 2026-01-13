@@ -32,10 +32,10 @@ class AccountForm extends AbstractType
                     'placeholder' => 'Description...',
                 ],
             ])
-            ->add('informationSystem', InformationSystemForm::class, [
+            /*->add('informationSystem', InformationSystemForm::class, [
                 'label' => 'Nom',
                 'required' => false,
-            ])
+            ])*/
             ->add('contacts', CollectionType::class, [
                 'entry_type' => ContactForm::class,
                 'allow_add' => true,

@@ -35,18 +35,45 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
      * @var Collection<int, Capture>
      */
     #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'projects', cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'project_capture')]
+    #[ORM\JoinTable(
+        name: 'project_capture',
+        joinColumns: [
+            new ORM\JoinColumn(name: 'project_id', referencedColumnName: 'id', onDelete: 'CASCADE'),
+        ],
+        inverseJoinColumns: [
+            new ORM\JoinColumn(name: 'capture_id', referencedColumnName: 'id', onDelete: 'CASCADE'),
+        ]
+    )]
     private Collection $captures;
 
     /**
      * @var Collection<int, Capture>
      */
     #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureProjects', cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'project_recurring_capture')]
+    #[ORM\JoinTable(
+        name: 'project_recurring_capture',
+        joinColumns: [
+            new ORM\JoinColumn(name: 'project_id', referencedColumnName: 'id', onDelete: 'CASCADE'),
+        ],
+        inverseJoinColumns: [
+            new ORM\JoinColumn(name: 'capture_id', referencedColumnName: 'id', onDelete: 'CASCADE'),
+        ]
+    )]
     private Collection $recurringCaptures;
 
+    /**
+     * @var Collection<int, Capture>
+     */
     #[ORM\ManyToMany(targetEntity: Capture::class, inversedBy: 'recurringCaptureTemplateProjects', cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'project_recurring_capture_templates')]
+    #[ORM\JoinTable(
+        name: 'project_recurring_capture_templates',
+        joinColumns: [
+            new ORM\JoinColumn(name: 'project_id', referencedColumnName: 'id', onDelete: 'CASCADE'),
+        ],
+        inverseJoinColumns: [
+            new ORM\JoinColumn(name: 'capture_id', referencedColumnName: 'id', onDelete: 'CASCADE'),
+        ]
+    )]
     private Collection $recurringCapturesTemplates;
 
     #[ORM\ManyToOne(inversedBy: 'projects')]
