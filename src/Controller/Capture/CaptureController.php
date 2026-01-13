@@ -22,6 +22,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/capture')]
@@ -295,8 +296,12 @@ final class CaptureController extends AbstractController
 
     #[Route('/{id}/render-preview', name: 'app_capture_render_text_preview', methods: ['GET'])]
     #[Route('/template/{id}/template-preview', name: 'app_capture_template_render_text_preview', methods: ['GET'])]
-    public function renderPreview(Request $request, Capture $capture): Response
+    public function renderPreview(?Profiler $profiler, Request $request, Capture $capture): Response
     {
+        $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+        if (null !== $profiler) {
+            $profiler->disable();
+        }
         $isTemplateRoute = 'app_capture_template_render_text_preview' === $request->attributes->get('_route') || $capture->isTemplate();
 
         return $this->render('capture/render_preview.html.twig', [

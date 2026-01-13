@@ -32,7 +32,7 @@
                    aria-selected="true">Rôles</a>
             </li>
         </ul>
-
+        {% include 'components/modal/_modal_document_preview.html.twig'%}
         <div class="tab-content">
             <div id="captures" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-captures">
                 <div class="row mx-2 mt-2 px-0 g-0 col-header">
@@ -108,4 +108,5 @@
             </div>
         </div>
     </div>
+
 {% endblock %}

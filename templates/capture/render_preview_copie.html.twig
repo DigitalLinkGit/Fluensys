@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Aperçu{% endblock %}
+
+{% block body %}
+    <h2>Aperçu du document</h2>
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                route: templateMode ? 'app_capture_template_edit' : 'app_capture_edit',
+                param_map: { id: 'capture.id' },
+                icon: 'bi-arrow-left',
+                label: 'Retour',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+    </div>
+    <div class="doc-container">
+        <div class="doc-page">
+            {# Document Title #}
+            {% include 'capture/rendering/_title_render.html.twig' with { title: capture.title } only %}
+
+            {# Chapter #}
+            {% for element in capture.captureElements %}
+                {% if element.template %}
+
+                    {# Conditions which target this element #}
+                    {% set elementConditions = (capture.conditions ?? [])
+                        | filter(c => (c.targetElement is same as(element))
+                        or (c.targetElement is defined and c.targetElement.id is defined and c.targetElement.id == element.id)) %}
+
+                    {% if elementConditions|length %}
+                        <div class="mb-0 mt-2">
+                            {% for condition in elementConditions %}
+                                <div class="doc-condition">{{ condition }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if element.chapter is not null and element.chapter.title is not null %}
+                        {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                    {% endif %}
+                    {% if element.chapter is not null and element.chapter.renderContent is not null %}
+                        <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+                    {% endif %}
+                {% else %}
+                    {% if element.active %}
+                        {% if element.chapter is not null and element.chapter.title is not null %}
+                            {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
+                        {% endif %}
+                        {% if element.chapter is not null and element.chapter.renderContent is not null %}
+                            <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

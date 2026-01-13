@@ -1,0 +1,23 @@
+<div class="modal fade"
+     id="documentPreviewModal"
+     tabindex="-1"
+     aria-hidden="true"
+     data-controller="document-preview-modal"
+     data-document-preview-modal-url-template-value="/capture/__ID__/render-preview">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Aperçu du document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <iframe
+                    class="doc-preview-iframe"
+                    data-document-preview-modal-target="iframe"
+                    title="Aperçu document"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+

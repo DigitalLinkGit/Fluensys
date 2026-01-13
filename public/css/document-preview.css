@@ -1,0 +1,112 @@
+/* ===== Iframe page background ===== */
+.doc-iframe-body{
+    margin: 0;
+    background: #f2f3f5;
+}
+
+.doc-container{
+    background: #f2f3f5;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.doc-page{
+    width: 100%;
+    max-width: 210mm;
+    min-height: calc(100vh - 32px);
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    border: 1px solid rgba(0,0,0,.08);
+    padding: 22mm 18mm;
+    margin: 0 auto 24px;        /* centré, propre */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.45;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-header{ margin-bottom: 12mm; }
+
+.doc-header-title{
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin: 0 0 8mm;
+    text-align: center;
+}
+
+.doc-cartouche{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.doc-cartouche-label,
+.doc-cartouche-value{
+    border: 1px solid rgba(0,0,0,.18);
+    padding: 8px 10px;
+    vertical-align: top;
+    font-size: 13px;
+}
+
+.doc-cartouche-label{
+    width: 26%;
+    font-weight: 600;
+    background: #fafafa;
+}
+
+.doc-cartouche-value{ width: 74%; }
+
+.doc-content{
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.doc-content h1{ font-size: 20px; margin: 0 0 10px; }
+.doc-content h2{ font-size: 16px; margin: 16px 0 8px; }
+.doc-content h3{ font-size: 14px; margin: 12px 0 6px; }
+
+.doc-paragraph{
+    font-size: 13.5px;
+    margin: 0 0 10px;
+    white-space: pre-wrap;
+}
+
+.doc-condition{
+    font-size: 12px;
+    color: #6b5b00;
+    background: #fff7cc;
+    border: 1px solid rgba(0,0,0,.12);
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin: 6px 0;
+}
+
+.doc-footer{
+    margin-top: auto;
+    padding-top: 6mm;
+    border-top: 1px solid rgba(0,0,0,.12);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.doc-meta{
+    font-size: 12px;
+    color: #555;
+}
+
+/* ===== Print ===== */
+@media print{
+    .doc-container{ background: transparent; padding: 0; }
+    .doc-page{
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        max-width: none;
+        width: auto;
+        min-height: auto;
+        padding: 0;
+    }
+}

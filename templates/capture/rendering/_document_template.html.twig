@@ -1,0 +1,59 @@
+{# templates/capture/document_templates/default.html.twig #}
+<div class="doc-page">
+    <header class="doc-header">
+        <div class="doc-header-title">
+            {{ capture.title.content }}
+        </div>
+
+        <table class="doc-cartouche" role="presentation">
+            <tbody>
+            <tr>
+                <td class="doc-cartouche-label">Objet</td>
+                <td class="doc-cartouche-value">
+                    {{ capture.name }}
+                </td>
+            </tr>
+            <tr>
+                <td class="doc-cartouche-label">Client</td>
+                <td class="doc-cartouche-value">
+                    {{ capture.account is not null ? capture.account.name : '' }}
+                </td>
+            </tr>
+            <tr>
+                <td class="doc-cartouche-label">Version</td>
+                <td class="doc-cartouche-value">
+                    1
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="doc-cartouche" role="presentation">
+            <tbody>
+            <tr>
+                <th class="doc-cartouche-label">Auteur</th>
+                <th class="doc-cartouche-label">Date</th>
+                <th class="doc-cartouche-label">Objet</th>
+            </tr>
+            <tr>
+                <td class="doc-cartouche-value">
+                    {{ capture.responsible is not null ? capture.responsible.username : '' }}
+                </td>
+                <td class="doc-cartouche-value">
+
+                </td>
+                <td class="doc-cartouche-value">
+                    Création
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </header>
+
+    <main class="doc-content">
+        {{ docBody|raw }}
+    </main>
+
+    <footer class="doc-footer">
+        <span class="doc-meta">Confidentiel</span>
+    </footer>
+</div>

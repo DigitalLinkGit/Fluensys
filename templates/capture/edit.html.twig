@@ -20,16 +20,14 @@
                 }
             } %}
             {% endif %}
-            {% include 'components/button/_btn.html.twig' with {
-                btn: {
-                    type: 'link',
-                    route: templateMode ? 'app_capture_template_render_text_preview' : 'app_capture_render_text_preview',
-                    param_map: { id: 'capture.id' },
-                    icon: 'bi-pencil',
-                    label: 'Aperçu du rendu',
-                    class: 'btn btn-outline-primary'
-                }
-            } %}
+            <button type="button"
+                    class="btn btn-outline-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#documentPreviewModal"
+                    data-capture-id="{{ capture.id }}">
+                <i class="bi bi-eye me-1"></i>
+                Aperçu du document
+            </button>
             {% if projectId is defined and projectId is not null %}
                 {% include 'components/button/_btn.html.twig' with {
                     btn: {
@@ -61,6 +59,9 @@
                     class: 'btn btn-primary'
                 }
             } %}
+
+            {% include 'components/modal/_modal_document_preview.html.twig'%}
+
         </div>
     </div>
     {% if not capture.template and not capture.draft %}
