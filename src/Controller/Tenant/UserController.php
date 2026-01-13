@@ -23,7 +23,7 @@ final class UserController extends AbstractController
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         return $this->render('tenant/user/index.html.twig', [
@@ -40,7 +40,7 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var \App\Entity\User $currentUser */
+            /** @var User $currentUser */
             $currentUser = $this->getUser();
             $user->setTenant($currentUser->getTenant());
             $plainPassword = (string) $form->get('plainPassword')->getData();
@@ -50,7 +50,7 @@ final class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_tenant_show', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('tenant/user/new.html.twig', [
@@ -78,9 +78,15 @@ final class UserController extends AbstractController
             if ('' !== $plainPassword) {
                 $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
             }
+
+            $mainRole = (string) $form->get('mainRole')->getData();
+            if ('' !== $mainRole) {
+                $user->setRoles([$mainRole]);
+            }
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_tenant_show', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('tenant/user/edit.html.twig', [
@@ -97,6 +103,6 @@ final class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_tenant_show', [], Response::HTTP_SEE_OTHER);
     }
 }

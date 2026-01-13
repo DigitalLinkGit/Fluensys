@@ -7,6 +7,7 @@ use App\Entity\Tenant\User;
 use App\Form\Tenant\TenantForm;
 use App\Form\Tenant\UserForm;
 use App\Repository\TenantRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,11 +47,15 @@ final class TenantController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_tenant_show', methods: ['GET'])]
-    public function show(Tenant $tenant): Response
+    #[Route('/show', name: 'app_tenant_show', methods: ['GET'])]
+    public function show(UserRepository $userRepository): Response
     {
-        return $this->render('tenant/show.html.twig', [
-            'tenant' => $tenant,
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $this->render('tenant/tenant_administration.html.twig', [
+            'users' => $userRepository->findAll(),
+            'tenant' => $user->getTenant(),
         ]);
     }
 

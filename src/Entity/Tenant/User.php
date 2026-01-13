@@ -95,6 +95,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TenantA
         return (string) $this->email;
     }
 
+    public function getRolesLabel(): string
+    {
+        return in_array('ROLE_ADMIN', $this->roles, true) ? 'Administrateur' : 'Utilisateur';
+    }
     /**
      * @see UserInterface
      */

@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>Mon organisation : </h1>
+
+    <h4 class="col-header my-4">{{ tenant.name }}</h4>
+
+
+    <div
+        data-controller="tabs-persist"
+        data-tabs-persist-default-tab-value="#users"
+        data-tabs-persist-storage-key-value="tenantTabs"
+        data-tabs-persist-mode-value="storage"
+    >
+        <ul class="tabs tabs--primary my-3 nav" role="tablist">
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-users" class="tab__link nav-link" data-bs-toggle="tab" href="#users" role="tab"
+                   aria-controls="users"
+                   aria-selected="false">Utilisateurs</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-templates" class="tab__link nav-link" data-bs-toggle="tab" href="#templates" role="tab"
+                   aria-controls="templates"
+                   aria-selected="false">Templates de documents</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div id="users" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-users">
+            <div class="mx-2">
+                {% include 'components/table/_table.html.twig' with {
+                    items: users,
+                    columns: ['username', 'email','rolesLabel'],
+                    headers: ['Nom', 'Email','Type de license'],
+                    filter: true,
+                    sort: true,
+                    add: {route: 'app_user_new'},
+                    actions: [
+                        {
+                            route: 'app_user_show',
+                            param_map: { id: 'id' },
+                            icon: 'bi-eye',
+                            label: 'Voir',
+                        },
+                        {
+                            route: 'app_user_edit',
+                            param_map: { id: 'id' },
+                            icon: 'bi-pencil',
+                            label: 'Éditer',
+                        },
+                        {
+                            route: 'app_user_delete',
+                            param_map: { id: 'id' },
+                            icon: 'bi-trash',
+                            label: 'Supprimer',
+                        }
+                    ]
+                } %}
+            </div>
+        </div>
+        <div id="templates" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-templates">
+            <div class="mx-2">
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

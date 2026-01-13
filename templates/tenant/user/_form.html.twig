@@ -6,6 +6,7 @@
         {{ form_row(form.function) }}
         {{ form_row(form.email) }}
         {{ form_row(form.plainPassword) }}
+        {{ form_row(form.mainRole) }}
     </div>
     <div class="col-md-6 p-3">
         <h5>Rôles</h5>
@@ -19,7 +20,7 @@
             type: 'link',
             label: 'Retour',
             icon: 'bi-arrow-left',
-            route: 'app_user_index',
+            route: 'app_tenant_show',
             class: 'btn btn-outline-primary'
         }
     } %}

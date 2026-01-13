@@ -3,15 +3,12 @@
 {% block title %}User index{% endblock %}
 
 {% block body %}
-    <h1>Mon organisation : </h1>
-
-    <h4 class="col-header my-4">{{ tenant.name }}</h4>
-    <h6>Utilisateurs : </h6>
+    <h1>Utilisateurs : </h1>
 
     {% include 'components/table/_table.html.twig' with {
         items: users,
-        columns: ['username', 'email','roles'],
-        headers: ['Nom', 'Email','Rôles'],
+        columns: ['username', 'email','rolesLabel'],
+        headers: ['Nom', 'Email','Type de license'],
         filter: true,
         sort: true,
         add: {route: 'app_user_new'},
