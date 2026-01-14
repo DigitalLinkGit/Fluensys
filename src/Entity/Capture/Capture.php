@@ -13,7 +13,6 @@ use App\Entity\Project;
 use App\Entity\Tenant\User;
 use App\Entity\Trait\LivecycleStatusTrait;
 use App\Entity\Trait\TenantAwareTrait;
-use App\Enum\LivecycleStatus;
 use App\Repository\CaptureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -73,6 +72,23 @@ class Capture implements TenantAwareInterface, LivecycleStatusAwareInterface
 
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'recurringCapturesTemplates')]
     private Collection $recurringCaptureTemplateProjects;
+
+    // Capture.php
+    #[ORM\ManyToOne(targetEntity: Project::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Project $ownerProject = null;
+
+    public function getOwnerProject(): ?Project
+    {
+        return $this->ownerProject;
+    }
+
+    public function setOwnerProject(?Project $ownerProject): self
+    {
+        $this->ownerProject = $ownerProject;
+
+        return $this;
+    }
 
     public function __construct()
     {
@@ -328,7 +344,6 @@ class Capture implements TenantAwareInterface, LivecycleStatusAwareInterface
 
         return $this;
     }
-
 
     /**
      * @return Collection<int, Project>

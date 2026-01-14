@@ -9,16 +9,16 @@
         {% include 'capture/_capture_form.html.twig' with { form: form } %}
         <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
             {% if capture.draft %}
-            {% include 'components/button/_btn.html.twig' with {
-                btn: {
-                    type: 'link',
-                    route: 'app_capture_template_publish',
-                    param_map: { id: 'capture.id' },
-                    icon: 'bi-box-arrow-up',
-                    label: 'Publier',
-                    class: 'btn btn-outline-primary'
-                }
-            } %}
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
+                        type: 'link',
+                        route: 'app_capture_template_publish',
+                        param_map: { id: 'capture.id' },
+                        icon: 'bi-box-arrow-up',
+                        label: 'Publier',
+                        class: 'btn btn-outline-primary'
+                    }
+                } %}
             {% endif %}
             <button type="button"
                     class="btn btn-outline-primary"
@@ -28,27 +28,52 @@
                 <i class="bi bi-eye me-1"></i>
                 Aperçu du document
             </button>
-            {% if projectId is defined and projectId is not null %}
-                {% include 'components/button/_btn.html.twig' with {
-                    btn: {
-                        type: 'link',
-                        label: 'Retour',
-                        icon: 'bi-arrow-left',
-                        route: 'app_project_template_edit',
-                        param_map: { id: 'projectId' },
-                        class: 'btn btn-outline-primary'
-                    }
-                } %}
+            {% if capture.draft or capture.template %}
+                {% if projectId is defined and projectId is not null %}
+                    {% include 'components/button/_btn.html.twig' with {
+                        btn: {
+                            type: 'link',
+                            label: 'Retour',
+                            icon: 'bi-arrow-left',
+                            route: 'app_project_template_edit',
+                            param_map: { id: 'projectId' },
+                            class: 'btn btn-outline-primary'
+                        }
+                    } %}
+                {% else %}
+                    {% include 'components/button/_btn.html.twig' with {
+                        btn: {
+                            type: 'link',
+                            label: 'Retour',
+                            icon: 'bi-arrow-left',
+                            route: 'app_capture_template_index',
+                            class: 'btn btn-outline-primary'
+                        }
+                    } %}
+                {% endif %}
             {% else %}
-                {% include 'components/button/_btn.html.twig' with {
-                    btn: {
-                        type: 'link',
-                        label: 'Retour',
-                        icon: 'bi-arrow-left',
-                        route: templateMode ? 'app_capture_template_index' : 'app_capture_index',
-                        class: 'btn btn-outline-primary'
-                    }
-                } %}
+                {% if capture.ownerProject is defined and capture.ownerProject is not null %}
+                    {% include 'components/button/_btn.html.twig' with {
+                        btn: {
+                            type: 'link',
+                            label: 'Retour',
+                            icon: 'bi-arrow-left',
+                            route: 'app_project_edit',
+                            param_map: { id: 'capture.ownerProject.id' },
+                            class: 'btn btn-outline-primary'
+                        }
+                    } %}
+                {% else %}
+                    {% include 'components/button/_btn.html.twig' with {
+                        btn: {
+                            type: 'link',
+                            label: 'Retour',
+                            icon: 'bi-arrow-left',
+                            route: 'app_capture_index',
+                            class: 'btn btn-outline-primary'
+                        }
+                    } %}
+                {% endif %}
             {% endif %}
 
             {% include 'components/button/_btn.html.twig' with {
@@ -60,7 +85,7 @@
                 }
             } %}
 
-            {% include 'components/modal/_modal_document_preview.html.twig'%}
+            {% include 'components/modal/_modal_document_preview.html.twig' %}
 
         </div>
     </div>

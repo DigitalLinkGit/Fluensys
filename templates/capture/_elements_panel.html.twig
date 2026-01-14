@@ -17,7 +17,7 @@
                 {% set entity = element ?? null %}
                 {% set elementId = entity ? entity.id : null %}
                 {% set incoming = elementId is not null ? (byTarget[elementId] ?? []) : [] %}
-                    {% include 'capture/capture_element/_prototype_card.html.twig' with {
+                    {% include 'capture/capture_element/_capture_element_prototype_card.html.twig' with {
                         element: element,
                         incomingConditions: incoming,
                         responseForms: responseForms|default({}),

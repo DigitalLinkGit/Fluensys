@@ -8,7 +8,7 @@
     {% if captures is defined and captures|length > 0 %}
         <div class="sortable-list" data-sortable-order-target="list">
             {% for capture in captures %}
-                {% include 'capture/_prototype_card.html.twig' with {
+                {% include 'project/_capture_prototype_card.html.twig' with {
                     capture: capture,
                     kind: kind
                 } %}

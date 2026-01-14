@@ -242,6 +242,12 @@ final class ProjectController extends AbstractController
         }
         $clone = clone $template;
         $clone->setAccount($account);
+        $clone->setResponsible($user);
+        foreach ($clone->getCaptures() as $capture) {
+            $capture->setAccount($account);
+            $capture->setResponsible($user);
+            $capture->setOwnerProject($clone);
+        }
         if (null !== $name && '' !== trim($name)) {
             $clone->setName($name);
         }
