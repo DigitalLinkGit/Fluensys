@@ -2,6 +2,7 @@
 
 namespace App\Entity\Tenant;
 
+use App\Entity\RenderingConfig;
 use App\Repository\TenantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,6 +18,9 @@ class Tenant
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?RenderingConfig $renderingConfig = null;
 
 
     public function __construct()
@@ -36,6 +40,18 @@ class Tenant
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getRenderingConfig(): ?RenderingConfig
+    {
+        return $this->renderingConfig;
+    }
+
+    public function setRenderingConfig(?RenderingConfig $renderingConfig): static
+    {
+        $this->renderingConfig = $renderingConfig;
 
         return $this;
     }

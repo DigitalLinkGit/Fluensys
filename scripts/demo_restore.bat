@@ -8,10 +8,10 @@ set HOST=127.0.0.1
 set PORT=3306
 
 set FILE=%~1
-if "%FILE%"=="" set FILE=demo.sql
+if "%FILE%"=="" set FILE=export.sql
 
-if not exist var\demo\%FILE% (
-  echo Missing var\demo\%FILE%
+if not exist demo\%FILE% (
+  echo Missing demo\%FILE%
   exit /b 1
 )
 
@@ -23,8 +23,8 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo Import demo snapshot from var\demo\%FILE%
-mysql -h %HOST% -P %PORT% -u %USER% -p%PASS% %DB% < var\demo\%FILE%
+echo Import demo snapshot from demo\%FILE%
+mysql -h %HOST% -P %PORT% -u %USER% -p%PASS% %DB% < demo\%FILE%
 
 if errorlevel 1 (
   echo Import failed.

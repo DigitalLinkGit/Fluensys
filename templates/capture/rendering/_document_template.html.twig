@@ -1,8 +1,28 @@
 {# templates/capture/document_templates/default.html.twig #}
-<div class="doc-page">
+
+<div class="doc-page"
+     style="
+         --doc-title-color: {{ renderingConfig.documentTitleColor ?: 'inherit' }};
+         --doc-title-h1-color: {{ renderingConfig.titleH1Color ?: 'inherit' }};
+         --doc-title-h2-color: {{ renderingConfig.titleH2Color ?: 'inherit' }};
+         --doc-title-h3-color: {{ renderingConfig.titleH3Color ?: 'inherit' }};
+         --doc-table-bg-color: {{ renderingConfig.tableHeaderBackgroundColor ?: 'inherit' }};
+         --doc-table-color: {{ renderingConfig.tableHeaderColor ?: 'inherit' }};
+         --doc-border-color: {{ renderingConfig.borderColor ?: 'inherit' }};
+         ">
     <header class="doc-header">
-        <div class="doc-header-title">
-            {{ capture.title.content }}
+        <div class="doc-header-top">
+            <div class="doc-header-left">
+                {% if renderingConfig.logoPath %}
+                    <img class="doc-logo" src="{{ asset('uploads/' ~ renderingConfig.logoPath) }}" alt="Logo">
+                {% endif %}
+            </div>
+
+            <div class="doc-header-title" style="color: {{ renderingConfig.documentTitleColor ?? 'inherit' }};">
+                {{ capture.title.content }}
+            </div>
+
+            <div class="doc-header-right"></div>
         </div>
 
         <table class="doc-cartouche" role="presentation">
@@ -19,30 +39,30 @@
                     {{ capture.account is not null ? capture.account.name : '' }}
                 </td>
             </tr>
-            <tr>
-                <td class="doc-cartouche-label">Version</td>
-                <td class="doc-cartouche-value">
-                    1
-                </td>
-            </tr>
             </tbody>
         </table>
+        <br>
         <table class="doc-cartouche" role="presentation">
             <tbody>
             <tr>
+                <th class="doc-cartouche-label">version</th>
                 <th class="doc-cartouche-label">Auteur</th>
-                <th class="doc-cartouche-label">Date</th>
                 <th class="doc-cartouche-label">Objet</th>
+                <th class="doc-cartouche-label">Date</th>
+
             </tr>
             <tr>
+                <td class="doc-cartouche-value">
+                    1
+                </td>
                 <td class="doc-cartouche-value">
                     {{ capture.responsible is not null ? capture.responsible.username : '' }}
                 </td>
                 <td class="doc-cartouche-value">
-
+                    Création
                 </td>
                 <td class="doc-cartouche-value">
-                    Création
+
                 </td>
             </tr>
             </tbody>

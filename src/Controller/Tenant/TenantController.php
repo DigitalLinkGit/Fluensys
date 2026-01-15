@@ -56,6 +56,7 @@ final class TenantController extends AbstractController
         return $this->render('tenant/tenant_administration.html.twig', [
             'users' => $userRepository->findAll(),
             'tenant' => $user->getTenant(),
+            'renderingConfig' => $user->getTenant()->getRenderingConfig(),
         ]);
     }
 

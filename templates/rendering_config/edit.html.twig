@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit RenderingConfig{% endblock %}
+
+{% block body %}
+    <h1>Configuration des templates de documents</h1>
+
+    {{ include('rendering_config/_form.html.twig', {'button_label': 'Update'}) }}
+
+{% endblock %}

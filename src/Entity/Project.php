@@ -90,6 +90,7 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
         $this->captures = new ArrayCollection();
         $this->recurringCaptures = new ArrayCollection();
         $this->participantAssignments = new ArrayCollection();
+        $this->recurringCapturesTemplates = new ArrayCollection();
     }
 
     public function __clone()
@@ -288,6 +289,22 @@ class Project implements TenantAwareInterface, LivecycleStatusAwareInterface
                 $participantAssignment->setCapture(null);
             }
         }
+
+        return $this;
+    }
+
+    public function addRecurringCapturesTemplate(Capture $recurringCapturesTemplate): static
+    {
+        if (!$this->recurringCapturesTemplates->contains($recurringCapturesTemplate)) {
+            $this->recurringCapturesTemplates->add($recurringCapturesTemplate);
+        }
+
+        return $this;
+    }
+
+    public function removeRecurringCapturesTemplate(Capture $recurringCapturesTemplate): static
+    {
+        $this->recurringCapturesTemplates->removeElement($recurringCapturesTemplate);
 
         return $this;
     }

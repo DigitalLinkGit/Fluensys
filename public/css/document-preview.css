@@ -1,3 +1,13 @@
+:root {
+    --doc-title-color: #111;
+    --doc-title-h1-color: #111;
+    --doc-title-h2-color: #111;
+    --doc-title-h3-color: #111;
+    --doc-table-bg-color: #fafafa;
+    --doc-table-color: #111;
+    --doc-border-color: #111;
+}
+
 /* ===== Iframe page background ===== */
 .doc-iframe-body{
     margin: 0;
@@ -26,34 +36,65 @@
     display: flex;
     flex-direction: column;
 }
+.doc-header-title { color: var(--doc-title-color) !important; }
+
+.doc-page h1 { color: var(--doc-title-h1-color) !important; }
+.doc-page h2 { color: var(--doc-title-h2-color) !important; }
+.doc-page h3 { color: var(--doc-title-h3-color) !important; }
 
 .doc-header{ margin-bottom: 12mm; }
 
 .doc-header-title{
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     letter-spacing: .2px;
     margin: 0 0 8mm;
     text-align: center;
+    flex:1 1 auto;
 }
+
+.doc-header-top{
+    display:flex;
+    align-items:center;
+    margin-bottom: 5mm;
+}
+
+.doc-header-left,
+.doc-header-right{
+    width:64px;
+    flex:0 0 64px;
+}
+
+.doc-logo{
+    width:35mm;
+    height:35mm;
+    object-fit:contain;
+    display:block;
+    margin:10px;
+}
+
+
 
 .doc-cartouche{
     width: 100%;
+    border-collapse: collapse;
     table-layout: fixed;
+    border: 1px solid var(--doc-border-color) !important;
 }
 
 .doc-cartouche-label,
 .doc-cartouche-value{
-    border: 1px solid rgba(0,0,0,.18);
+    border: 1px solid var(--doc-border-color) !important;
     padding: 8px 10px;
     vertical-align: top;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .doc-cartouche-label{
     width: 26%;
-    font-weight: 600;
-    background: #fafafa;
+    font-weight: 700;
+    background: var(--doc-table-bg-color);
+    color: var(--doc-table-color);
 }
 
 .doc-cartouche-value{ width: 74%; }

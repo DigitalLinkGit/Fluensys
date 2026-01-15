@@ -298,15 +298,22 @@ final class CaptureController extends AbstractController
     #[Route('/template/{id}/template-preview', name: 'app_capture_template_render_text_preview', methods: ['GET'])]
     public function renderPreview(?Profiler $profiler, Request $request, Capture $capture): Response
     {
+        /** @var User|null $user */
+        $user = $this->getUser();
+        $renderingConfig = $user->getTenant()->getRenderingConfig();
+
+        /* remove symfony toolbar in modal */
         $request->headers->set('X-Requested-With', 'XMLHttpRequest');
         if (null !== $profiler) {
             $profiler->disable();
         }
+
         $isTemplateRoute = 'app_capture_template_render_text_preview' === $request->attributes->get('_route') || $capture->isTemplate();
 
         return $this->render('capture/render_preview.html.twig', [
             'capture' => $capture,
             'templateMode' => $isTemplateRoute,
+            'renderingConfig' => $renderingConfig,
         ]);
     }
 

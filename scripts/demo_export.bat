@@ -7,16 +7,16 @@ set PASS=root
 set HOST=127.0.0.1
 set PORT=3306
 
-if not exist var\demo mkdir var\demo
+if not exist demo mkdir demo
 
 set FILE=%~1
-if "%FILE%"=="" set FILE=demo.sql
+if "%FILE%"=="" set FILE=export.sql
 
-echo Export demo database to var\demo\%FILE%
+echo Export demo database to demo\%FILE%
 mysqldump -h %HOST% -P %PORT% -u %USER% -p%PASS% ^
   --single-transaction --routines --triggers --events ^
   --add-drop-table --no-tablespaces ^
-  %DB% > var\demo\%FILE%
+  %DB% > demo\%FILE%
 
 if errorlevel 1 (
   echo Export failed.

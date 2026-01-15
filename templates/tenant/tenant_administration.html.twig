@@ -3,10 +3,20 @@
 {% block title %}User index{% endblock %}
 
 {% block body %}
-    <h1>Mon organisation : </h1>
 
-    <h4 class="col-header my-4">{{ tenant.name }}</h4>
-
+    <h2>Mon organisation : </h2>
+    <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
+        <h4 class="col-header my-4">{{ tenant.name }}</h4>
+        {% if renderingConfig.logoPath %}
+            <div style="width:100px; height:100px; flex:0 0 100px;">
+                <img
+                    src="{{ asset('uploads/' ~ renderingConfig.logoPath) }}"
+                    alt="Logo"
+                    style="width:100% !important; height:100% !important; object-fit:contain; display:block;"
+                >
+            </div>
+        {% endif %}
+    </div>
 
     <div
         data-controller="tabs-persist"
@@ -62,7 +72,52 @@
         </div>
         <div id="templates" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-templates">
             <div class="mx-2">
+                <div class="d-flex align-items-center justify-content-end mt-3 mb-3">
+                    <a href="{{ path('app_rendering_config_edit') }}"
+                       class="btn btn-outline-primary btn-sm"
+                       title="Paramètres">
+                        <i class="bi bi-gear"></i>
+                    </a>
+                </div>
 
+                {% if renderingConfig is defined and renderingConfig is not null %}
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur du titre du document :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.documentTitleColor ?? 'transparent' }};">{{ renderingConfig.documentTitleColor }}</div>
+                    </div>
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur des titres h1 :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.titleH1Color ?? 'transparent' }};">{{ renderingConfig.titleH1Color }}</div>
+                    </div>
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur des titres h2 :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.titleH2Color ?? 'transparent' }};">{{ renderingConfig.titleH2Color }}</div>
+                    </div>
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur des titres h3 :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.titleH3Color ?? 'transparent' }};">{{ renderingConfig.titleH3Color }}</div>
+                    </div>
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur de fond des entêtes de tableaux :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.tableHeaderBackgroundColor ?? 'transparent' }};">{{ renderingConfig.tableHeaderBackgroundColor }}</div>
+                    </div>
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur des labels des entêtes de tableaux :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.tableHeaderColor ?? 'transparent' }};">{{ renderingConfig.tableHeaderColor }}</div>
+                    </div>
+                    <div class="d-flex gap-3 p-2">
+                        <div class="col-3">Couleur des bordures :</div>
+                        <div class="px-2"
+                             style="background-color: {{ renderingConfig.borderColor ?? 'transparent' }};">{{ renderingConfig.borderColor }}</div>
+                    </div>
+
+                {% endif %}
             </div>
         </div>
     </div>
