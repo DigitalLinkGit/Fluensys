@@ -1,7 +1,9 @@
 {{ form_start(form) }}
 
     {{ include('capture/capture_element/_form_base.html.twig') }}
-<div data-controller="capture-element">
+<div data-controller="capture-element fields-ajax"
+     data-fields-ajax-add-url-value="{{ path('app_flex_capture_field_add', { id: element.id }) }}"
+     data-fields-ajax-reorder-url-value="{{ path('app_flex_capture_field_reorder', { id: element.id }) }}">
     <div class="d-flex justify-content-end gap-2 mt-4">
         {% include 'capture/field/_available_fields_type.html.twig' %}
         {% include 'components/button/_btn.html.twig' with {
@@ -60,7 +62,8 @@
                value="{{ (fieldForm.vars.value.fields ?? [])|map(f => f.id)|json_encode }}">
         <div class="p-3 " data-controller="ghost-field">
             <div class="sortable-list" data-prototype="{{ prototype|e('html_attr') }}"
-                 data-sortable-order-target="list">
+                 data-sortable-order-target="list"
+                 data-fields-ajax-target="list">
                 {% for fieldForm in form.fields %}
                     {% include 'capture/field/_field_template_prototype.html.twig' with { form: fieldForm } %}
                 {% endfor %}

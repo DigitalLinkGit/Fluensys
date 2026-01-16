@@ -16,10 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CaptureElementContributorForm extends AbstractType
 {
-    public function __construct(private readonly FieldTypeManager $typeManager)
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('fields', CollectionType::class, [

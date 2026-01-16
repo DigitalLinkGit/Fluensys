@@ -47,11 +47,12 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/preview', name: 'app_capture_element_form_preview', methods: ['GET'])]
-    public function preview(CaptureElement $element): Response
+    public function formPreview(CaptureElement $element): Response
     {
         $form = $this->createForm(CaptureElementContributorForm::class, $element);
 
         return $this->render('capture/capture_element/preview.html.twig', [
+            'templateMode' => true,
             'element' => $element,
             'form' => $form,
         ]);

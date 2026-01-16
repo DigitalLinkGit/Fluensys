@@ -8,6 +8,18 @@
 
 {% if is_granted('ROLE_USER') and not element.capture.template %}
 <div class="d-flex justify-content-end gap-2 mt-4">
+    {% if templateMode %}
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                label: 'Retour',
+                param_map: { id: 'element.capture.id' },
+                icon: 'bi-arrow-left',
+                route: 'app_capture_template_edit',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+    {% else %}
     {% include 'components/button/_btn.html.twig' with {
         btn: {
             type: 'link',
@@ -26,6 +38,7 @@
             class: 'btn btn-primary'
         }
     } %}
+    {% endif %}
 </div>
     {% endif %}
 

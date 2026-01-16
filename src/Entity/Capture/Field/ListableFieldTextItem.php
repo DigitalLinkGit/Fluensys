@@ -2,7 +2,6 @@
 
 namespace App\Entity\Capture\Field;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -33,6 +32,7 @@ class ListableFieldTextItem
     public function setListableField(?ListableField $listableField): static
     {
         $this->listableField = $listableField;
+
         return $this;
     }
 
@@ -44,6 +44,7 @@ class ListableFieldTextItem
     public function setValue(?string $value): static
     {
         $this->value = $value;
+
         return $this;
     }
 }

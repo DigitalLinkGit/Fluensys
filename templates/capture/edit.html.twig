@@ -111,7 +111,7 @@
                    aria-controls="roles"
                    aria-selected="true">Rôles</a>
             </li>
-            {% if capture.template %}
+            {% if capture.template or capture.draft %}
                 <li class="tab nav-item" role="presentation">
                     <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
                        aria-controls="conditions"

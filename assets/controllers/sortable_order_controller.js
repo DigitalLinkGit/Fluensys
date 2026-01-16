@@ -21,7 +21,6 @@ export default class extends Controller {
             draggable: "[data-sortable-id]",
             ghostClass: "sortable-ghost",
 
-            // PROOF: does SortableJS actually get the drag lifecycle?
             onStart: () => console.log("[Sortable] onStart"),
             onMove: () => console.log("[Sortable] onMove"),
             onEnd: () => console.log("[Sortable] onEnd"),
@@ -51,6 +50,13 @@ export default class extends Controller {
 
         this.inputTarget.value = JSON.stringify(ids);
         console.log("[sortable-order] sync", ids);
+
+        // Notify other controllers (e.g., fields-ajax) so they can persist order via AJAX
+        const evt = new CustomEvent('sortable:sync', {
+            bubbles: true,
+            detail: { ids }
+        });
+        this.listTarget.dispatchEvent(evt);
     }
 
     toggleEmpty() {
