@@ -27,16 +27,16 @@
             {% if element.chapter is not null and element.chapter.title is not null %}
                 {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
             {% endif %}
-            {% if element.chapter is not null and element.chapter.renderContent is not null %}
-                <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+            {% if element.chapter is not null and element.chapter.content is not null %}
+                <div class="doc-paragraph">{{ render_chapter(element.chapter) }}</div>
             {% endif %}
         {% else %}
             {% if element.active %}
                 {% if element.chapter is not null and element.chapter.title is not null %}
                     {% include 'capture/rendering/_title_render.html.twig' with { title: element.chapter.title } only %}
                 {% endif %}
-                {% if element.chapter is not null and element.chapter.renderContent is not null %}
-                    <div class="doc-paragraph">{{ element.chapter.renderContent }}</div>
+                {% if element.chapter is not null and element.chapter.content is not null %}
+                    <div class="doc-paragraph">{{ render_chapter(element.chapter) }}</div>
                 {% endif %}
             {% endif %}
         {% endif %}

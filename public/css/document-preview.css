@@ -137,6 +137,30 @@
     color: #555;
 }
 
+.doc-paragraph .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+}
+
+.doc-paragraph .doc-table th,
+.doc-paragraph .doc-table td {
+    border: 1px solid var(--doc-border-color) !important;
+    padding: 0.35rem 0.5rem;
+    vertical-align: top;
+}
+
+.doc-paragraph .doc-table thead th {
+    background: var(--doc-table-bg-color);
+    color: var(--doc-table-color);
+}
+
+.doc-paragraph .doc-list {
+    margin: 0.25rem 0;
+    padding-left: 1.25rem;
+}
+
+
 /* ===== Print ===== */
 @media print{
     .doc-container{ background: transparent; padding: 0; }

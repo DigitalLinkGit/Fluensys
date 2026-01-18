@@ -15,11 +15,10 @@ use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\EmailField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
-use App\Entity\Capture\Field\SystemComponentCollectionField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Field\UrlField;
-use App\Entity\Capture\Rendering\TextChapter;
+use App\Entity\Capture\Rendering\Chapter;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\Participant\ParticipantRole;
 use App\Entity\Tenant\User;
@@ -167,17 +166,6 @@ class AppFixtures extends Fixture
         );
         $manager->persist($f6);
 
-        // f7 SystemComponentCollectionField
-        $f7 = $this->createField(
-            new SystemComponentCollectionField(),
-            6,
-            'Composants de SI',
-            'Composants de SI',
-            false,
-            null
-        );
-        $manager->persist($f7);
-
         // f8 Link
         $f8 = $this->createField(
             new UrlField(),
@@ -212,7 +200,6 @@ class AppFixtures extends Fixture
             ->addField($f4)
             ->addField($f5)
             ->addField($f6)
-            ->addField($f7)
             ->addField($f8)
             ->addField($f9);
         $manager->persist($flex);
@@ -224,7 +211,7 @@ class AppFixtures extends Fixture
         $manager->persist($title2);
 
         // chapter
-        $chapter = (new TextChapter())
+        $chapter = (new Chapter())
             ->setTitle($title2)
             ->setTemplateContent('Textarea : [TEXTAREA]
 Integer : [INTEGER]
@@ -320,7 +307,7 @@ Email : [EMAIL]');
         $manager->persist($title);
 
         // chapter
-        $chapter2 = (new TextChapter())
+        $chapter2 = (new Chapter())
             ->setTitle($title)
             ->setTemplateContent('[NOMDELASOCIETE] est une société de [NOMBREDESALARIE] salariés qui a démarée son activité le [DATEDEDEBUTDACTIVITE].
 [ACTIVITE]
@@ -352,7 +339,6 @@ Scope :
             ->addCaptureElement($flex)
             ->addCaptureElement($flex2)
             ->setTitle($CaptureTitle)
-            ->setTemplate(true)
             ->addCondition($condition);
         $flex->setCapture($capture);
         $flex2->setCapture($capture);

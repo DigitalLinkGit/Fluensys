@@ -9,10 +9,12 @@ use App\Entity\Capture\Field\EmailField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\ListableField;
+use App\Entity\Capture\Field\TableField;
 use App\Entity\Capture\Field\TextAreaField;
 use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Field\UrlField;
 use App\Form\Capture\Field\ListableFieldContributorForm;
+use App\Form\Capture\Field\TableFieldContributorForm;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -34,6 +36,7 @@ final class FieldTypeManager
         'url' => UrlField::class,
         'email' => EmailField::class,
         'listable_field' => ListableField::class,
+        'table_field' => TableField::class,
     ];
 
     /** key => FormType */
@@ -47,6 +50,7 @@ final class FieldTypeManager
         'url' => UrlType::class,
         'email' => EmailType::class,
         'listable_field' => ListableFieldContributorForm::class,
+        'table_field' => TableFieldContributorForm::class,
     ];
 
     /** key => label */
@@ -60,6 +64,7 @@ final class FieldTypeManager
         'url' => 'lien',
         'email' => 'Email',
         'listable_field' => 'Liste',
+        'table_field' => 'Tableau',
     ];
 
     /** key => public (bool) */
@@ -73,6 +78,7 @@ final class FieldTypeManager
         'url' => true,
         'email' => true,
         'listable_field' => true,
+        'table_field' => true,
     ];
 
     /** FQCN form key */

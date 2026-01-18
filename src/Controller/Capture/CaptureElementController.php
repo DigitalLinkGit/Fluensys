@@ -6,17 +6,18 @@ use App\Controller\AbstractAppController;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
-use App\Entity\Capture\Rendering\TextChapter;
+use App\Entity\Capture\Rendering\Chapter;
 use App\Entity\Tenant\User;
+use App\Enum\LivecycleStatus;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateNewForm;
 use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Service\Factory\CaptureElementFactory;
 use App\Service\Helper\CaptureElementRouter;
-use App\Service\Helper\LivecycleStatusManager;
 use App\Service\Helper\CaptureElementTypeManager;
 use App\Service\Helper\ConditionToggler;
+use App\Service\Helper\LivecycleStatusManager;
 use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,7 +66,7 @@ final class CaptureElementController extends AbstractAppController
                 if ($f instanceof \App\Entity\Capture\Field\TableField) {
                     $row['columns_count'] = $f->getColumns()->count();
                     $row['columns_ids'] = array_map(
-                        static fn($c) => method_exists($c, 'getId') ? $c->getId() : null,
+                        static fn ($c) => method_exists($c, 'getId') ? $c->getId() : null,
                         $f->getColumns()->toArray()
                     );
                 }
@@ -102,7 +103,7 @@ final class CaptureElementController extends AbstractAppController
         }
         $variables = array_values(array_unique(array_merge($fieldVars, $calcVars)));
 
-        $chapter = $flexCapture->getChapter() ?? new TextChapter();
+        $chapter = $flexCapture->getChapter() ?? new Chapter();
         $form = $this->createForm(RenderTextEditorForm::class, $chapter, [
             'variables' => $variables,
         ]);
@@ -225,6 +226,9 @@ final class CaptureElementController extends AbstractAppController
                 if ($captureId) {
                     $capture = $em->getRepository(Capture::class)->find($captureId);
                     if ($capture) {
+                        if ($capture->isTemplate()) {
+                            $element->setStatus(LivecycleStatus::TEMPLATE);
+                        }
                         $element->setCapture($capture);
                     }
                 }

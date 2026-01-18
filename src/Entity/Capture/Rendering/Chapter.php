@@ -6,12 +6,7 @@ use App\Entity\Capture\CaptureElement\CaptureElement;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
-#[ORM\DiscriminatorMap([
-    'text' => TextChapter::class,
-])]
-abstract class Chapter
+class Chapter
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,6 +20,9 @@ abstract class Chapter
     #[ORM\OneToOne(mappedBy: 'chapter', cascade: ['persist', 'remove'])]
     private ?CaptureElement $captureElement = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $content = null;
+
     public function __clone()
     {
         $this->id = null;
@@ -33,12 +31,6 @@ abstract class Chapter
             $this->setTitle($clonedTitle);
         }
     }
-
-    abstract public function getTemplateContent(): mixed;
-
-    abstract public function getRenderContent(): mixed;
-
-    abstract public function getFormat(): string;
 
     public function getId(): ?int
     {
@@ -64,12 +56,10 @@ abstract class Chapter
 
     public function setCaptureElement(?CaptureElement $captureElement): static
     {
-        // unset the owning side of the relation if necessary
         if (null === $captureElement && null !== $this->captureElement) {
             $this->captureElement->setChapter(null);
         }
 
-        // set the owning side of the relation if necessary
         if (null !== $captureElement && $captureElement->getChapter() !== $this) {
             $captureElement->setChapter($this);
         }
@@ -77,5 +67,43 @@ abstract class Chapter
         $this->captureElement = $captureElement;
 
         return $this;
+    }
+
+    /**
+     * Template content edited by the user (placeholders like [VAR]).
+     */
+    public function getTemplateContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setTemplateContent(?string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * Kept for backward compatibility with existing code.
+     */
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(?string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * Kept for compatibility; single format for now.
+     */
+    public function getFormat(): string
+    {
+        return 'text';
     }
 }
