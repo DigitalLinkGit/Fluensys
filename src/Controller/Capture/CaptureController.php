@@ -183,6 +183,29 @@ final class CaptureController extends AbstractController
             if (LivecycleStatus::READY !== $el->getStatus()) {
                 $isDisabled = true;
             }
+            dump('INLINE element fields', [
+                'element_id' => $el->getId(),
+                'fields' => array_map(static function ($f) {
+                    if (!$f instanceof \App\Entity\Capture\Field\Field) {
+                        return ['class' => is_object($f) ? get_class($f) : gettype($f)];
+                    }
+
+                    $row = [
+                        'field_id' => $f->getId(),
+                        'class' => get_class($f),
+                    ];
+
+                    if ($f instanceof \App\Entity\Capture\Field\TableField) {
+                        $row['columns_count'] = $f->getColumns()->count();
+                        $row['columns_ids'] = array_map(
+                            static fn($c) => method_exists($c, 'getId') ? $c->getId() : null,
+                            $f->getColumns()->toArray()
+                        );
+                    }
+
+                    return $row;
+                }, $el->getFields()->toArray()),
+            ]);
 
             $inlineForm = $this->createForm(CaptureElementContributorForm::class, $el, [
                 'disabled' => $isDisabled,

@@ -5,9 +5,11 @@ namespace App\Form\Capture\Field;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\ListableField;
+use App\Entity\Capture\Field\TableField;
 use App\Entity\Capture\Field\UrlField;
 use App\Service\Helper\FieldTypeManager;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -27,6 +29,25 @@ class FieldContributorForm extends AbstractType
             if (!$field instanceof Field) {
                 return;
             }
+
+            $key = $this->typeManager->getKeyFor($field);
+
+            $event->getForm()->add('type', HiddenType::class, [
+                'mapped' => false,
+                'required' => true,
+                'data' => $key,
+            ]);
+
+            if ($field instanceof TableField) {
+                $event->getForm()->add('rows', TableFieldContributorForm::class, [
+                    'inherit_data' => true,
+                    'label' => $field->isRequired() ? '*'.$field->getLabel() : $field->getLabel(),
+                    'required' => (bool) $field->isRequired(),
+                    'columns' => $field->getColumns()->toArray(),
+                ]);
+                return;
+            }
+
 
             if ($field instanceof ListableField) {
                 $event->getForm()->add('items', ListableFieldContributorForm::class, [

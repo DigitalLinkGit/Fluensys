@@ -50,6 +50,29 @@ final class CaptureElementController extends AbstractAppController
     public function formPreview(CaptureElement $element): Response
     {
         $form = $this->createForm(CaptureElementContributorForm::class, $element);
+        dump('PREVIEW element fields', [
+            'element_id' => $element->getId(),
+            'fields' => array_map(static function ($f) {
+                if (!$f instanceof \App\Entity\Capture\Field\Field) {
+                    return ['class' => is_object($f) ? get_class($f) : gettype($f)];
+                }
+
+                $row = [
+                    'field_id' => $f->getId(),
+                    'class' => get_class($f),
+                ];
+
+                if ($f instanceof \App\Entity\Capture\Field\TableField) {
+                    $row['columns_count'] = $f->getColumns()->count();
+                    $row['columns_ids'] = array_map(
+                        static fn($c) => method_exists($c, 'getId') ? $c->getId() : null,
+                        $f->getColumns()->toArray()
+                    );
+                }
+
+                return $row;
+            }, $element->getFields()->toArray()),
+        ]);
 
         return $this->render('capture/capture_element/preview.html.twig', [
             'templateMode' => true,

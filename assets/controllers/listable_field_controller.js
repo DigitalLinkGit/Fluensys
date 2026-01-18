@@ -15,18 +15,21 @@ export default class extends Controller {
 
         const wrapper = document.createElement("div");
         wrapper.setAttribute("data-listable-field-item", "1");
-        wrapper.className = "mb-2";
-        wrapper.innerHTML = html;
+        wrapper.className = "mb-2 d-flex align-items-start gap-2";
+        wrapper.innerHTML = `<div class="flex-grow-1">${html}</div>`;
 
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "btn btn-outline-danger btn-sm";
         btn.setAttribute("data-action", "listable-field#remove");
-        btn.textContent = "Supprimer";
+        btn.setAttribute("title", "Supprimer");
+        btn.setAttribute("aria-label", "Supprimer");
+        btn.innerHTML = `<i class="bi bi-trash"></i>`;
 
         wrapper.appendChild(btn);
         this.containerTarget.appendChild(wrapper);
     }
+
 
     remove(event) {
         event?.preventDefault();

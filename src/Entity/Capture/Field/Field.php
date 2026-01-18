@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
     'url' => UrlField::class,
     'email' => EmailField::class,
     'listable_field' => ListableField::class,
+    'table_field' => TableField::class,
 ])]
 abstract class Field
 {

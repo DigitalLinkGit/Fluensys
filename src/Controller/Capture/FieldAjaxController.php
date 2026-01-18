@@ -8,7 +8,6 @@ use App\Entity\Capture\Field\Field;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
 use App\Service\Factory\FieldFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,10 +17,6 @@ use Twig\Environment;
 #[Route('/flex-capture-element')]
 final class FieldAjaxController extends AbstractAppController
 {
-    public function __construct(private readonly Security $security)
-    {
-    }
-
     #[Route('/{id}/field/add', name: 'app_flex_capture_field_add', methods: ['POST'])]
     public function add(
         Request $request,
@@ -31,9 +26,6 @@ final class FieldAjaxController extends AbstractAppController
         FormFactoryInterface $formFactory,
         Environment $twig,
     ): JsonResponse {
-        // Minimal access parity with edit page
-        // $this->denyAccessUnlessGranted('EDIT', $element); // Uncomment if you have voters
-
         $type = (string) $request->request->get('type', '');
         if ('' === $type) {
             return new JsonResponse(['status' => 'error', 'message' => 'Missing field type'], 400);
@@ -59,6 +51,7 @@ final class FieldAjaxController extends AbstractAppController
             $em->flush();
         } catch (\Throwable $e) {
             $this->logger->error('Field add failed: '.$e->getMessage(), ['exception' => $e]);
+
             return new JsonResponse(['status' => 'error', 'message' => 'Unable to create field'], 500);
         }
 
@@ -123,6 +116,7 @@ final class FieldAjaxController extends AbstractAppController
             $em->flush();
         } catch (\Throwable $e) {
             $this->logger->error('Field delete failed: '.$e->getMessage(), ['exception' => $e]);
+
             return new JsonResponse(['status' => 'error', 'message' => 'Unable to delete field'], 500);
         }
 
@@ -152,6 +146,7 @@ final class FieldAjaxController extends AbstractAppController
             $em->flush();
         } catch (\Throwable $e) {
             $this->logger->error('Field reorder failed: '.$e->getMessage(), ['exception' => $e]);
+
             return new JsonResponse(['status' => 'error', 'message' => 'Unable to save order'], 500);
         }
 

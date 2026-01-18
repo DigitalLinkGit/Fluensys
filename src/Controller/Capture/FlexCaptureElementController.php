@@ -5,6 +5,7 @@ namespace App\Controller\Capture;
 use App\Controller\AbstractAppController;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\TableField;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
 use App\Service\Helper\FieldTypeManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +38,24 @@ final class FlexCaptureElementController extends AbstractAppController
                             $field->setPosition($index);
                         }
                     }
+
+                    // Sync TableField columns from subtype[columns_raw]
+                    $root = $form->getName(); // usually "capture_element_template_form" (Symfony decides)
+                    $payload = $request->request->all($root);
+
+                    if (isset($payload['fields']) && is_array($payload['fields'])) {
+                        foreach ($form->get('fields') as $fieldForm) {
+                            $field = $fieldForm->getData();
+                            if (!$field instanceof TableField) {
+                                continue;
+                            }
+
+                            $entryKey = $fieldForm->getName(); // key of this row in the collection
+                            $rawColumns = $payload['fields'][$entryKey]['subtype']['columns_raw'] ?? null;
+                            $field->syncColumnsFromRaw(is_string($rawColumns) ? $rawColumns : null);
+                        }
+                    }
+
                     $entityManager->persist($element);
                     $entityManager->flush();
                     $this->addFlash('success', 'Élément enregistré avec succès.');

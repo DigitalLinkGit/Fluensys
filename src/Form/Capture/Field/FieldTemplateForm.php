@@ -25,7 +25,7 @@ final class FieldTemplateForm extends AbstractType
     /** @var array<string, class-string> */
     private array $subtypeRegistry = [
         'checklist' => ChecklistFieldOptionsTemplateForm::class,
-        // 'date' => DateFieldOptionsTemplateForm::class,
+        'table_field' => TableFieldOptionsTemplateForm::class,
         // 'select' => SelectFieldOptionsTemplateForm::class,
     ];
 
