@@ -160,6 +160,13 @@
     padding-left: 1.25rem;
 }
 
+.doc-image{
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+
 
 /* ===== Print ===== */
 @media print{

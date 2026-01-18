@@ -7,6 +7,8 @@ use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
 use App\Entity\Capture\Field\EmailField;
 use App\Entity\Capture\Field\Field;
+use App\Entity\Capture\Field\FileField;
+use App\Entity\Capture\Field\ImageField;
 use App\Entity\Capture\Field\IntegerField;
 use App\Entity\Capture\Field\ListableField;
 use App\Entity\Capture\Field\TableField;
@@ -22,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 final class FieldTypeManager
 {
@@ -37,6 +40,8 @@ final class FieldTypeManager
         'email' => EmailField::class,
         'listable_field' => ListableField::class,
         'table_field' => TableField::class,
+        'file' => FileField::class,
+        'image' => ImageField::class,
     ];
 
     /** key => FormType */
@@ -51,6 +56,8 @@ final class FieldTypeManager
         'email' => EmailType::class,
         'listable_field' => ListableFieldContributorForm::class,
         'table_field' => TableFieldContributorForm::class,
+        'file' => FileType::class,
+        'image' => FileType::class,
     ];
 
     /** key => label */
@@ -65,6 +72,8 @@ final class FieldTypeManager
         'email' => 'Email',
         'listable_field' => 'Liste',
         'table_field' => 'Tableau',
+        'file' => 'Fichier',
+        'image' => 'Image',
     ];
 
     /** key => public (bool) */
@@ -79,6 +88,8 @@ final class FieldTypeManager
         'email' => true,
         'listable_field' => true,
         'table_field' => true,
+        'file' => true,
+        'image' => true,
     ];
 
     /** FQCN form key */

@@ -20,6 +20,8 @@ use Doctrine\ORM\Mapping as ORM;
     'email' => EmailField::class,
     'listable_field' => ListableField::class,
     'table_field' => TableField::class,
+    'file' => FileField::class,
+    'image' => ImageField::class,
 ])]
 abstract class Field
 {

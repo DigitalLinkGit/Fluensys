@@ -118,6 +118,63 @@
             {% if fieldForm.children['type'] is defined %}{% do fieldForm.children['type'].setRendered %}{% endif %}
 
 
+            {# IMAGE #}
+        {% elseif typeKey == 'image' %}
+            {% set imageForm = fieldForm.children['image'] %}
+            {% set existingPath = (fieldForm.vars.value.path is defined) ? fieldForm.vars.value.path : null %}
+
+            <legend class="col-form-label">
+                {{ fieldForm.vars.value.label }}
+            </legend>
+
+            <div
+                class="d-grid gap-2"
+                data-controller="image-field"
+            >
+                {# file + size #}
+                <div class="d-flex align-items-end gap-2">
+                    <div class="w-auto">
+                        {{ form_row(imageForm.children['value'], {
+                            attr: {
+                                'data-action': 'change->image-field#preview'
+                            }
+                        }) }}
+                    </div>
+                    <div class="w-auto">
+                        {{ form_row(imageForm.children['displayMode'], {
+                            attr: {
+                                'data-action': 'change->image-field#resize'
+                            }
+                        }) }}
+                    </div>
+                </div>
+                {% if fieldForm.vars.value.value is defined and fieldForm.vars.value.value %}
+                    <div class="form-text">
+                        Fichier actuel : {{ fieldForm.vars.value.value }}
+                    </div>
+                {% endif %}
+
+
+                {# preview #}
+                <div>
+                    <img
+                        data-image-field-target="preview"
+                        class="doc-image"
+                        alt=""
+                        {% if existingPath %}
+                            src="/uploads/{{ existingPath|trim('/') }}"
+                        {% endif %}
+                        style="{{ existingPath ? 'display:block;' : 'display:none;' }}"
+                    />
+                </div>
+
+            </div>
+
+            {% do fieldForm.children['image'].setRendered %}
+            {% do fieldForm.children['image'].children['value'].setRendered %}
+            {% do fieldForm.children['image'].children['displayMode'].setRendered %}
+            {% if fieldForm.children['type'] is defined %}{% do fieldForm.children['type'].setRendered %}{% endif %}
+
 
         {% else %}
 

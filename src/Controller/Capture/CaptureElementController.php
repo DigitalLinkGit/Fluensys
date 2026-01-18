@@ -6,7 +6,10 @@ use App\Controller\AbstractAppController;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\Field\FileField;
+use App\Entity\Capture\Field\ImageField;
 use App\Entity\Capture\Rendering\Chapter;
+use App\Entity\Interface\UploadableField;
 use App\Entity\Tenant\User;
 use App\Enum\LivecycleStatus;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
@@ -17,10 +20,11 @@ use App\Service\Factory\CaptureElementFactory;
 use App\Service\Helper\CaptureElementRouter;
 use App\Service\Helper\CaptureElementTypeManager;
 use App\Service\Helper\ConditionToggler;
+use App\Service\Helper\FileUploadManager;
 use App\Service\Helper\LivecycleStatusManager;
-use App\Service\Rendering\TemplateInterpolator;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,7 +33,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CaptureElementController extends AbstractAppController
 {
     #[Route(name: 'app_capture_element_index', methods: ['GET'])]
-    public function index(Request $request, EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em): Response
     {
         $all = $em->getRepository(CaptureElement::class)->findAll();
         $templates = array_filter($all, fn ($el) => $el->isTemplate());
@@ -83,7 +87,7 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/render-text/edit', name: 'app_capture_element_render_text_edit', methods: ['GET', 'POST'])]
-    public function editRenderText(Request $request, FlexCaptureElement $flexCapture, TemplateInterpolator $interpolator, EntityManagerInterface $entityManager): Response
+    public function editRenderText(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
     {
         // Build available variables from Fields and CalculatedVariables
         $fieldVars = [];
@@ -132,8 +136,14 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, LivecycleStatusManager $statusManager): Response
-    {
+    public function respond(
+        Request $request,
+        CaptureElement $element,
+        EntityManagerInterface $entityManager,
+        ConditionToggler $toggler,
+        LivecycleStatusManager $statusManager,
+        FileUploadManager $fileUploadManager,
+    ): Response {
         /** @var User|null $user */
         $user = $this->getUser();
 
@@ -143,6 +153,32 @@ final class CaptureElementController extends AbstractAppController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->has('fields')) {
+                foreach ($form->get('fields') as $fieldForm) {
+                    $field = $fieldForm->getData();
+                    if ($field instanceof ImageField) {
+                        $uploadedFile = null;
+
+                        if ($fieldForm->has('image') && $fieldForm->get('image')->has('value')) {
+                            $uploadedFile = $fieldForm->get('image')->get('value')->getData();
+                        }
+
+                        $this->persistUploadedFile($uploadedFile, $field, $element, $capture, $fileUploadManager, 'images');
+                    }
+
+                    if ($field instanceof FileField) {
+                        $uploadedFile = null;
+
+                        if ($fieldForm->has('value')) {
+                            $uploadedFile = $fieldForm->get('value')->getData();
+                        }
+
+                        $this->persistUploadedFile($uploadedFile, $field, $element, $capture, $fileUploadManager, 'files');
+                    }
+
+                }
+            }
+
             $statusManager->submit($element, $user, false);
 
             if (null !== $capture) {
@@ -324,5 +360,34 @@ final class CaptureElementController extends AbstractAppController
         }
 
         return $this->redirectToRoute($route, $params);
+    }
+
+    private function persistUploadedFile(
+        ?UploadedFile $uploadedFile,
+        UploadableField $field,
+        CaptureElement $element,
+        ?Capture $capture,
+        FileUploadManager $fileUploadManager,
+        string $folder,
+    ): void {
+        if (null === $uploadedFile) {
+            return;
+        }
+
+        $captureId = $capture?->getId() ?? 0;
+        $elementId = $element->getId() ?? 0;
+
+        $subDir = sprintf('captures/%d/elements/%d/%s', $captureId, $elementId, $folder);
+        $baseName = $field->getTechnicalName() ?: ($field->getName() ?: 'file');
+
+        $oldPath = $field->getPath();
+        $newPath = $fileUploadManager->upload($uploadedFile, $subDir, $baseName);
+
+        $field->setPath($newPath);
+        $field->setValue($uploadedFile->getClientOriginalName());
+
+        if ($oldPath && $oldPath !== $newPath) {
+            $fileUploadManager->delete($oldPath);
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Service\Rendering;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\DateField;
 use App\Entity\Capture\Field\DecimalField;
+use App\Entity\Capture\Field\ImageField;
 use App\Entity\Capture\Field\ListableField;
 use App\Entity\Capture\Field\TableField;
 use App\Entity\Capture\Field\UrlField;
@@ -38,13 +39,12 @@ class ChapterRenderer
             $field = $fieldMap[$key];
             $html = $this->renderFieldAsHtml($field);
 
-            if ('' === trim(strip_tags($html))) {
+            if ('' === trim($html)) {
                 return $m[0];
             }
 
             return $html;
         }, $template);
-
         return $rendered ?? $this->escapeText($template);
     }
 
@@ -54,9 +54,9 @@ class ChapterRenderer
             return $this->renderTableField($field);
         }
 
-        /*if ($field instanceof ImageField) {
+        if ($field instanceof ImageField) {
             return $this->renderImageField($field);
-        }*/
+        }
 
         if ($field instanceof DateField) {
             return $this->renderDateField($field);
@@ -398,19 +398,32 @@ class ChapterRenderer
 
     private function renderImageField(object $field): string
     {
-        if (!method_exists($field, 'getValue')) {
+        if (!method_exists($field, 'getPath')) {
             return '';
         }
 
-        $value = $field->getValue();
-        if (!is_string($value) || '' === trim($value)) {
+        $path = $field->getPath();
+        if (!is_string($path) || '' === trim($path)) {
             return '';
         }
 
-        $src = $this->escapeAttribute($value);
+        $publicPath = '/uploads/'.ltrim($path, '/');
+        $src = $this->escapeAttribute($publicPath);
 
-        return '<img class="doc-image" src="'.$src.'" alt="" />';
+        $mode = method_exists($field, 'getDisplayMode') ? (string) $field->getDisplayMode() : 'medium';
+
+        if ('small' === $mode) {
+            $style = 'width:25%;max-width:100%;height:auto;display:block;';
+        } elseif ('large' === $mode) {
+            $style = 'width:100%;max-width:100%;height:auto;display:block;';
+        } else { // medium default
+            $style = 'width:50%;max-width:100%;height:auto;display:block;';
+        }
+
+        return '<img class="doc-image" src="'.$src.'" style="'.$style.'" alt="" />';
     }
+
+
 
     private function escapeText(string $text): string
     {
