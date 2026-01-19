@@ -3,7 +3,7 @@
 namespace App\Entity\Participant;
 
 use App\Entity\Account\Contact;
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Entity\Interface\TenantAwareInterface;
 use App\Entity\Tenant\User;
 use App\Entity\Trait\TenantAwareTrait;

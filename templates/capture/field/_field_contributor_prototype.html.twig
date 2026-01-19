@@ -1,0 +1,194 @@
+{# templates/capture/field/_field_form.html.twig #}
+{% set typeKey = fieldForm.type is defined ? fieldForm.type.vars.value : '' %}
+{% set editable = true %}
+{% if fieldForm.vars.value.captureElement is not null and fieldForm.vars.value.captureElement.isValidated %}
+    {% set editable = false %}
+{% endif %}
+<fieldset class="mb-3">
+    {% if typeKey == 'listable_field' %}
+        {% set items = fieldForm.children['items'] %}
+        {% set list = items.children['items'] %}
+
+        {% set prototypeHtml = (list.vars.prototype is defined and list.vars.prototype is not null) ? form_widget(list.vars.prototype) : '' %}
+        {# {{ dump(items) }}
+        {{ dump(list) }}
+        {{ dump(prototypeHtml) }} #}
+        <legend class="col-form-label">
+            {{ fieldForm.vars.value.label }}
+        </legend>
+        <div
+            id="{{ list.vars.id }}"
+            data-controller="listable-field"
+            data-listable-field-index-value="{{ list|length }}"
+        >
+
+            <template data-listable-field-target="prototype">
+                {{ prototypeHtml|raw }}
+            </template>
+
+            <div data-listable-field-target="container">
+                {% for child in list %}
+                    <div data-listable-field-item="1" class="mb-2 d-flex align-items-center gap-2">
+                        <div class="flex-grow-1">
+                            {{ form_row(child) }}
+                        </div>
+                        {% if editable %}
+                            <button type="button"
+                                    class="btn btn-outline-danger btn-sm"
+                                    title="Supprimer"
+                                    aria-label="Supprimer"
+                                    data-action="listable-field#remove">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+
+                {% endfor %}
+            </div>
+            {% if editable %}
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm mt-2"
+                        data-action="listable-field#add">
+                    Ajouter
+                </button>
+            {% endif %}
+        </div>
+        {% do fieldForm.children['items'].setRendered %}
+        {% do fieldForm.children['items'].children['items'].setRendered %}
+        {% if fieldForm.children['type'] is defined %}{% do fieldForm.children['type'].setRendered %}{% endif %}
+
+        {# TABLE #}
+    {% elseif typeKey == 'table_field' %}
+        {% set rowsForm = fieldForm.children['rows'].children['rows'] %}
+
+
+        {% set protoView = rowsForm.vars.prototype is defined ? rowsForm.vars.prototype : null %}
+        {% set prototypeHtml = protoView ? form_widget(protoView) : '' %}
+        {% set prototypeName = protoView ? protoView.vars.name : '__name__' %}
+
+        <div
+            id="{{ rowsForm.vars.id }}"
+            data-controller="table-field"
+            data-prototype="{{ prototypeHtml|e('html_attr') }}"
+            data-prototype-name="{{ prototypeName }}"
+            data-index="{{ rowsForm|length }}"
+        >
+            <legend class="col-form-label">
+                {{ fieldForm.vars.value.label }}
+            </legend>
+
+            <table class="table table-sm align-middle">
+                <thead>
+                <tr>
+                    {% if protoView %}
+                        {% for cell in protoView %}
+                            <th>{{ cell.vars.label }}</th>
+                        {% endfor %}
+                    {% endif %}
+                    {% if editable %}
+                    <th style="width: 1%"></th>
+                    {% endif %}
+                </tr>
+                </thead>
+
+                <tbody data-table-field-target="container">
+                {% for row in rowsForm %}
+                    <tr data-table-field-item="1">
+                        {% for cell in row %}
+                            <td>{{ form_widget(cell) }}</td>
+                        {% endfor %}
+                        {% if editable %}
+                            <td class="text-end">
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-sm"
+                                        data-action="click->table-field#remove">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end mb-2">
+                {% if editable %}
+                    <button type="button"
+                            class="btn btn-outline-primary btn-sm"
+                            data-action="click->table-field#add">
+                        Ajouter une ligne
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        {% if fieldForm.children['value'] is defined %}
+            {% do fieldForm.children['value'].setRendered %}
+        {% endif %}
+
+        {% do fieldForm.children['rows'].setRendered %}
+        {% do fieldForm.children['rows'].children['rows'].setRendered %}
+        {% if fieldForm.children['type'] is defined %}{% do fieldForm.children['type'].setRendered %}{% endif %}
+
+
+        {# IMAGE #}
+    {% elseif typeKey == 'image' %}
+        {% set imageForm = fieldForm.children['image'] %}
+        {% set existingPath = (fieldForm.vars.value.path is defined) ? fieldForm.vars.value.path : null %}
+
+        <legend class="col-form-label">
+            {{ fieldForm.vars.value.label }}
+        </legend>
+
+        <div
+            class="d-grid gap-2"
+            data-controller="image-field"
+        >
+            {# file + size #}
+            <div class="d-flex align-items-end gap-2">
+                <div class="w-auto">
+                    {{ form_row(imageForm.children['value'], {
+                        attr: {
+                            'data-action': 'change->image-field#preview'
+                        }
+                    }) }}
+                </div>
+                <div class="w-auto">
+                    {{ form_row(imageForm.children['displayMode'], {
+                        attr: {
+                            'data-action': 'change->image-field#resize'
+                        }
+                    }) }}
+                </div>
+            </div>
+            {% if fieldForm.vars.value.value is defined and fieldForm.vars.value.value %}
+                <div class="form-text">
+                    Fichier actuel : {{ fieldForm.vars.value.value }}
+                </div>
+            {% endif %}
+
+
+            {# preview #}
+            <div>
+                <img
+                    data-image-field-target="preview"
+                    class="doc-image"
+                    alt=""
+                    {% if existingPath %}
+                        src="/uploads/{{ existingPath|trim('/') }}"
+                    {% endif %}
+                    style="{{ existingPath ? 'display:block;' : 'display:none;' }}"
+                />
+            </div>
+
+        </div>
+
+        {% do fieldForm.children['image'].setRendered %}
+        {% do fieldForm.children['image'].children['value'].setRendered %}
+        {% do fieldForm.children['image'].children['displayMode'].setRendered %}
+        {% if fieldForm.children['type'] is defined %}{% do fieldForm.children['type'].setRendered %}{% endif %}
+
+
+    {% else %}
+
+        {{ form_widget(fieldForm) }}
+    {% endif %}
+</fieldset>

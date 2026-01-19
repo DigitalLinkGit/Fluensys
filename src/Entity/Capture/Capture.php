@@ -3,7 +3,6 @@
 namespace App\Entity\Capture;
 
 use App\Entity\Account\Account;
-use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\Rendering\Title;
 use App\Entity\Interface\LivecycleStatusAwareInterface;
 use App\Entity\Interface\TenantAwareInterface;

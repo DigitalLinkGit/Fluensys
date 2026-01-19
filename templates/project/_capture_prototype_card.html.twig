@@ -96,9 +96,8 @@
                         {# status + collapser #}
                         <div class="d-inline-flex justify-content-end align-items-center gap-2 text-nowrap"
                              style="width: 130px;">
-                            <span class="badge bg-secondary type-badge">
-                                 {{ capture.statusLabel }}
-                            </span>
+                            {% import 'components/badge/_livecycle_Status_badge.html.twig' as badge %}
+                            {{ badge.status(capture.statusLabel) }}
 
                             <a href="#{{ collapseId }}"
                                class="collapse-chevron"

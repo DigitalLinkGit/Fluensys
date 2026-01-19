@@ -2,16 +2,11 @@
 
 namespace App\Form\Capture\CaptureElement;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\CaptureElement\ListableFieldCaptureElement;
-use App\Entity\Capture\Field\ListableField;
 use App\Form\Capture\Field\FieldContributorForm;
-use App\Service\Helper\FieldTypeManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CaptureElementContributorForm extends AbstractType
@@ -33,7 +28,7 @@ class CaptureElementContributorForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => CaptureElement::class,
+            'data_class' => \App\Entity\Capture\CaptureElement::class,
         ]);
     }
 }

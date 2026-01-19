@@ -2,7 +2,7 @@
 
 namespace App\Form\Capture;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Entity\Capture\Condition;
 use App\Entity\Capture\Field\Field;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

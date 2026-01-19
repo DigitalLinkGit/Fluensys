@@ -7,7 +7,7 @@ use App\Entity\Account\Contact;
 use App\Entity\Account\InformationSystem;
 use App\Entity\Account\SystemComponent;
 use App\Entity\Capture\Capture;
-use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Entity\Capture\Condition;
 use App\Entity\Capture\Field\ChecklistField;
 use App\Entity\Capture\Field\DateField;
@@ -20,9 +20,9 @@ use App\Entity\Capture\Field\TextField;
 use App\Entity\Capture\Field\UrlField;
 use App\Entity\Capture\Rendering\Chapter;
 use App\Entity\Capture\Rendering\Title;
+use App\Entity\Enum\SystemComponentType;
 use App\Entity\Participant\ParticipantRole;
 use App\Entity\Tenant\User;
-use App\Enum\SystemComponentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -189,7 +189,7 @@ class AppFixtures extends Fixture
         $manager->persist($f9);
 
         // capture element
-        $flex = (new FlexCaptureElement())
+        $flex = (new CaptureElement())
             ->setDescription("Flex capture utilisée pour vérifier que tous les types de fields fonctionnent et s'affichent correctement")
             ->setName('Flex test fields')
             ->setContributor($r1)
@@ -288,7 +288,7 @@ Email : [EMAIL]');
         $manager->persist($f60);
 
         // capture element
-        $flex2 = (new FlexCaptureElement())
+        $flex2 = (new CaptureElement())
             ->setDescription('Recueil des informations classiques sur le compte')
             ->setName('Informations générale')
             ->setContributor($r1)

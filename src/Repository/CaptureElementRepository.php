@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

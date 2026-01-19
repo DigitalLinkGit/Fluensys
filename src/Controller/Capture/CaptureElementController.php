@@ -4,22 +4,24 @@ namespace App\Controller\Capture;
 
 use App\Controller\AbstractAppController;
 use App\Entity\Capture\Capture;
-use App\Entity\Capture\CaptureElement\CaptureElement;
-use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\CaptureElement;
+use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Field\FileField;
 use App\Entity\Capture\Field\ImageField;
+use App\Entity\Capture\Field\TableField;
 use App\Entity\Capture\Rendering\Chapter;
+use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Interface\UploadableField;
 use App\Entity\Tenant\User;
-use App\Enum\LivecycleStatus;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
-use App\Form\Capture\CaptureElement\CaptureElementTemplateNewForm;
+use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
 use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
 use App\Service\Factory\CaptureElementFactory;
 use App\Service\Helper\CaptureElementRouter;
 use App\Service\Helper\CaptureElementTypeManager;
 use App\Service\Helper\ConditionToggler;
+use App\Service\Helper\FieldTypeManager;
 use App\Service\Helper\FileUploadManager;
 use App\Service\Helper\LivecycleStatusManager;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
@@ -32,17 +34,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/capture/element')]
 final class CaptureElementController extends AbstractAppController
 {
-    #[Route(name: 'app_capture_element_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): Response
-    {
-        $all = $em->getRepository(CaptureElement::class)->findAll();
-        $templates = array_filter($all, fn ($el) => $el->isTemplate());
-
-        return $this->render('capture/capture_element/index.html.twig', [
-            'capture_elements' => $all,
-        ]);
-    }
-
     #[Route('/{id}/show', name: 'app_capture_element_show', methods: ['GET'])]
     public function show(CaptureElement $captureElement): Response
     {
@@ -58,7 +49,7 @@ final class CaptureElementController extends AbstractAppController
         dump('PREVIEW element fields', [
             'element_id' => $element->getId(),
             'fields' => array_map(static function ($f) {
-                if (!$f instanceof \App\Entity\Capture\Field\Field) {
+                if (!$f instanceof Field) {
                     return ['class' => is_object($f) ? get_class($f) : gettype($f)];
                 }
 
@@ -67,7 +58,7 @@ final class CaptureElementController extends AbstractAppController
                     'class' => get_class($f),
                 ];
 
-                if ($f instanceof \App\Entity\Capture\Field\TableField) {
+                if ($f instanceof TableField) {
                     $row['columns_count'] = $f->getColumns()->count();
                     $row['columns_ids'] = array_map(
                         static fn ($c) => method_exists($c, 'getId') ? $c->getId() : null,
@@ -87,11 +78,11 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/render-text/edit', name: 'app_capture_element_render_text_edit', methods: ['GET', 'POST'])]
-    public function editRenderText(Request $request, FlexCaptureElement $flexCapture, EntityManagerInterface $entityManager): Response
+    public function editRenderText(Request $request, CaptureElement $element, EntityManagerInterface $entityManager): Response
     {
         // Build available variables from Fields and CalculatedVariables
         $fieldVars = [];
-        foreach ($flexCapture->getFields() as $f) {
+        foreach ($element->getFields() as $f) {
             $name = $f->getTechnicalName();
             if ($name) {
                 $fieldVars[] = $name;
@@ -99,7 +90,7 @@ final class CaptureElementController extends AbstractAppController
         }
 
         $calcVars = [];
-        foreach ($flexCapture->getCalculatedVariables() as $cv) {
+        foreach ($element->getCalculatedVariables() as $cv) {
             $name = $cv->getTechnicalName();
             if ($name) {
                 $calcVars[] = $name;
@@ -107,7 +98,7 @@ final class CaptureElementController extends AbstractAppController
         }
         $variables = array_values(array_unique(array_merge($fieldVars, $calcVars)));
 
-        $chapter = $flexCapture->getChapter() ?? new Chapter();
+        $chapter = $element->getChapter() ?? new Chapter();
         $form = $this->createForm(RenderTextEditorForm::class, $chapter, [
             'variables' => $variables,
         ]);
@@ -120,30 +111,24 @@ final class CaptureElementController extends AbstractAppController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $flexCapture->setChapter($chapter);
+            $element->setChapter($chapter);
             $entityManager->persist($chapter);
             $entityManager->flush();
             $this->addFlash('success', 'Rendu texte enregistré.');
 
-            return $this->redirectToRoute('app_flex_capture_element_edit', ['id' => $flexCapture->getId()]);
+            return $this->redirectToRoute('app_capture_element_edit', ['id' => $element->getId()]);
         }
 
         return $this->render('capture/capture_element/render_text_editor.html.twig', [
             'form' => $form,
             'variables' => $variables,
-            'element' => $flexCapture,
+            'element' => $element,
         ]);
     }
 
     #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function respond(
-        Request $request,
-        CaptureElement $element,
-        EntityManagerInterface $entityManager,
-        ConditionToggler $toggler,
-        LivecycleStatusManager $statusManager,
-        FileUploadManager $fileUploadManager,
-    ): Response {
+    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, LivecycleStatusManager $statusManager, FileUploadManager $fileUploadManager): Response
+    {
         /** @var User|null $user */
         $user = $this->getUser();
 
@@ -175,7 +160,6 @@ final class CaptureElementController extends AbstractAppController
 
                         $this->persistUploadedFile($uploadedFile, $field, $element, $capture, $fileUploadManager, 'files');
                     }
-
                 }
             }
 
@@ -249,16 +233,12 @@ final class CaptureElementController extends AbstractAppController
     {
         $captureId = $request->query->getInt('capture');
 
-        $form = $this->createForm(CaptureElementTemplateNewForm::class, null, [
-            'type_choices' => $typeManager->getFormChoices(),
-        ])->handleRequest($request);
+        $element = new CaptureElement();
+        $form = $this->createForm(CaptureElementTemplateForm::class, $element);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $data = $form->getData();
-                $typeKey = $form->get('type')->getData();
-
-                $element = $factory->create($typeKey, $data);
                 if ($captureId) {
                     $capture = $em->getRepository(Capture::class)->find($captureId);
                     if ($capture) {
@@ -271,9 +251,8 @@ final class CaptureElementController extends AbstractAppController
 
                 $em->persist($element);
                 $em->flush();
-                [$route, $params] = $router->resolveEditRoute($element);
 
-                return $this->redirectToRoute($route, $params);
+                return $this->redirectToRoute('app_capture_element_edit', ['id' => $element?->getId()], 303);
             } else {
                 foreach ($form->getErrors(true, true) as $error) {
                     $this->addFlash('danger', $error->getMessage());
@@ -345,21 +324,69 @@ final class CaptureElementController extends AbstractAppController
         );
     }
 
-    #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET'])]
-    public function editRedirect(int $id, Request $request, EntityManagerInterface $em, CaptureElementRouter $router): Response
+    #[Route('/{id}/edit', name: 'app_capture_element_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, FieldTypeManager $helper): Response
     {
-        $captureId = $request->query->getInt('capture');
-        $element = $em->getRepository(CaptureElement::class)->find($id);
-        if (!$element) {
-            throw $this->createNotFoundException('CaptureElement not found');
+        $form = $this->createForm(CaptureElementTemplateForm::class, $element);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                try {
+                    // update elements order
+                    $raw = (string) $request->request->get('fields_order', '[]');
+                    $orderedIds = json_decode($raw, true);
+
+                    if (is_array($orderedIds)) {
+                        foreach ($orderedIds as $index => $id) {
+                            $field = $entityManager->getRepository(Field::class)->find((int) $id);
+                            if (!$field) {
+                                continue;
+                            }
+                            $field->setPosition($index);
+                        }
+                    }
+
+                    // Sync TableField columns from subtype[columns_raw]
+                    $root = $form->getName(); // usually "capture_element_template_form" (Symfony decides)
+                    $payload = $request->request->all($root);
+
+                    if (isset($payload['fields']) && is_array($payload['fields'])) {
+                        foreach ($form->get('fields') as $fieldForm) {
+                            $field = $fieldForm->getData();
+                            if (!$field instanceof TableField) {
+                                continue;
+                            }
+
+                            $entryKey = $fieldForm->getName(); // key of this row in the collection
+                            $rawColumns = $payload['fields'][$entryKey]['subtype']['columns_raw'] ?? null;
+                            $field->syncColumnsFromRaw(is_string($rawColumns) ? $rawColumns : null);
+                        }
+                    }
+
+                    $entityManager->persist($element);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Élément enregistré avec succès.');
+
+                    return $this->redirectToRoute('app_capture_element_edit', [
+                        'id' => $element->getId(),
+                        'capture' => $element->getCapture()->getId(),
+                    ]);
+                } catch (\Throwable $e) {
+                    $this->logger->error($e->getMessage(), ['exception' => $e]);
+                    $this->addFlash('danger', $e->getMessage());
+                }
+            } else {
+                $this->addFlash('warning', 'Le formulaire contient des erreurs. Corrigez-les pour continuer.');
+            }
         }
 
-        [$route, $params] = $router->resolveEditRoute($element);
-        if ($captureId) {
-            $params['capture'] = $captureId;
-        }
-
-        return $this->redirectToRoute($route, $params);
+        return $this->render('capture/capture_element/edit.html.twig', [
+            'element' => $element,
+            'form' => $form,
+            'dragTypes' => $helper->getLibraryChoices(true),
+            'captureId' => $element->getCapture()->getId(),
+        ]);
     }
 
     private function persistUploadedFile(

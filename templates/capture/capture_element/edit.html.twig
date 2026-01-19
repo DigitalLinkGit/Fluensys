@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Element{% endblock %}
+
+{% block body %}
+    <h1>Modifier l'élément de capture</h1>
+
+    {{ include('capture/capture_element/_template_form.html.twig', {'button_label': 'Update'}) }}
+
+{% endblock %}

@@ -2,7 +2,7 @@
 
 namespace App\Entity\Account;
 
-use App\Enum\SystemComponentType;
+use App\Entity\Enum\SystemComponentType;
 use App\Repository\SystemComponentRepository;
 use Doctrine\ORM\Mapping as ORM;
 

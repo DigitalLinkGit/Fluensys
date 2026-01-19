@@ -1,0 +1,16 @@
+{% macro status(status) %}
+    {% set s = (status|default('')|lower|trim) %}
+
+    {% set cls = {
+        'draft': 'bg-info',
+        'template': 'bg-info',
+        'ready': 'bg-warning',
+        'pending': 'bg-danger',
+        'submitted': 'bg-success',
+        'validated': 'bg-success'
+    }[s] ?? 'bg-light' %}
+
+    <span class="badge {{ cls }}">
+        {{ status }}
+    </span>
+{% endmacro %}

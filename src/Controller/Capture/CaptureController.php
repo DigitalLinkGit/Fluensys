@@ -4,10 +4,10 @@ namespace App\Controller\Capture;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
+use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Project;
 use App\Entity\Tenant\User;
-use App\Enum\LivecycleStatus;
 use App\Form\Capture\CaptureContributorForm;
 use App\Form\Capture\CaptureContributorNewForm;
 use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
@@ -169,27 +169,6 @@ final class CaptureController extends AbstractController
         $form = $this->createForm(CaptureContributorForm::class, $capture);
         $form->handleRequest($request);
 
-        $responseForms = [];
-        // Build inline response forms for each element
-        foreach ($capture->getCaptureElements() as $el) {
-            $isDisabled = false;
-
-            // 1) Active flag
-            if (!$el->isActive()) {
-                $isDisabled = true;
-            }
-
-            // 2) Status
-            if (LivecycleStatus::READY !== $el->getStatus()) {
-                $isDisabled = true;
-            }
-
-            $inlineForm = $this->createForm(CaptureElementContributorForm::class, $el, [
-                'disabled' => $isDisabled,
-            ]);
-            $responseForms[$el->getId()] = $inlineForm->createView();
-        }
-
         // Reset active state and apply conditions
         foreach ($capture->getCaptureElements() as $element) {
             $element->setActive(true);
@@ -207,6 +186,27 @@ final class CaptureController extends AbstractController
 
         // refresh status
         $this->statusManager->refresh($capture, $user, true);
+
+        $responseForms = [];
+        // Build inline response forms for each element
+        foreach ($capture->getCaptureElements() as $el) {
+            $isDisabled = true;
+
+            // 1) Active flag
+            if ($el->isActive()) {
+                $isDisabled = false;
+            }
+
+            // 2) Status
+            if ($el->isReady() || $el->isSubmitted()) {
+                $isDisabled = false;
+            }
+
+            $inlineForm = $this->createForm(CaptureElementContributorForm::class, $el, [
+                'disabled' => $isDisabled,
+            ]);
+            $responseForms[$el->getId()] = $inlineForm->createView();
+        }
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
@@ -339,6 +339,19 @@ final class CaptureController extends AbstractController
         }
         // ToDo: Validation before publish
         $this->statusManager->publishTemplate($capture, $user);
+        $em->flush();
+
+        return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
+    }
+
+    #[Route('/template/{id}/unpublish', name: 'app_capture_template_unpublish', methods: ['GET'])]
+    public function unpublishTemplate(Capture $capture, EntityManagerInterface $em): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        // ToDo: Validation before publish
+        $this->statusManager->unpublishTemplate($capture, $user);
         $em->flush();
 
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);

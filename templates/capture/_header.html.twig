@@ -11,12 +11,9 @@
                 </a>
             </div>
         {% endif %}
-        {# {% if capture.template or capture.draft %} #}
         <div>
-            <span class="badge bg-secondary type-badge">
-                {{ capture.statusLabel }}
-            </span>
+            {% import 'components/badge/_livecycle_Status_badge.html.twig' as badge %}
+            {{ badge.status(capture.statusLabel) }}
         </div>
-        {# {% endif %} #}
     </div>
 </div>

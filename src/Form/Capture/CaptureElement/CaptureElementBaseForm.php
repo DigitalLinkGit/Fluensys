@@ -86,7 +86,7 @@ class CaptureElementBaseForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => null,   // on bosse sur un array
+            'data_class' => null,
         ]);
     }
 }

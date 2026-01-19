@@ -3,7 +3,7 @@
 namespace App\Controller\Capture;
 
 use App\Controller\AbstractAppController;
-use App\Entity\Capture\CaptureElement\FlexCaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Entity\Capture\Field\Field;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
 use App\Service\Factory\FieldFactory;
@@ -14,13 +14,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Twig\Environment;
 
-#[Route('/flex-capture-element')]
+#[Route('/capture/element')]
 final class FieldAjaxController extends AbstractAppController
 {
-    #[Route('/{id}/field/add', name: 'app_flex_capture_field_add', methods: ['POST'])]
+    #[Route('/{id}/field/add', name: 'app_field_add', methods: ['POST'])]
     public function add(
         Request $request,
-        FlexCaptureElement $element,
+        CaptureElement $element,
         EntityManagerInterface $em,
         FieldFactory $factory,
         FormFactoryInterface $formFactory,
@@ -84,7 +84,7 @@ final class FieldAjaxController extends AbstractAppController
         ]);
     }
 
-    #[Route('/field/{id}/delete', name: 'app_flex_capture_field_delete', methods: ['POST'])]
+    #[Route('/field/{id}/delete', name: 'app_field_delete', methods: ['POST'])]
     public function delete(
         Request $request,
         Field $field,
@@ -123,10 +123,10 @@ final class FieldAjaxController extends AbstractAppController
         return new JsonResponse(['status' => 'ok']);
     }
 
-    #[Route('/{id}/field/reorder', name: 'app_flex_capture_field_reorder', methods: ['POST'])]
+    #[Route('/{id}/field/reorder', name: 'app_field_reorder', methods: ['POST'])]
     public function reorder(
         Request $request,
-        FlexCaptureElement $element,
+        CaptureElement $element,
         EntityManagerInterface $em,
     ): JsonResponse {
         // $this->denyAccessUnlessGranted('EDIT', $element);

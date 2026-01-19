@@ -2,7 +2,7 @@
 
 namespace App\Entity\Capture\Field;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Repository\CalculatedVariableRepository;
 use Doctrine\ORM\Mapping as ORM;
 

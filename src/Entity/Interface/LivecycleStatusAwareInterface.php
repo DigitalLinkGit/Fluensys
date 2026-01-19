@@ -2,7 +2,7 @@
 
 namespace App\Entity\Interface;
 
-use App\Enum\LivecycleStatus;
+use App\Entity\Enum\LivecycleStatus;
 
 interface LivecycleStatusAwareInterface
 {

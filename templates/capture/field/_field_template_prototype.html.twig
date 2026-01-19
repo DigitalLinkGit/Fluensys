@@ -2,7 +2,7 @@
           data-sortable-id="{{ form.vars.value.id ?? form.vars.name }}"
           data-type-label="{{ form.vars.type_label }}"
     {% if form.vars.value and form.vars.value.id %}
-    data-delete-url="{{ path('app_flex_capture_field_delete', { id: form.vars.value.id }) }}"
+    data-delete-url="{{ path('app_field_delete', { id: form.vars.value.id }) }}"
     data-delete-token="{{ csrf_token('delete_field_' ~ form.vars.value.id) }}"
     {% endif %}>
     {{ form_row(form.position, { attr: { class: 'd-none position-input' } }) }}

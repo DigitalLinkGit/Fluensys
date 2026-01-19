@@ -2,7 +2,7 @@
 
 namespace App\Entity\Capture\Rendering;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]

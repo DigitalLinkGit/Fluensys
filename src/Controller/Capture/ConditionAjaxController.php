@@ -2,7 +2,7 @@
 
 namespace App\Controller\Capture;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Entity\Capture\Field\Field;
 use App\Repository\CaptureElementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +20,7 @@ final class ConditionAjaxController extends AbstractController
             return new JsonResponse(['fields' => []]);
         }
 
-        /** @var CaptureElement|null $element */
+        /** @var \App\Entity\Capture\CaptureElement|null $element */
         $element = $elements->find($id);
         if (!$element || !method_exists($element, 'getFields')) {
             return new JsonResponse(['fields' => []]);

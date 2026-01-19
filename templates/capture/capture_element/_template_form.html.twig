@@ -2,8 +2,8 @@
 
     {{ include('capture/capture_element/_form_base.html.twig') }}
 <div data-controller="capture-element fields-ajax"
-     data-fields-ajax-add-url-value="{{ path('app_flex_capture_field_add', { id: element.id }) }}"
-     data-fields-ajax-reorder-url-value="{{ path('app_flex_capture_field_reorder', { id: element.id }) }}">
+     data-fields-ajax-add-url-value="{{ path('app_field_add', { id: element.id }) }}"
+     data-fields-ajax-reorder-url-value="{{ path('app_field_reorder', { id: element.id }) }}">
     <div class="d-flex justify-content-end gap-2 mt-4">
         {% include 'capture/field/_available_fields_type.html.twig' %}
         {% include 'components/button/_btn.html.twig' with {

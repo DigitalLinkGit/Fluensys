@@ -32,6 +32,18 @@
             }
         } %}
     {% endif %}
+    {% if project.isTemplate() %}
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'link',
+                route: 'app_project_template_unpublish',
+                param_map: { id: 'project.id' },
+                icon: 'bi-box-arrow-down',
+                label: 'Dé-Publier',
+                class: 'btn btn-outline-primary'
+            }
+        } %}
+    {% endif %}
     {% include 'components/button/_btn.html.twig' with {
         btn: {
             type: 'link',

@@ -12,7 +12,6 @@ export default class extends Controller {
     }
 
     add(event) {
-        console.log("CLIC ADD");
         event.preventDefault();
         const prototype = this.element.dataset.prototype;
         const html = prototype.replace(/__name__/g, this.index);
@@ -25,7 +24,6 @@ export default class extends Controller {
     }
 
     remove(event) {
-        console.log("CLIC DELETE");
         event.preventDefault();
         event.target.closest('fieldset').remove();
     }

@@ -2,7 +2,6 @@
 
 namespace App\Entity\Capture;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
 use App\Entity\Capture\Field\Field;
 use App\Repository\ConditionRepository;
 use Doctrine\ORM\Mapping as ORM;

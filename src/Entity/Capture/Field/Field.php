@@ -2,7 +2,7 @@
 
 namespace App\Entity\Capture\Field;
 
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
 use App\Service\Helper\FieldTypeManager;
 use Doctrine\ORM\Mapping as ORM;
 

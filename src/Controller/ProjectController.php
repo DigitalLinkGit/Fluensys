@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
+use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Project;
 use App\Entity\Tenant\User;
-use App\Enum\LivecycleStatus;
 use App\Form\ProjectContributorNewForm;
 use App\Form\ProjectTemplateForm;
 use App\Repository\CaptureRepository;
@@ -227,6 +227,19 @@ final class ProjectController extends AbstractController
         }
         // ToDo: Validation before publish
         $this->statusManager->publishTemplate($project, $user);
+        $em->flush();
+
+        return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
+    }
+
+    #[Route('/template/{id}/unpublish', name: 'app_project_template_unpublish', methods: ['GET'])]
+    public function unpublishTemplate(Project $project, EntityManagerInterface $em): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        // ToDo: Validation before publish
+        $this->statusManager->unpublishTemplate($project, $user);
         $em->flush();
 
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);

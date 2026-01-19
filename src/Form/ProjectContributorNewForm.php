@@ -3,9 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Account\Account;
-use App\Entity\Capture\Capture;
+use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Project;
-use App\Enum\LivecycleStatus;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

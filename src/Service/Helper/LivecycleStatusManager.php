@@ -3,11 +3,11 @@
 namespace App\Service\Helper;
 
 use App\Entity\Capture\Capture;
-use App\Entity\Capture\CaptureElement\CaptureElement;
+use App\Entity\Capture\CaptureElement;
+use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Interface\LivecycleStatusAwareInterface;
 use App\Entity\Project;
 use App\Entity\Tenant\User;
-use App\Enum\LivecycleStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class LivecycleStatusManager
@@ -35,9 +35,23 @@ final readonly class LivecycleStatusManager
         }
     }
 
+    public function unpublishTemplate(LivecycleStatusAwareInterface $entity, User $user, bool $flush = true): void
+    {
+        // ToDo : check if capture template is used in project template
+        $this->transition($entity, LivecycleStatus::DRAFT, $user, $flush);
+        if ($entity instanceof Capture) {
+            foreach ($entity->getCaptureElements() as $element) {
+                $this->unpublishTemplate($element, $user, $flush);
+            }
+        }
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
     public function init(LivecycleStatusAwareInterface $entity, User $user, bool $flush = true): void
     {
-        if (LivecycleStatus::TEMPLATE == $entity->getStatus()) {
+        if ($entity->isTemplate()) {
             $this->transition($entity, LivecycleStatus::READY, $user, $flush);
         }
 
@@ -71,11 +85,7 @@ final readonly class LivecycleStatusManager
     public function submit(LivecycleStatusAwareInterface $entity, User $user, bool $flush = true): void
     {
         if ($entity instanceof CaptureElement) {
-            if ($entity->getValidator()) {
-                $this->transition($entity, LivecycleStatus::SUBMITTED, $user, $flush);
-            } else {
-                $this->transition($entity, LivecycleStatus::VALIDATED, $user, $flush);
-            }
+            $this->transition($entity, LivecycleStatus::SUBMITTED, $user, $flush);
         }
     }
 
@@ -87,14 +97,12 @@ final readonly class LivecycleStatusManager
 
     public function refresh(LivecycleStatusAwareInterface $entity, User $user, bool $flush): void
     {
+        // ToDo : add condition toggler here
         if ($entity instanceof CaptureElement) {
-            if (
-                LivecycleStatus::VALIDATED === $entity->getStatus()
-                || LivecycleStatus::COLLECTING === $entity->getStatus()
-            ) {
+            if ($entity->isValidated() || $entity->isCollecting()) {
                 return;
             }
-            if (LivecycleStatus::SUBMITTED === $entity->getStatus()) {
+            if ($entity->issubmitted()) {
                 if (!$this->userHasValidatorRole($entity, $user) && !$this->assignmentHasValidatorRole($entity)) {
                     $this->transition($entity, LivecycleStatus::PENDING, $user, $flush);
                 }
@@ -146,7 +154,7 @@ final readonly class LivecycleStatusManager
     private function refreshParentStatusFromChilds(LivecycleStatusAwareInterface $parent, User $user): void
     {
         // safety: never downgrade a validated capture
-        if (LivecycleStatus::VALIDATED === $parent->getStatus()) {
+        if ($parent->isValidated()) {
             return;
         }
 
@@ -170,6 +178,7 @@ final readonly class LivecycleStatusManager
 
         $statuses = [];
         foreach ($childs as $child) {
+            // ToDo : take only active child
             $statuses[] = $child->getStatus();
         }
 
@@ -217,6 +226,7 @@ final readonly class LivecycleStatusManager
 
         // PENDING
         if (\in_array(LivecycleStatus::PENDING, $statuses, true)) {
+
             $this->transition($parent, LivecycleStatus::PENDING, $user, false);
 
             return;
@@ -246,9 +256,9 @@ final readonly class LivecycleStatusManager
     {
         $map = [
             LivecycleStatus::DRAFT->value => [LivecycleStatus::TEMPLATE],
-            LivecycleStatus::TEMPLATE->value => [LivecycleStatus::READY, LivecycleStatus::PENDING],
-            LivecycleStatus::READY->value => [LivecycleStatus::COLLECTING, LivecycleStatus::PENDING, LivecycleStatus::SUBMITTED, LivecycleStatus::VALIDATED],
-            LivecycleStatus::COLLECTING->value => [LivecycleStatus::SUBMITTED, LivecycleStatus::VALIDATED],
+            LivecycleStatus::TEMPLATE->value => [LivecycleStatus::READY, LivecycleStatus::PENDING, LivecycleStatus::DRAFT],
+            LivecycleStatus::READY->value => [LivecycleStatus::COLLECTING, LivecycleStatus::PENDING, LivecycleStatus::SUBMITTED],
+            LivecycleStatus::COLLECTING->value => [LivecycleStatus::SUBMITTED],
             LivecycleStatus::PENDING->value => [LivecycleStatus::READY],
             LivecycleStatus::SUBMITTED->value => [LivecycleStatus::VALIDATED, LivecycleStatus::PENDING],
             LivecycleStatus::VALIDATED->value => [],

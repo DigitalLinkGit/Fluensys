@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Entity\Capture\CaptureElement;
+namespace App\Entity\Capture;
 
-use App\Entity\Capture\Capture;
 use App\Entity\Capture\Field\CalculatedVariable;
 use App\Entity\Capture\Field\Field;
 use App\Entity\Capture\Rendering\Chapter;
@@ -16,13 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
-#[ORM\DiscriminatorMap([
-    'flex' => FlexCaptureElement::class,
-    'listable_field' => ListableFieldCaptureElement::class,
-])]
-abstract class CaptureElement implements TenantAwareInterface, LivecycleStatusAwareInterface
+class CaptureElement implements TenantAwareInterface, LivecycleStatusAwareInterface
 {
     use TenantAwareTrait;
     use LivecycleStatusTrait;
@@ -56,13 +49,7 @@ abstract class CaptureElement implements TenantAwareInterface, LivecycleStatusAw
     #[ORM\OneToOne(inversedBy: 'captureElement', cascade: ['persist', 'remove'])]
     private ?Chapter $chapter = null;
 
-    #[ORM\Column(type: 'boolean', options: ['default' => true])]
-    protected bool $active = true;
-
-    #[ORM\ManyToOne(
-        targetEntity: Capture::class,
-        inversedBy: 'captureElements'
-    )]
+    #[ORM\ManyToOne(targetEntity: Capture::class, inversedBy: 'captureElements')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Capture $capture = null;
 
@@ -222,18 +209,6 @@ abstract class CaptureElement implements TenantAwareInterface, LivecycleStatusAw
     public function setChapter(?Chapter $chapter): static
     {
         $this->chapter = $chapter;
-
-        return $this;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): static
-    {
-        $this->active = $active;
 
         return $this;
     }

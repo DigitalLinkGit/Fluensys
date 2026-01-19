@@ -4,11 +4,11 @@ namespace App\Form\Participant;
 
 use App\Entity\Account\Contact;
 use App\Entity\Capture\Capture;
+use App\Entity\Enum\ParticipantAssignmentPurpose;
 use App\Entity\Participant\ParticipantAssignment;
 use App\Entity\Participant\ParticipantRole;
 use App\Entity\Project;
 use App\Entity\Tenant\User;
-use App\Enum\ParticipantAssignmentPurpose;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

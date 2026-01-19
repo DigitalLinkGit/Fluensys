@@ -1,7 +1,7 @@
 <div>
     <div class="input-group">
-        <select class="form-select" data-capture-element-target="typeSelect">
-            {% for item in dragTypes %}
+        <select class="form-select" data-fields-ajax-target="typeSelect">
+        {% for item in dragTypes %}
                 <option value="{{ item.key }}">{{ item.label }}</option>
             {% endfor %}
         </select>
