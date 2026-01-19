@@ -94,6 +94,7 @@ CREATE TABLE `capture` (
   `tenant_id` int(11) NOT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'draft',
   `owner_project_id` int(11) DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_8BFEA6E5A9F87BD` (`title_id`),
   KEY `IDX_8BFEA6E59B6B5FBA` (`account_id`),
@@ -105,7 +106,7 @@ CREATE TABLE `capture` (
   CONSTRAINT `FK_8BFEA6E59033212A` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`),
   CONSTRAINT `FK_8BFEA6E59B6B5FBA` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`),
   CONSTRAINT `FK_8BFEA6E5A9F87BD` FOREIGN KEY (`title_id`) REFERENCES `title` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=153 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=171 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -114,7 +115,7 @@ CREATE TABLE `capture` (
 
 LOCK TABLES `capture` WRITE;
 /*!40000 ALTER TABLE `capture` DISABLE KEYS */;
-INSERT INTO `capture` VALUES (17,52,NULL,'Compte rendu','Support de comptes rendus',NULL,1,'template',NULL),(139,336,NULL,'COPIL / COPROJ','Support de COPIL / COPROJ',NULL,1,'template',NULL),(140,345,NULL,'Spécification fonctionnelle','Spécification fonctionnelle',NULL,1,'template',NULL),(141,344,NULL,'Chiffrage','Chiffrage',NULL,1,'template',NULL),(142,346,4,'Interface MS Dynamics <-> Atrium','Spécification fonctionnelle',20,1,'validated',NULL),(146,366,4,'SPEC : Interface SAP ByDesign <-> Hubspot','Spécification fonctionnelle',20,1,'validated',27),(147,373,4,'Chiffrage : Interface SAP ByDesign <-> Hubspot','Chiffrage',20,1,'pending',27),(148,375,4,'Spécification fonctionnelle','Spécification fonctionnelle',22,1,'ready',28),(149,382,4,'Chiffrage','Chiffrage',22,1,'ready',28),(150,384,4,'Spécification fonctionnelle','Spécification fonctionnelle',22,1,'ready',NULL),(151,NULL,NULL,'dsgsdg','sgsgsgsg',NULL,1,'template',NULL);
+INSERT INTO `capture` VALUES (17,52,NULL,'Compte rendu','Support de comptes rendus',NULL,1,'template',NULL,1),(139,336,NULL,'COPIL / COPROJ','Support de COPIL / COPROJ',NULL,1,'template',NULL,1),(140,345,NULL,'Spécification fonctionnelle','Spécification fonctionnelle',NULL,1,'template',NULL,1),(141,344,NULL,'Chiffrage','Chiffrage',NULL,1,'template',NULL,1),(153,392,NULL,'Capture de TEST','Capture de TEST',NULL,1,'template',NULL,1),(162,417,4,'Capture de TEST de rendu','Capture de TEST',20,1,'validated',NULL,1),(164,425,4,'Spécification fonctionnelle v2','Spécification fonctionnelle',20,1,'ready',NULL,1),(165,432,4,'Chiffrage','Chiffrage',20,1,'pending',NULL,1),(168,440,4,'Spécification fonctionnelle','Spécification fonctionnelle',20,1,'ready',30,1),(169,447,4,'Chiffrage','Chiffrage',20,1,'pending',30,1),(170,449,4,'Compte rendu','Support de comptes rendus',20,1,'submitted',NULL,1);
 /*!40000 ALTER TABLE `capture` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,7 +170,6 @@ CREATE TABLE `capture_element` (
   `description` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
   `position` int(11) NOT NULL,
-  `type` varchar(255) NOT NULL,
   `contributor_id` int(11) DEFAULT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'draft',
   `tenant_id` int(11) NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE `capture_element` (
   CONSTRAINT `FK_33ED8BFF7A19A357` FOREIGN KEY (`contributor_id`) REFERENCES `participant_role` (`id`),
   CONSTRAINT `FK_33ED8BFF9033212A` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`),
   CONSTRAINT `FK_33ED8BFFB0644AEC` FOREIGN KEY (`validator_id`) REFERENCES `participant_role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=362 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=418 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,7 +193,7 @@ CREATE TABLE `capture_element` (
 
 LOCK TABLES `capture_element` WRITE;
 /*!40000 ALTER TABLE `capture_element` DISABLE KEYS */;
-INSERT INTO `capture_element` VALUES (33,NULL,33,17,'Introduction','Introduction',1,0,'flex',NULL,'template',1),(34,NULL,34,17,'Points abordés / résumé','Points abordés / résumé',1,1,'flex',NULL,'template',1),(35,NULL,35,17,'Etapes suivantes','Etapes suivantes',1,2,'flex',NULL,'template',1),(309,39,240,139,'Compte rendu (COPIL / COPROJ)','Compte rendu de COPIL (ou COPROJ)',1,0,'flex',NULL,'template',1),(310,NULL,241,140,'Contexte et objectifs','Contexte et objectifs',1,0,'flex',NULL,'template',1),(311,NULL,242,140,'Périmètre','Périmètre',1,1,'flex',NULL,'template',1),(312,NULL,243,140,'Acteurs / Rôles','Acteurs / Rôles',1,2,'flex',NULL,'template',1),(313,NULL,NULL,140,'Besoins fonctionnels','Besoins fonctionnels',1,3,'flex',NULL,'template',1),(314,NULL,244,140,'Règles de gestion','Règles de gestion',1,4,'flex',NULL,'template',1),(315,NULL,245,140,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,'flex',NULL,'template',1),(316,NULL,246,140,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,'flex',NULL,'template',1),(318,39,247,141,'Chiffrage','Chiffrage',1,0,'flex',52,'template',1),(319,NULL,248,142,'Contexte et objectifs','Contexte et objectifs',1,0,'flex',NULL,'validated',1),(320,NULL,249,142,'Périmètre','Périmètre',1,1,'flex',NULL,'validated',1),(321,NULL,250,142,'Acteurs / Rôles','Acteurs / Rôles',1,2,'flex',NULL,'validated',1),(322,NULL,NULL,142,'Besoins fonctionnels','Besoins fonctionnels',1,3,'flex',NULL,'validated',1),(323,NULL,251,142,'Règles de gestion','Règles de gestion',1,4,'flex',NULL,'validated',1),(324,NULL,252,142,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,'flex',NULL,'validated',1),(325,NULL,253,142,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,'flex',NULL,'validated',1),(337,NULL,264,146,'Contexte et objectifs','Contexte et objectifs',1,0,'flex',NULL,'validated',1),(338,NULL,265,146,'Périmètre','Périmètre',1,1,'flex',NULL,'validated',1),(339,NULL,266,146,'Acteurs / Rôles','Acteurs / Rôles',1,2,'flex',NULL,'validated',1),(340,NULL,NULL,146,'Besoins fonctionnels','Besoins fonctionnels',1,3,'flex',NULL,'validated',1),(341,NULL,267,146,'Règles de gestion','Règles de gestion',1,4,'flex',NULL,'validated',1),(342,NULL,268,146,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,'flex',NULL,'validated',1),(343,NULL,269,146,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,'flex',NULL,'validated',1),(344,39,270,147,'Chiffrage','Chiffrage',1,0,'flex',52,'pending',1),(345,NULL,271,148,'Contexte et objectifs','Contexte et objectifs',1,0,'flex',NULL,'ready',1),(346,NULL,272,148,'Périmètre','Périmètre',1,1,'flex',NULL,'ready',1),(347,NULL,273,148,'Acteurs / Rôles','Acteurs / Rôles',1,2,'flex',NULL,'ready',1),(348,NULL,NULL,148,'Besoins fonctionnels','Besoins fonctionnels',1,3,'flex',NULL,'ready',1),(349,NULL,274,148,'Règles de gestion','Règles de gestion',1,4,'flex',NULL,'ready',1),(350,NULL,275,148,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,'flex',NULL,'ready',1),(351,NULL,276,148,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,'flex',NULL,'ready',1),(352,39,277,149,'Chiffrage','Chiffrage',1,0,'flex',52,'ready',1),(353,NULL,278,150,'Contexte et objectifs','Contexte et objectifs',1,0,'flex',NULL,'validated',1),(354,NULL,279,150,'Périmètre','Périmètre',1,1,'flex',NULL,'validated',1),(355,NULL,280,150,'Acteurs / Rôles','Acteurs / Rôles',1,2,'flex',NULL,'ready',1),(356,NULL,NULL,150,'Besoins fonctionnels','Besoins fonctionnels',1,3,'flex',NULL,'ready',1),(357,NULL,281,150,'Règles de gestion','Règles de gestion',1,4,'flex',NULL,'ready',1),(358,NULL,282,150,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,'flex',NULL,'ready',1),(359,NULL,283,150,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,'flex',NULL,'ready',1),(360,NULL,NULL,151,'dgsdgs','gsgsgs',1,0,'flex',NULL,'template',1);
+INSERT INTO `capture_element` VALUES (33,NULL,33,17,'Introduction','Introduction',1,0,NULL,'template',1),(34,NULL,34,17,'Points abordés / Décisions','Points abordés / Décisions',1,1,NULL,'template',1),(35,NULL,35,17,'Etapes suivantes','Etapes suivantes',1,2,NULL,'template',1),(309,39,240,139,'Compte rendu (COPIL / COPROJ)','Compte rendu de COPIL (ou COPROJ)',1,0,NULL,'template',1),(310,NULL,241,140,'Contexte et objectifs','Contexte et objectifs',1,0,NULL,'template',1),(311,NULL,242,140,'Périmètre','Périmètre',1,1,NULL,'template',1),(312,NULL,243,140,'Acteurs / Rôles','Acteurs / Rôles',1,2,NULL,'template',1),(313,NULL,NULL,140,'Besoins fonctionnels','Besoins fonctionnels',1,3,NULL,'template',1),(314,NULL,244,140,'Règles de gestion','Règles de gestion',1,4,NULL,'template',1),(315,NULL,245,140,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,NULL,'template',1),(316,NULL,246,140,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,NULL,'template',1),(318,39,247,141,'Chiffrage','Chiffrage',1,0,52,'template',1),(367,NULL,290,153,'Table field test','Table field test',1,0,NULL,'template',1),(368,NULL,291,153,'Listable field test','Listable field test',1,0,NULL,'template',1),(380,NULL,294,153,'Autres champs','Autres champs',1,0,NULL,'template',1),(387,NULL,301,162,'Table field test','Table field test',1,0,NULL,'validated',1),(388,NULL,302,162,'Listable field test','Listable field test',1,0,NULL,'validated',1),(389,NULL,303,162,'Autres champs','Autres champs',1,0,NULL,'validated',1),(393,NULL,307,164,'Contexte et objectifs','Contexte et objectifs',1,0,NULL,'ready',1),(394,NULL,308,164,'Périmètre','Périmètre',1,1,NULL,'submitted',1),(395,NULL,309,164,'Acteurs / Rôles','Acteurs / Rôles',1,2,NULL,'ready',1),(396,NULL,NULL,164,'Besoins fonctionnels','Besoins fonctionnels',1,3,NULL,'ready',1),(397,NULL,310,164,'Règles de gestion','Règles de gestion',1,4,NULL,'ready',1),(398,NULL,311,164,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,NULL,'ready',1),(399,NULL,312,164,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,NULL,'ready',1),(400,39,313,165,'Chiffrage','Chiffrage',1,0,52,'pending',1),(407,NULL,318,168,'Contexte et objectifs','Contexte et objectifs',1,0,NULL,'submitted',1),(408,NULL,319,168,'Périmètre','Périmètre',1,1,NULL,'submitted',1),(409,NULL,320,168,'Acteurs / Rôles','Acteurs / Rôles',1,2,NULL,'ready',1),(410,NULL,NULL,168,'Besoins fonctionnels','Besoins fonctionnels',1,3,NULL,'ready',1),(411,NULL,321,168,'Règles de gestion','Règles de gestion',1,4,NULL,'submitted',1),(412,NULL,322,168,'Parcours / cas d’usage','Parcours / cas d’usage',1,5,NULL,'submitted',1),(413,NULL,323,168,'Critères d’acceptation (Definition of Done)','Critères d’acceptation (Definition of Done)',1,6,NULL,'ready',1),(414,39,324,169,'Chiffrage','Chiffrage',1,0,52,'pending',1),(415,NULL,325,170,'Introduction','Introduction',1,0,NULL,'submitted',1),(416,NULL,326,170,'Points abordés / Décisions','Points abordés / Décisions',1,1,NULL,'submitted',1),(417,NULL,327,170,'Etapes suivantes','Etapes suivantes',1,2,NULL,'submitted',1);
 /*!40000 ALTER TABLE `capture_element` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -207,11 +207,11 @@ DROP TABLE IF EXISTS `chapter`;
 CREATE TABLE `chapter` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title_id` int(11) DEFAULT NULL,
-  `type` varchar(255) NOT NULL,
+  `content` longtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_F981B52EA9F87BD` (`title_id`),
   CONSTRAINT `FK_F981B52EA9F87BD` FOREIGN KEY (`title_id`) REFERENCES `title` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=284 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=328 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,7 +220,7 @@ CREATE TABLE `chapter` (
 
 LOCK TABLES `chapter` WRITE;
 /*!40000 ALTER TABLE `chapter` DISABLE KEYS */;
-INSERT INTO `chapter` VALUES (33,49,'text'),(34,50,'text'),(35,51,'text'),(240,335,'text'),(241,337,'text'),(242,338,'text'),(243,339,'text'),(244,340,'text'),(245,341,'text'),(246,342,'text'),(247,343,'text'),(248,347,'text'),(249,348,'text'),(250,349,'text'),(251,350,'text'),(252,351,'text'),(253,352,'text'),(264,367,'text'),(265,368,'text'),(266,369,'text'),(267,370,'text'),(268,371,'text'),(269,372,'text'),(270,374,'text'),(271,376,'text'),(272,377,'text'),(273,378,'text'),(274,379,'text'),(275,380,'text'),(276,381,'text'),(277,383,'text'),(278,385,'text'),(279,386,'text'),(280,387,'text'),(281,388,'text'),(282,389,'text'),(283,390,'text');
+INSERT INTO `chapter` VALUES (33,49,'Objet : [OBJET]\r\nDate : [DATE]\r\n\r\nParticipants :\r\n[PARTICIPANTS]'),(34,50,'[POINTSABORDESDECISIONS]'),(35,51,'[ACTIONS]'),(240,335,'Date : [DATECOPIL]\r\n\r\nParticipants : \r\n[PARTICIPANTSCOPIL]\r\n\r\n[POINTSABORDESDECISIONS]\r\n\r\nProchaines étapes : \r\n[PROCHAINESETAPES]'),(241,337,'[CONTEXTEETOBJECTIFS]'),(242,338,'[PERIMETRE]'),(243,339,'[ACTEURSROLES]'),(244,340,'[REGLESDEGESTION]'),(245,341,'[CASDUSAGE]\r\n\r\n[JEUXDEDONNEES]'),(246,342,'[DEFINITIONOFDONE]'),(247,343,'[LISTEDETACHES]'),(290,403,'[TABLE]'),(291,404,'[LISTE]'),(294,408,'Texte long :\r\n[TEXTELONG]\r\n\r\nTexte court :\r\n[TEXTECOURT]\r\n\r\nInteger :\r\n[INTEGER]\r\n\r\nDecimal :\r\n[DECIMAL]\r\n\r\nDate :\r\n[DATE]\r\n\r\nReponse multiple :\r\n[CHOIXMULTIPLE]\r\n\r\nReponse unique :\r\n[REPONSEUNIQUE]\r\n\r\nLien :\r\n[LINK]\r\n\r\nEmail :\r\n[EMAIL]\r\n\r\nFichier :\r\n[FILE]\r\n\r\nImage :\r\n[IMAGE]'),(301,418,'[TABLE]'),(302,419,'[LISTE]'),(303,420,'Texte long :\r\n[TEXTELONG]\r\n\r\nTexte court :\r\n[TEXTECOURT]\r\n\r\nInteger :\r\n[INTEGER]\r\n\r\nDecimal :\r\n[DECIMAL]\r\n\r\nDate :\r\n[DATE]\r\n\r\nReponse multiple :\r\n[CHOIXMULTIPLE]\r\n\r\nReponse unique :\r\n[REPONSEUNIQUE]\r\n\r\nLien :\r\n[LINK]\r\n\r\nEmail :\r\n[EMAIL]\r\n\r\nFichier :\r\n[FILE]\r\n\r\nImage :\r\n[IMAGE]'),(307,426,NULL),(308,427,NULL),(309,428,NULL),(310,429,NULL),(311,430,NULL),(312,431,NULL),(313,433,NULL),(318,441,'[CONTEXTEETOBJECTIFS]'),(319,442,'[PERIMETRE]'),(320,443,'[ACTEURSROLES]'),(321,444,'[REGLESDEGESTION]'),(322,445,'[CASDUSAGE]\r\n\r\n[JEUXDEDONNEES]'),(323,446,'[DEFINITIONOFDONE]'),(324,448,'[LISTEDETACHES]'),(325,450,'Objet : [OBJET]\r\nDate : [DATE]\r\n\r\nParticipants :\r\n[PARTICIPANTS]'),(326,451,'[POINTSABORDESDECISIONS]'),(327,452,'[ACTIONS]');
 /*!40000 ALTER TABLE `chapter` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,7 +247,7 @@ CREATE TABLE `checklist_field` (
 
 LOCK TABLES `checklist_field` WRITE;
 /*!40000 ALTER TABLE `checklist_field` DISABLE KEYS */;
-INSERT INTO `checklist_field` VALUES (633,'[{\"label\":\"COPIL\",\"value\":\"COPIL\"},{\"label\":\"COPROJ\",\"value\":\"COPROJ\"}]',NULL,1);
+INSERT INTO `checklist_field` VALUES (633,'[{\"label\":\"COPIL\",\"value\":\"COPIL\"},{\"label\":\"COPROJ\",\"value\":\"COPROJ\"}]',NULL,1),(788,'[{\"label\":\"Option A\",\"value\":\"Option A\"},{\"label\":\"Option B\",\"value\":\"Option B\"},{\"label\":\"Option C\",\"value\":\"Option C\"}]',NULL,0),(789,'[{\"label\":\"Option A\",\"value\":\"Option A\"},{\"label\":\"Option B\",\"value\":\"Option B\"},{\"label\":\"Option C\",\"value\":\"Option C\"}]',NULL,1),(823,'[{\"label\":\"Option A\",\"value\":\"Option A\"},{\"label\":\"Option B\",\"value\":\"Option B\"},{\"label\":\"Option C\",\"value\":\"Option C\"}]','[\"Option B\",\"Option C\"]',0),(824,'[{\"label\":\"Option A\",\"value\":\"Option A\"},{\"label\":\"Option B\",\"value\":\"Option B\"},{\"label\":\"Option C\",\"value\":\"Option C\"}]','[\"Option A\"]',1);
 /*!40000 ALTER TABLE `checklist_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -332,7 +332,7 @@ CREATE TABLE `date_field` (
 
 LOCK TABLES `date_field` WRITE;
 /*!40000 ALTER TABLE `date_field` DISABLE KEYS */;
-INSERT INTO `date_field` VALUES (169,NULL),(626,NULL);
+INSERT INTO `date_field` VALUES (169,NULL),(626,NULL),(787,NULL),(822,'2026-01-15'),(887,'2026-01-08');
 /*!40000 ALTER TABLE `date_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -357,6 +357,7 @@ CREATE TABLE `decimal_field` (
 
 LOCK TABLES `decimal_field` WRITE;
 /*!40000 ALTER TABLE `decimal_field` DISABLE KEYS */;
+INSERT INTO `decimal_field` VALUES (786,NULL),(821,10.3500);
 /*!40000 ALTER TABLE `decimal_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -381,7 +382,7 @@ CREATE TABLE `doctrine_migration_versions` (
 
 LOCK TABLES `doctrine_migration_versions` WRITE;
 /*!40000 ALTER TABLE `doctrine_migration_versions` DISABLE KEYS */;
-INSERT INTO `doctrine_migration_versions` VALUES ('DoctrineMigrations\\Version20251221124726','2025-12-22 23:39:06',1962),('DoctrineMigrations\\Version20251222175506','2025-12-22 23:39:08',129),('DoctrineMigrations\\Version20251222233019','2025-12-22 23:39:08',325),('DoctrineMigrations\\Version20251222234341','2025-12-22 23:43:48',45),('DoctrineMigrations\\Version20251223110823','2025-12-23 11:08:30',139),('DoctrineMigrations\\Version20251223132424','2025-12-23 13:24:30',24),('DoctrineMigrations\\Version20251223135827','2025-12-23 13:58:33',134),('DoctrineMigrations\\Version20251224173554','2025-12-24 17:36:09',250),('DoctrineMigrations\\Version20251224204633','2025-12-24 20:46:36',200),('DoctrineMigrations\\Version20251224214524','2025-12-24 21:45:53',302),('DoctrineMigrations\\Version20251225102140','2025-12-25 10:21:51',41),('DoctrineMigrations\\Version20251225155652','2025-12-25 15:56:59',27),('DoctrineMigrations\\Version20251225222045','2025-12-25 22:20:55',452),('DoctrineMigrations\\Version20251228100054',NULL,NULL),('DoctrineMigrations\\Version20251228104045','2025-12-28 10:40:58',122),('DoctrineMigrations\\Version20251228122935',NULL,NULL),('DoctrineMigrations\\Version20251228123730','2025-12-28 12:37:33',101),('DoctrineMigrations\\Version20251228163504',NULL,NULL),('DoctrineMigrations\\Version20251228164051','2025-12-28 16:40:57',113),('DoctrineMigrations\\Version20251228164506',NULL,NULL),('DoctrineMigrations\\Version20251228164634','2025-12-28 16:46:38',98),('DoctrineMigrations\\Version20251228164727',NULL,NULL),('DoctrineMigrations\\Version20251228164820','2025-12-28 16:48:26',95),('DoctrineMigrations\\Version20251228165021',NULL,NULL),('DoctrineMigrations\\Version20251228165132','2025-12-28 16:51:37',92),('DoctrineMigrations\\Version20251228172057','2025-12-28 17:21:23',26),('DoctrineMigrations\\Version20251230111731','2025-12-30 11:17:50',91),('DoctrineMigrations\\Version20251230121029','2025-12-30 12:10:34',123),('DoctrineMigrations\\Version20251230125658','2025-12-30 12:57:02',88),('DoctrineMigrations\\Version20251230153755','2025-12-30 15:37:59',377),('DoctrineMigrations\\Version20260108104748','2026-01-08 10:48:04',358),('DoctrineMigrations\\Version20260108154528','2026-01-08 15:45:32',109),('DoctrineMigrations\\Version20260109112302','2026-01-09 11:23:07',75),('DoctrineMigrations\\Version20260109150519','2026-01-09 15:05:23',117),('DoctrineMigrations\\Version20260111112211','2026-01-11 11:22:15',47),('DoctrineMigrations\\Version20260111120442','2026-01-11 12:04:49',129),('DoctrineMigrations\\Version20260111121511','2026-01-11 12:15:16',124),('DoctrineMigrations\\Version20260112093425','2026-01-12 09:53:50',116),('DoctrineMigrations\\Version20260112101614','2026-01-12 10:16:20',62),('DoctrineMigrations\\Version20260112114713','2026-01-12 11:47:19',133),('DoctrineMigrations\\Version20260114154652','2026-01-14 15:47:02',167);
+INSERT INTO `doctrine_migration_versions` VALUES ('DoctrineMigrations\\Version20251221124726','2025-12-22 23:39:06',1962),('DoctrineMigrations\\Version20251222175506','2025-12-22 23:39:08',129),('DoctrineMigrations\\Version20251222233019','2025-12-22 23:39:08',325),('DoctrineMigrations\\Version20251222234341','2025-12-22 23:43:48',45),('DoctrineMigrations\\Version20251223110823','2025-12-23 11:08:30',139),('DoctrineMigrations\\Version20251223132424','2025-12-23 13:24:30',24),('DoctrineMigrations\\Version20251223135827','2025-12-23 13:58:33',134),('DoctrineMigrations\\Version20251224173554','2025-12-24 17:36:09',250),('DoctrineMigrations\\Version20251224204633','2025-12-24 20:46:36',200),('DoctrineMigrations\\Version20251224214524','2025-12-24 21:45:53',302),('DoctrineMigrations\\Version20251225102140','2025-12-25 10:21:51',41),('DoctrineMigrations\\Version20251225155652','2025-12-25 15:56:59',27),('DoctrineMigrations\\Version20251225222045','2025-12-25 22:20:55',452),('DoctrineMigrations\\Version20251228100054',NULL,NULL),('DoctrineMigrations\\Version20251228104045','2025-12-28 10:40:58',122),('DoctrineMigrations\\Version20251228122935',NULL,NULL),('DoctrineMigrations\\Version20251228123730','2025-12-28 12:37:33',101),('DoctrineMigrations\\Version20251228163504',NULL,NULL),('DoctrineMigrations\\Version20251228164051','2025-12-28 16:40:57',113),('DoctrineMigrations\\Version20251228164506',NULL,NULL),('DoctrineMigrations\\Version20251228164634','2025-12-28 16:46:38',98),('DoctrineMigrations\\Version20251228164727',NULL,NULL),('DoctrineMigrations\\Version20251228164820','2025-12-28 16:48:26',95),('DoctrineMigrations\\Version20251228165021',NULL,NULL),('DoctrineMigrations\\Version20251228165132','2025-12-28 16:51:37',92),('DoctrineMigrations\\Version20251228172057','2025-12-28 17:21:23',26),('DoctrineMigrations\\Version20251230111731','2025-12-30 11:17:50',91),('DoctrineMigrations\\Version20251230121029','2025-12-30 12:10:34',123),('DoctrineMigrations\\Version20251230125658','2025-12-30 12:57:02',88),('DoctrineMigrations\\Version20251230153755','2025-12-30 15:37:59',377),('DoctrineMigrations\\Version20260108104748','2026-01-08 10:48:04',358),('DoctrineMigrations\\Version20260108154528','2026-01-08 15:45:32',109),('DoctrineMigrations\\Version20260109112302','2026-01-09 11:23:07',75),('DoctrineMigrations\\Version20260109150519','2026-01-09 15:05:23',117),('DoctrineMigrations\\Version20260111112211','2026-01-11 11:22:15',47),('DoctrineMigrations\\Version20260111120442','2026-01-11 12:04:49',129),('DoctrineMigrations\\Version20260111121511','2026-01-11 12:15:16',124),('DoctrineMigrations\\Version20260112093425','2026-01-12 09:53:50',116),('DoctrineMigrations\\Version20260112101614','2026-01-12 10:16:20',62),('DoctrineMigrations\\Version20260112114713','2026-01-12 11:47:19',133),('DoctrineMigrations\\Version20260114154652','2026-01-14 15:47:02',167),('DoctrineMigrations\\Version20260114235806','2026-01-14 23:58:14',47),('DoctrineMigrations\\Version20260115000120','2026-01-15 00:01:34',114),('DoctrineMigrations\\Version20260115000254','2026-01-15 00:02:57',82),('DoctrineMigrations\\Version20260115000447','2026-01-15 00:04:56',111),('DoctrineMigrations\\Version20260115010619','2026-01-15 01:06:22',55),('DoctrineMigrations\\Version20260115102633','2026-01-15 10:26:38',55),('DoctrineMigrations\\Version20260116152619','2026-01-16 15:26:35',232),('DoctrineMigrations\\Version20260118114958','2026-01-18 11:50:05',41),('DoctrineMigrations\\Version20260118124554','2026-01-18 12:45:58',85),('DoctrineMigrations\\Version20260118145149','2026-01-18 14:51:56',164),('DoctrineMigrations\\Version20260118150004','2026-01-18 15:00:09',33),('DoctrineMigrations\\Version20260118153939','2026-01-18 15:39:44',84),('DoctrineMigrations\\Version20260118171727','2026-01-18 17:17:31',38),('DoctrineMigrations\\Version20260118213543','2026-01-18 21:36:04',62),('DoctrineMigrations\\Version20260118221638','2026-01-18 22:16:42',134);
 /*!40000 ALTER TABLE `doctrine_migration_versions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -406,6 +407,7 @@ CREATE TABLE `email_field` (
 
 LOCK TABLES `email_field` WRITE;
 /*!40000 ALTER TABLE `email_field` DISABLE KEYS */;
+INSERT INTO `email_field` VALUES (791,NULL),(826,'max@fluensys.io');
 /*!40000 ALTER TABLE `email_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -429,7 +431,7 @@ CREATE TABLE `field` (
   PRIMARY KEY (`id`),
   KEY `IDX_5BF54558DE152EAB` (`capture_element_id`),
   CONSTRAINT `FK_5BF54558DE152EAB` FOREIGN KEY (`capture_element_id`) REFERENCES `capture_element` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=891 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -438,32 +440,61 @@ CREATE TABLE `field` (
 
 LOCK TABLES `field` WRITE;
 /*!40000 ALTER TABLE `field` DISABLE KEYS */;
-INSERT INTO `field` VALUES (157,33,'Objet','OBJET',0,'text','Objet (ex. “Atelier #2 – Parcours utilisateur / besoins”)',NULL,1),(159,33,'Ordre du jour','ORDREDUJOUR',1,'textarea','Ordre du jour',NULL,1),(169,33,'Date','DATE',3,'date','Date',NULL,1),(176,33,'Participants','PARTICIPANTS',4,'listable_field','Participants',NULL,1),(626,309,'Date COPIL','DATECOPIL',1,'date','Date',NULL,1),(627,309,'Participants COPIL','PARTICIPANTSCOPIL',2,'listable_field','Participants',NULL,1),(628,309,'Avancement COPIL','AVANCEMENTCOPIL',3,'textarea','Avancement',NULL,1),(629,309,'Décisions COPIL','DECISIONSCOPIL',4,'textarea','Décisions',NULL,1),(630,309,'Actions COPIL','ACTIONSCOPIL',5,'listable_field','Actions / Prochaines étapes',NULL,1),(631,34,'Points abordés','POINTSABORDES',1,'listable_field','Listez les points abordés',NULL,1),(632,35,'Actions','ACTIONS',1,'listable_field','Listez les prochaines étapes / Actions à mener',NULL,1),(633,309,'COPIL / COPROJ','COPILCOPROJ',0,'checklist','COPIL / COPROJ',NULL,1),(634,310,'Contexte et objectifs','CONTEXTEETOBJECTIFS',1,'textarea','Contexte et objectifs',NULL,1),(635,311,'Périmètre','PERIMETRE',1,'textarea','Périmètre',NULL,1),(636,312,'Acteurs / Rôles','ACTEURSROLES',1,'listable_field','Acteurs / Rôles',NULL,1),(637,313,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(638,314,'Règles de gestion','REGLESDEGESTION',1,'listable_field','Règles de gestion',NULL,1),(639,315,'Parcours / cas d’usage','PARCOURSCASDUSAGE',1,'textarea','Parcours / cas d’usage',NULL,1),(640,316,'Definition of Done','DEFINITIONOFDONE',1,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(641,318,'Chiffrage','CHIFFRAGE',0,'listable_field','Listez les tâches et indiquez le nombre de jours',NULL,1),(642,319,'Contexte et objectifs','CONTEXTEETOBJECTIFS',1,'textarea','Contexte et objectifs',NULL,1),(643,320,'Périmètre','PERIMETRE',1,'textarea','Périmètre',NULL,1),(644,321,'Acteurs / Rôles','ACTEURSROLES',1,'listable_field','Acteurs / Rôles',NULL,1),(645,322,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(646,323,'Règles de gestion','REGLESDEGESTION',1,'listable_field','Règles de gestion',NULL,1),(647,324,'Parcours / cas d’usage','PARCOURSCASDUSAGE',1,'textarea','Parcours / cas d’usage',NULL,1),(648,325,'Definition of Done','DEFINITIONOFDONE',1,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(663,337,'Contexte et objectifs','CONTEXTEETOBJECTIFS',1,'textarea','Contexte et objectifs',NULL,1),(664,338,'Périmètre','PERIMETRE',1,'textarea','Périmètre',NULL,1),(665,339,'Acteurs / Rôles','ACTEURSROLES',1,'listable_field','Acteurs / Rôles',NULL,1),(666,340,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(667,341,'Règles de gestion','REGLESDEGESTION',1,'listable_field','Règles de gestion',NULL,1),(668,342,'Parcours / cas d’usage','PARCOURSCASDUSAGE',1,'textarea','Parcours / cas d’usage',NULL,1),(669,343,'Definition of Done','DEFINITIONOFDONE',1,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(670,344,'Chiffrage','CHIFFRAGE',0,'listable_field','Listez les tâches et indiquez le nombre de jours',NULL,1),(671,345,'Contexte et objectifs','CONTEXTEETOBJECTIFS',1,'textarea','Contexte et objectifs',NULL,1),(672,346,'Périmètre','PERIMETRE',1,'textarea','Périmètre',NULL,1),(673,347,'Acteurs / Rôles','ACTEURSROLES',1,'listable_field','Acteurs / Rôles',NULL,1),(674,348,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(675,349,'Règles de gestion','REGLESDEGESTION',1,'listable_field','Règles de gestion',NULL,1),(676,350,'Parcours / cas d’usage','PARCOURSCASDUSAGE',1,'textarea','Parcours / cas d’usage',NULL,1),(677,351,'Definition of Done','DEFINITIONOFDONE',1,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(678,352,'Chiffrage','CHIFFRAGE',0,'listable_field','Listez les tâches et indiquez le nombre de jours',NULL,1),(679,353,'Contexte et objectifs','CONTEXTEETOBJECTIFS',1,'textarea','Contexte et objectifs',NULL,1),(680,354,'Périmètre','PERIMETRE',1,'textarea','Périmètre',NULL,1),(681,355,'Acteurs / Rôles','ACTEURSROLES',1,'listable_field','Acteurs / Rôles',NULL,1),(682,356,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(683,357,'Règles de gestion','REGLESDEGESTION',1,'listable_field','Règles de gestion',NULL,1),(684,358,'Parcours / cas d’usage','PARCOURSCASDUSAGE',1,'textarea','Parcours / cas d’usage',NULL,1),(685,359,'Definition of Done','DEFINITIONOFDONE',1,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(686,360,'sdfsf','SDFSF',1,'textarea','sdfsdfsdfsdfsdf',NULL,1);
+INSERT INTO `field` VALUES (157,33,'Objet','OBJET',0,'text','Objet (ex. “Atelier #2 – Parcours utilisateur / besoins”)',NULL,1),(169,33,'Date','DATE',1,'date','Date',NULL,1),(176,33,'Participants','PARTICIPANTS',2,'listable_field','Participants',NULL,1),(626,309,'Date COPIL','DATECOPIL',1,'date','Date',NULL,1),(627,309,'Participants COPIL','PARTICIPANTSCOPIL',2,'listable_field','Participants',NULL,1),(633,309,'COPIL / COPROJ','COPILCOPROJ',0,'checklist','COPIL / COPROJ',NULL,1),(634,310,'Contexte et objectifs','CONTEXTEETOBJECTIFS',0,'textarea','Contexte et objectifs',NULL,1),(635,311,'Périmètre','PERIMETRE',0,'textarea','Périmètre',NULL,1),(636,312,'Acteurs / Rôles','ACTEURSROLES',0,'listable_field','Acteurs / Rôles',NULL,1),(637,313,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(640,316,'Definition of Done','DEFINITIONOFDONE',0,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(743,368,'Liste','LISTE',0,'listable_field','Liste',NULL,0),(744,367,'Table','TABLE',0,'table_field','Table',NULL,0),(783,380,'Texte long','TEXTELONG',0,'textarea','Texte long',NULL,0),(784,380,'Texte court','TEXTECOURT',1,'text','Texte court',NULL,0),(785,380,'Integer','INTEGER',2,'integer','Integer',NULL,0),(786,380,'Decimal','DECIMAL',3,'decimal','Decimal',NULL,0),(787,380,'Date','DATE',4,'date','Date',NULL,0),(788,380,'Choix multiple','CHOIXMULTIPLE',5,'checklist','Choix multiple',NULL,0),(789,380,'Reponse unique','REPONSEUNIQUE',6,'checklist','Reponse unique',NULL,0),(790,380,'Link','LINK',7,'url','Link',NULL,0),(791,380,'Email','EMAIL',8,'email','Email',NULL,0),(814,380,'File','FILE',9,'file','File',NULL,0),(815,380,'Image','IMAGE',10,'image','Image',NULL,0),(816,387,'Table','TABLE',0,'table_field','Table',NULL,0),(817,388,'Liste','LISTE',0,'listable_field','Liste',NULL,0),(818,389,'Texte long','TEXTELONG',0,'textarea','Texte long',NULL,0),(819,389,'Texte court','TEXTECOURT',1,'text','Texte court',NULL,0),(820,389,'Integer','INTEGER',2,'integer','Integer',NULL,0),(821,389,'Decimal','DECIMAL',3,'decimal','Decimal',NULL,0),(822,389,'Date','DATE',4,'date','Date',NULL,0),(823,389,'Choix multiple','CHOIXMULTIPLE',5,'checklist','Choix multiple',NULL,0),(824,389,'Reponse unique','REPONSEUNIQUE',6,'checklist','Reponse unique',NULL,0),(825,389,'Link','LINK',7,'url','Link',NULL,0),(826,389,'Email','EMAIL',8,'email','Email',NULL,0),(827,389,'File','FILE',9,'file','File',NULL,0),(828,389,'Image','IMAGE',10,'image','Image',NULL,0),(842,393,'Contexte et objectifs','CONTEXTEETOBJECTIFS',1,'textarea','Contexte et objectifs',NULL,1),(843,394,'Périmètre','PERIMETRE',1,'textarea','Périmètre',NULL,1),(844,395,'Acteurs / Rôles','ACTEURSROLES',1,'listable_field','Acteurs / Rôles',NULL,1),(845,396,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(846,397,'Règles de gestion','REGLESDEGESTION',1,'listable_field','Règles de gestion',NULL,1),(847,398,'Parcours / cas d’usage','PARCOURSCASDUSAGE',1,'textarea','Parcours / cas d’usage',NULL,1),(848,399,'Definition of Done','DEFINITIONOFDONE',1,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(849,400,'Chiffrage','CHIFFRAGE',0,'listable_field','Listez les tâches et indiquez le nombre de jours',NULL,1),(865,314,'Règles de gestion','REGLESDEGESTION',0,'table_field','Règles de gestion',NULL,1),(866,315,'Cas d\'usage','CASDUSAGE',0,'table_field','Cas d\'usage',NULL,0),(869,318,'Liste de tâches','LISTEDETACHES',0,'table_field','Listez les tâches à effectuer et indiquez un nombre d\'heure',NULL,0),(871,35,'Actions','ACTIONS',0,'table_field','Listez les prochaines étapes / Actions à mener',NULL,0),(873,34,'points abordés / Décisions','POINTSABORDESDECISIONS',0,'table_field','Listez les points abordés / Décisions',NULL,0),(874,309,'Points abordés / Décisions','POINTSABORDESDECISIONS',3,'table_field','Points abordés / Décisions',NULL,0),(875,309,'Prochaines étapes','PROCHAINESETAPES',4,'table_field','Prochaines étapes',NULL,0),(876,407,'Contexte et objectifs','CONTEXTEETOBJECTIFS',0,'textarea','Contexte et objectifs',NULL,1),(877,408,'Périmètre','PERIMETRE',0,'textarea','Périmètre',NULL,1),(878,409,'Acteurs / Rôles','ACTEURSROLES',0,'listable_field','Acteurs / Rôles',NULL,1),(879,410,'Besoins fonctionnels','BESOINSFONCTIONNELS',1,'textarea','Besoins fonctionnels',NULL,1),(880,411,'Règles de gestion','REGLESDEGESTION',0,'table_field','Règles de gestion',NULL,1),(881,412,'Cas d\'usage','CASDUSAGE',0,'table_field','Cas d\'usage',NULL,0),(882,412,'Jeux de données','JEUXDEDONNEES',1,'textarea','Fournissez un fichier avec un jeu de données couvrant tous les cas d\'usage et toutes les règles de gestion',NULL,0),(883,413,'Definition of Done','DEFINITIONOFDONE',0,'listable_field','Critères d’acceptation (Definition of Done)',NULL,1),(884,414,'Liste de tâches','LISTEDETACHES',0,'table_field','Listez les tâches à effectuer et indiquez un nombre d\'heure',NULL,0),(885,315,'jeux de données','JEUXDEDONNEES',1,'file','Fournissez un fichier avec un jeux de données permettant de couvrir l\'ensemble des cas d\'usage et des règles de gestion',NULL,0),(886,415,'Objet','OBJET',0,'text','Objet (ex. “Atelier #2 – Parcours utilisateur / besoins”)',NULL,1),(887,415,'Date','DATE',1,'date','Date',NULL,1),(888,415,'Participants','PARTICIPANTS',2,'listable_field','Participants',NULL,1),(889,416,'points abordés / Décisions','POINTSABORDESDECISIONS',0,'table_field','Listez les points abordés / Décisions',NULL,0),(890,417,'Actions','ACTIONS',0,'table_field','Listez les prochaines étapes / Actions à mener',NULL,0);
 /*!40000 ALTER TABLE `field` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `flex_capture_element`
+-- Table structure for table `file_field`
 --
 
-DROP TABLE IF EXISTS `flex_capture_element`;
+DROP TABLE IF EXISTS `file_field`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `flex_capture_element` (
+CREATE TABLE `file_field` (
   `id` int(11) NOT NULL,
+  `value` varchar(1024) DEFAULT NULL,
+  `path` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `FK_CAF7302BF396750` FOREIGN KEY (`id`) REFERENCES `capture_element` (`id`) ON DELETE CASCADE
+  CONSTRAINT `FK_F176F56FBF396750` FOREIGN KEY (`id`) REFERENCES `field` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `flex_capture_element`
+-- Dumping data for table `file_field`
 --
 
-LOCK TABLES `flex_capture_element` WRITE;
-/*!40000 ALTER TABLE `flex_capture_element` DISABLE KEYS */;
-INSERT INTO `flex_capture_element` VALUES (33),(34),(35),(309),(310),(311),(312),(313),(314),(315),(316),(318),(319),(320),(321),(322),(323),(324),(325),(337),(338),(339),(340),(341),(342),(343),(344),(345),(346),(347),(348),(349),(350),(351),(352),(353),(354),(355),(356),(357),(358),(359),(360);
-/*!40000 ALTER TABLE `flex_capture_element` ENABLE KEYS */;
+LOCK TABLES `file_field` WRITE;
+/*!40000 ALTER TABLE `file_field` DISABLE KEYS */;
+INSERT INTO `file_field` VALUES (814,NULL,NULL),(815,NULL,NULL),(827,'logo-pdf.pdf','captures/162/elements/389/files/file_196bf46e0c35.pdf'),(828,NULL,NULL),(885,NULL,NULL);
+/*!40000 ALTER TABLE `file_field` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `image_field`
+--
+
+DROP TABLE IF EXISTS `image_field`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `image_field` (
+  `id` int(11) NOT NULL,
+  `value` varchar(1024) DEFAULT NULL,
+  `path` varchar(1024) DEFAULT NULL,
+  `display_mode` varchar(20) NOT NULL DEFAULT 'medium',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FK_4CB0C1F1BF396750` FOREIGN KEY (`id`) REFERENCES `field` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `image_field`
+--
+
+LOCK TABLES `image_field` WRITE;
+/*!40000 ALTER TABLE `image_field` DISABLE KEYS */;
+INSERT INTO `image_field` VALUES (815,NULL,NULL,'medium'),(828,'logo-png.png','captures/162/elements/389/images/image_1b3a9420a350.png','small');
+/*!40000 ALTER TABLE `image_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -511,6 +542,7 @@ CREATE TABLE `integer_field` (
 
 LOCK TABLES `integer_field` WRITE;
 /*!40000 ALTER TABLE `integer_field` DISABLE KEYS */;
+INSERT INTO `integer_field` VALUES (785,NULL),(820,10);
 /*!40000 ALTER TABLE `integer_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -534,31 +566,8 @@ CREATE TABLE `listable_field` (
 
 LOCK TABLES `listable_field` WRITE;
 /*!40000 ALTER TABLE `listable_field` DISABLE KEYS */;
-INSERT INTO `listable_field` VALUES (627),(630),(631),(632),(636),(638),(640),(641),(644),(646),(648),(665),(667),(669),(670),(673),(675),(677),(678),(681),(683),(685);
+INSERT INTO `listable_field` VALUES (627),(636),(640),(743),(817),(844),(846),(848),(849),(878),(883),(888);
 /*!40000 ALTER TABLE `listable_field` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `listable_field_capture_element`
---
-
-DROP TABLE IF EXISTS `listable_field_capture_element`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `listable_field_capture_element` (
-  `id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `FK_7F1995CBF396750` FOREIGN KEY (`id`) REFERENCES `capture_element` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `listable_field_capture_element`
---
-
-LOCK TABLES `listable_field_capture_element` WRITE;
-/*!40000 ALTER TABLE `listable_field_capture_element` DISABLE KEYS */;
-/*!40000 ALTER TABLE `listable_field_capture_element` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -575,7 +584,7 @@ CREATE TABLE `listable_field_text_item` (
   PRIMARY KEY (`id`),
   KEY `IDX_F16BD479D938ADC9` (`listable_field_id`),
   CONSTRAINT `FK_F16BD479D938ADC9` FOREIGN KEY (`listable_field_id`) REFERENCES `listable_field` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -584,7 +593,7 @@ CREATE TABLE `listable_field_text_item` (
 
 LOCK TABLES `listable_field_text_item` WRITE;
 /*!40000 ALTER TABLE `listable_field_text_item` DISABLE KEYS */;
-INSERT INTO `listable_field_text_item` VALUES (7,644,'Tous les utilisateurs de Microsoft Dynamics'),(8,646,'Un seul type de temps devra être créer dans MS Dynamics pour gérer tous les types d\'absences'),(9,648,'Lecture des temps effectifs dans MS Dynamics'),(10,648,'Création d\'une absence dans MS Dynamics'),(11,648,'Modification d\'une absence dans MS Dynamics'),(12,648,'Suppression d\'une absence dans MS Dynamics'),(13,665,'Tous les utilisateurs de SAP ByDesign'),(14,669,'La base article est synchronisée avec SAP en maître de la donnée'),(15,669,'La base client est synchronisée avec Hubspot en maître'),(16,669,'Les commandes sont créées automatiquement dans SAP ByDesign quand le statut de celle ci passe en \"closed won\" dans Hubspot'),(17,667,'Tous les articles au statut \"Actif\" dans SAP ByDesign doivent être synchronisés dans Hubspot (création / modification) : toutes les 30min'),(18,667,'Tous les clients dans Hubspot qui ont au moins une commande au statut \"Closed won\" doivent être synchronisés dans SAP ByDesign (création / modification): toutes les 30min'),(19,667,'Quand une commande passe au statut \"Closed won\" dans Hubspot, elle est répliquée dans SAP ByDesign après vérification / création du compte client dans SAP ByDesign');
+INSERT INTO `listable_field_text_item` VALUES (28,817,'item 1'),(29,817,'item 2'),(30,888,'Julien Armond'),(31,888,'Sylvie Raton'),(32,888,'Erwan Dogon');
 /*!40000 ALTER TABLE `listable_field_text_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -646,7 +655,7 @@ CREATE TABLE `participant_assignment` (
   CONSTRAINT `FK_C05A2A4A76ED395` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
   CONSTRAINT `FK_C05A2A4D60322AC` FOREIGN KEY (`role_id`) REFERENCES `participant_role` (`id`) ON DELETE CASCADE,
   CONSTRAINT `FK_C05A2A4E7A1254A` FOREIGN KEY (`contact_id`) REFERENCES `contact` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -702,6 +711,7 @@ CREATE TABLE `project` (
   `status` varchar(255) NOT NULL DEFAULT 'draft',
   `account_id` int(11) DEFAULT NULL,
   `responsible_id` int(11) DEFAULT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   KEY `IDX_2FB3D0EE9033212A` (`tenant_id`),
   KEY `IDX_2FB3D0EE9B6B5FBA` (`account_id`),
@@ -709,7 +719,7 @@ CREATE TABLE `project` (
   CONSTRAINT `FK_2FB3D0EE602AD315` FOREIGN KEY (`responsible_id`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_2FB3D0EE9033212A` FOREIGN KEY (`tenant_id`) REFERENCES `tenant` (`id`),
   CONSTRAINT `FK_2FB3D0EE9B6B5FBA` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -718,7 +728,7 @@ CREATE TABLE `project` (
 
 LOCK TABLES `project` WRITE;
 /*!40000 ALTER TABLE `project` DISABLE KEYS */;
-INSERT INTO `project` VALUES (25,1,'Projet de développement','Projet de développement','template',NULL,NULL),(27,1,'Interface SAP ByDesign <-> Hubspot','Projet de développement','pending',4,20),(28,1,'Site web','Projet de développement','ready',4,22);
+INSERT INTO `project` VALUES (25,1,'Projet de développement','Projet de développement','template',NULL,NULL,1),(30,1,'Projet de développement','Projet de développement','pending',4,20,1);
 /*!40000 ALTER TABLE `project` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -746,7 +756,7 @@ CREATE TABLE `project_capture` (
 
 LOCK TABLES `project_capture` WRITE;
 /*!40000 ALTER TABLE `project_capture` DISABLE KEYS */;
-INSERT INTO `project_capture` VALUES (25,140),(25,141),(27,146),(27,147),(28,148),(28,149);
+INSERT INTO `project_capture` VALUES (25,140),(25,141),(30,168),(30,169);
 /*!40000 ALTER TABLE `project_capture` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -774,6 +784,7 @@ CREATE TABLE `project_recurring_capture` (
 
 LOCK TABLES `project_recurring_capture` WRITE;
 /*!40000 ALTER TABLE `project_recurring_capture` DISABLE KEYS */;
+INSERT INTO `project_recurring_capture` VALUES (30,170);
 /*!40000 ALTER TABLE `project_recurring_capture` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -801,8 +812,39 @@ CREATE TABLE `project_recurring_capture_templates` (
 
 LOCK TABLES `project_recurring_capture_templates` WRITE;
 /*!40000 ALTER TABLE `project_recurring_capture_templates` DISABLE KEYS */;
-INSERT INTO `project_recurring_capture_templates` VALUES (25,17),(25,139),(27,17),(27,139),(28,17),(28,139);
+INSERT INTO `project_recurring_capture_templates` VALUES (25,17),(25,139),(30,17),(30,139);
 /*!40000 ALTER TABLE `project_recurring_capture_templates` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rendering_config`
+--
+
+DROP TABLE IF EXISTS `rendering_config`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `rendering_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `document_title_color` varchar(255) DEFAULT NULL,
+  `title_h1_color` varchar(255) DEFAULT NULL,
+  `title_h2_color` varchar(255) DEFAULT NULL,
+  `title_h3_color` varchar(255) DEFAULT NULL,
+  `logo_path` varchar(255) DEFAULT NULL,
+  `table_header_background_color` varchar(255) DEFAULT NULL,
+  `table_header_color` varchar(255) DEFAULT NULL,
+  `border_color` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rendering_config`
+--
+
+LOCK TABLES `rendering_config` WRITE;
+/*!40000 ALTER TABLE `rendering_config` DISABLE KEYS */;
+INSERT INTO `rendering_config` VALUES (1,'#0060a7','#0060a7','#0060a7','#0060a7','logos/logo_94f0da2bf765.png','#0060a7','#ffffff','#0060a7');
+/*!40000 ALTER TABLE `rendering_config` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -834,6 +876,89 @@ INSERT INTO `system_component` VALUES (10,4,'Salesforce','application'),(11,4,'M
 UNLOCK TABLES;
 
 --
+-- Table structure for table `table_field`
+--
+
+DROP TABLE IF EXISTS `table_field`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `table_field` (
+  `id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FK_57098820BF396750` FOREIGN KEY (`id`) REFERENCES `field` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `table_field`
+--
+
+LOCK TABLES `table_field` WRITE;
+/*!40000 ALTER TABLE `table_field` DISABLE KEYS */;
+INSERT INTO `table_field` VALUES (744),(816),(865),(866),(869),(871),(873),(874),(875),(880),(881),(884),(889),(890);
+/*!40000 ALTER TABLE `table_field` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `table_field_column`
+--
+
+DROP TABLE IF EXISTS `table_field_column`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `table_field_column` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `table_field_id` int(11) NOT NULL,
+  `col_key` varchar(80) NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `type` varchar(20) NOT NULL,
+  `position` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_table_field_column_key` (`table_field_id`,`col_key`),
+  KEY `IDX_E2F49ABED48A2960` (`table_field_id`),
+  CONSTRAINT `FK_E2F49ABED48A2960` FOREIGN KEY (`table_field_id`) REFERENCES `table_field` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `table_field_column`
+--
+
+LOCK TABLES `table_field_column` WRITE;
+/*!40000 ALTER TABLE `table_field_column` DISABLE KEYS */;
+INSERT INTO `table_field_column` VALUES (7,744,'nom','nom','text',0),(8,744,'date','date','date',1),(16,744,'int','int','integer',2),(23,816,'nom','nom','text',0),(24,816,'date','date','date',1),(25,816,'int','int','integer',2),(29,865,'objetcible','Objet / Cible','text',0),(30,865,'condition','Condition','text',1),(31,865,'scope','Scope','text',2),(32,865,'regle','Règle','text',3),(33,866,'acteur','Acteur','text',0),(34,866,'action','Action','text',1),(35,866,'resultat','Résultat','text',2),(36,869,'tache','Tâche','text',0),(37,869,'dureeh','Durée (H)','integer',1),(41,871,'acteur','Acteur','text',0),(42,871,'action','Action','text',1),(43,871,'datedecheance','Date d\'échéance','date',2),(44,873,'pointaborde','Point abordé','text',0),(45,873,'decisionprise','Décision prise','text',1),(46,874,'pointsaborde','Points abordé','text',0),(47,874,'decision','Décision','text',1),(48,875,'acteur','Acteur','text',0),(49,875,'action','Action','text',1),(50,875,'datedecheance','Date d\'échéance','date',2),(51,880,'objetcible','Objet / Cible','text',0),(52,880,'condition','Condition','text',1),(53,880,'scope','Scope','text',2),(54,880,'regle','Règle','text',3),(55,881,'acteur','Acteur','text',0),(56,881,'action','Action','text',1),(57,881,'resultat','Résultat','text',2),(58,884,'tache','Tâche','text',0),(59,884,'dureeh','Durée (H)','integer',1),(60,889,'pointaborde','Point abordé','text',0),(61,889,'decisionprise','Décision prise','text',1),(62,890,'acteur','Acteur','text',0),(63,890,'action','Action','text',1),(64,890,'datedecheance','Date d\'échéance','date',2);
+/*!40000 ALTER TABLE `table_field_column` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `table_field_row`
+--
+
+DROP TABLE IF EXISTS `table_field_row`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `table_field_row` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `table_field_id` int(11) NOT NULL,
+  `position` int(11) NOT NULL,
+  `row_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '(DC2Type:json)' CHECK (json_valid(`row_values`)),
+  PRIMARY KEY (`id`),
+  KEY `IDX_A2827539D48A2960` (`table_field_id`),
+  CONSTRAINT `FK_A2827539D48A2960` FOREIGN KEY (`table_field_id`) REFERENCES `table_field` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `table_field_row`
+--
+
+LOCK TABLES `table_field_row` WRITE;
+/*!40000 ALTER TABLE `table_field_row` DISABLE KEYS */;
+INSERT INTO `table_field_row` VALUES (6,816,0,'{\"nom\":\"row 1\",\"date\":\"2026-01-14\",\"int\":1}'),(7,816,0,'{\"nom\":\"row 2\",\"date\":\"2026-01-14\",\"int\":2}'),(8,816,0,'{\"nom\":\"row 3\",\"date\":\"2026-01-21\",\"int\":3}'),(9,880,0,'{\"objetcible\":\"R\\u00e9cup\\u00e9ration des extrait\",\"condition\":\"Aucune\",\"scope\":\"Tous les compte FR\",\"regle\":\"1 fois par jour \\u00e0 8h\"}'),(10,881,0,'{\"acteur\":\"User technique\",\"action\":\"R\\u00e9cup\\u00e8re les extraits de compte du jour et les charges dans SAP ByDesign\",\"resultat\":\"Les extraits du jour sont pr\\u00e9sents et au statut \\\"comptabilis\\u00e9\\\" dans SAP ByDesign\"}'),(11,889,0,'{\"pointaborde\":\"API MesBanques pour r\\u00e9cup\\u00e9ration des extraits\",\"decisionprise\":\"API REST\"}'),(12,890,0,'{\"acteur\":\"Julien Armond\",\"action\":\"Configure MesBanques pour activer l\'API\",\"datedecheance\":\"2026-01-20\"}'),(13,890,0,'{\"acteur\":\"Julien Armond\",\"action\":\"Fourni les acc\\u00e8s API pour test\",\"datedecheance\":\"2026-01-21\"}'),(14,890,0,'{\"acteur\":\"Sylvie Raton\",\"action\":\"Test l\'API d\'upload des extrait dans SAP et fait un retour\",\"datedecheance\":\"2026-01-29\"}');
+/*!40000 ALTER TABLE `table_field_row` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tenant`
 --
 
@@ -843,7 +968,10 @@ DROP TABLE IF EXISTS `tenant`;
 CREATE TABLE `tenant` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`)
+  `rendering_config_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UNIQ_4E59C462CB6D06F4` (`rendering_config_id`),
+  CONSTRAINT `FK_4E59C462CB6D06F4` FOREIGN KEY (`rendering_config_id`) REFERENCES `rendering_config` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -853,7 +981,7 @@ CREATE TABLE `tenant` (
 
 LOCK TABLES `tenant` WRITE;
 /*!40000 ALTER TABLE `tenant` DISABLE KEYS */;
-INSERT INTO `tenant` VALUES (1,'Idev4U'),(2,'ERP Logic - Intégrateur multi technos');
+INSERT INTO `tenant` VALUES (1,'Idev4U',1),(2,'ERP Logic - Intégrateur multi technos',NULL);
 /*!40000 ALTER TABLE `tenant` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -878,33 +1006,8 @@ CREATE TABLE `text_area_field` (
 
 LOCK TABLES `text_area_field` WRITE;
 /*!40000 ALTER TABLE `text_area_field` DISABLE KEYS */;
-INSERT INTO `text_area_field` VALUES (159,NULL),(628,NULL),(629,NULL),(634,NULL),(635,NULL),(637,NULL),(639,NULL),(642,'Solaris a développé sont propre outil de gestion de projet interne et souhaite maintenant l\'interfacer avec son ERP Microsoft Dynamics'),(643,'Ne concerne que l\'entité Solaris France'),(645,'L\'application de gestion de projet interne Atrium doit être en mesure de lire les temps effectifs passés sur projet dans MS Dynamics et venir y ajouter des absences'),(647,'Vérifier les temps effectifs dans MS Dynamics\r\nCréer une absence dans MS Dynamics\r\nModifier cette absence dans MS Dynamics\r\nSupprimer cette absence dans MS Dynamics'),(663,'La société Solaris souhaite interfacer l\'ERP SAP ByDesign avec le CRM Hubspot pour éviter toute ressaisie'),(664,'Toutes les entités sont concernées'),(666,'Le programme devra permettre de synchroniser la base article (SAP maître), la base client (Hbspot maître)et de créer des commandes clients dans SAP ByDesign quand celles ci sont au statut \"closed won\" dans Hubspot'),(668,'Création du commande dans Hubspot pour un compte client non synchronisé\r\nPassage du statut de la commande en \"Closed won\"\r\nLe compte client est créé dans SAP ByDesign et \"Actif\"\r\nLa commande est créée dans SAP ByDesign au staut \"En cours\"'),(671,NULL),(672,NULL),(674,NULL),(676,NULL),(679,'kjgdskjgfkdsgkjggsdg'),(680,'odhdkjdhkjbksdbbsd'),(682,NULL),(684,NULL),(686,NULL);
+INSERT INTO `text_area_field` VALUES (634,NULL),(635,NULL),(637,NULL),(783,NULL),(818,'dqgjbq:kjb:q v,qsmk,mlsd,q;nvmq,mflpizhqifjmdkqjgohpzmheglkbldsqhsghoihzljebjgzqgzG'),(842,NULL),(843,'Toutes les sociétés du groupe (USA, FR, ES, IT)'),(845,NULL),(847,NULL),(876,'Récupérer automatiquement les extraits de compte dans MesBanques (Cegid) et les intégrer automatiquement dans SAP ByDesign'),(877,'Concerne toute les sociétés FR'),(879,NULL),(882,NULL);
 /*!40000 ALTER TABLE `text_area_field` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `text_chapter`
---
-
-DROP TABLE IF EXISTS `text_chapter`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `text_chapter` (
-  `id` int(11) NOT NULL,
-  `content` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `FK_DD209A11BF396750` FOREIGN KEY (`id`) REFERENCES `chapter` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `text_chapter`
---
-
-LOCK TABLES `text_chapter` WRITE;
-/*!40000 ALTER TABLE `text_chapter` DISABLE KEYS */;
-INSERT INTO `text_chapter` VALUES (33,'Objet : [OBJET]\r\nDate : [DATE]\r\n\r\nOrdre du jour :\r\n[ORDREDUJOUR]\r\n\r\nParticipant :\r\n[PARTICIPANTS]'),(34,'[POINTSABORDES]'),(35,'[NEXTSTEPS]'),(240,'Objet : [COPILCOPROJ]\r\nDate : [DATECOPIL]\r\n\r\nParticipants :\r\n[PARTICIPANTSCOPIL]\r\n\r\nAvancement :\r\n[AVANCEMENTCOPIL]\r\n\r\nDécisions : \r\n[DECISIONSCOPIL]\r\n\r\nProchaines étapes :\r\n[ACTIONSCOPIL]'),(241,'[CONTEXTEETOBJECTIFS]'),(242,'[PERIMETRE]'),(243,'[ACTEURSROLES]'),(244,'[REGLESDEGESTION]'),(245,'[PARCOURSCASDUSAGE]'),(246,'[DEFINITIONOFDONE]'),(247,'[CHIFFRAGE]'),(248,'[CONTEXTEETOBJECTIFS]'),(249,'[PERIMETRE]'),(250,'[ACTEURSROLES]'),(251,'[REGLESDEGESTION]'),(252,'[PARCOURSCASDUSAGE]'),(253,'[DEFINITIONOFDONE]'),(264,'[CONTEXTEETOBJECTIFS]'),(265,'[PERIMETRE]'),(266,'[ACTEURSROLES]'),(267,'[REGLESDEGESTION]'),(268,'[PARCOURSCASDUSAGE]'),(269,'[DEFINITIONOFDONE]'),(270,'[CHIFFRAGE]'),(271,'[CONTEXTEETOBJECTIFS]'),(272,'[PERIMETRE]'),(273,'[ACTEURSROLES]'),(274,'[REGLESDEGESTION]'),(275,'[PARCOURSCASDUSAGE]'),(276,'[DEFINITIONOFDONE]'),(277,'[CHIFFRAGE]'),(278,'[CONTEXTEETOBJECTIFS]'),(279,'[PERIMETRE]'),(280,'[ACTEURSROLES]'),(281,'[REGLESDEGESTION]'),(282,'[PARCOURSCASDUSAGE]'),(283,'[DEFINITIONOFDONE]');
-/*!40000 ALTER TABLE `text_chapter` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -928,7 +1031,7 @@ CREATE TABLE `text_field` (
 
 LOCK TABLES `text_field` WRITE;
 /*!40000 ALTER TABLE `text_field` DISABLE KEYS */;
-INSERT INTO `text_field` VALUES (157,NULL);
+INSERT INTO `text_field` VALUES (157,NULL),(784,NULL),(819,'Un texte un peu court'),(886,'Atelier Idev4U / Cegid');
 /*!40000 ALTER TABLE `text_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -944,7 +1047,7 @@ CREATE TABLE `title` (
   `content` varchar(255) DEFAULT NULL,
   `level` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=391 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=453 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -953,7 +1056,7 @@ CREATE TABLE `title` (
 
 LOCK TABLES `title` WRITE;
 /*!40000 ALTER TABLE `title` DISABLE KEYS */;
-INSERT INTO `title` VALUES (49,'Contexte',2),(50,'Points abordés',2),(51,'Prochaines étapes',2),(52,'Compte rendu d\'atelier',1),(335,NULL,1),(336,'Compte rendu de COPIL',1),(337,'Contexte et objectifs',2),(338,'Périmètre',2),(339,'Acteurs / Rôles',2),(340,'Règles de gestion',2),(341,'Parcours / cas d’usage',2),(342,'Critères d’acceptation (Definition of Done)',2),(343,NULL,1),(344,'Chiffrage',1),(345,'Spécification fonctionnelle',1),(346,'Spécification fonctionnelle',1),(347,'Contexte et objectifs',2),(348,'Périmètre',2),(349,'Acteurs / Rôles',2),(350,'Règles de gestion',2),(351,'Parcours / cas d’usage',2),(352,'Critères d’acceptation (Definition of Done)',2),(366,'Spécification fonctionnelle',1),(367,'Contexte et objectifs',2),(368,'Périmètre',2),(369,'Acteurs / Rôles',2),(370,'Règles de gestion',2),(371,'Parcours / cas d’usage',2),(372,'Critères d’acceptation (Definition of Done)',2),(373,'Chiffrage',1),(374,NULL,1),(375,'Spécification fonctionnelle',1),(376,'Contexte et objectifs',2),(377,'Périmètre',2),(378,'Acteurs / Rôles',2),(379,'Règles de gestion',2),(380,'Parcours / cas d’usage',2),(381,'Critères d’acceptation (Definition of Done)',2),(382,'Chiffrage',1),(383,NULL,1),(384,'Spécification fonctionnelle',1),(385,'Contexte et objectifs',2),(386,'Périmètre',2),(387,'Acteurs / Rôles',2),(388,'Règles de gestion',2),(389,'Parcours / cas d’usage',2),(390,'Critères d’acceptation (Definition of Done)',2);
+INSERT INTO `title` VALUES (49,'Contexte',2),(50,'Points abordés / Décisions',2),(51,'Prochaines étapes',2),(52,'Compte rendu d\'atelier',1),(335,'[COPILCOPROJ]',1),(336,'Compte rendu de COPIL',1),(337,'Contexte et objectifs',2),(338,'Périmètre',2),(339,'Acteurs / Rôles',2),(340,'Règles de gestion',2),(341,'Parcours / cas d’usage',2),(342,'Critères d’acceptation (Definition of Done)',2),(343,NULL,1),(344,'Chiffrage',1),(345,'Spécification fonctionnelle',1),(392,'TEST de rendu',1),(403,'Tableau',2),(404,'Liste',2),(408,'Autres champs',2),(417,'TEST de rendu',1),(418,'Tableau',2),(419,'Liste',2),(420,'Autres champs',2),(425,'Spécification fonctionnelle',1),(426,'Contexte et objectifs',2),(427,'Périmètre',2),(428,'Acteurs / Rôles',2),(429,'Règles de gestion',2),(430,'Parcours / cas d’usage',2),(431,'Critères d’acceptation (Definition of Done)',2),(432,'Chiffrage',1),(433,NULL,1),(440,'Spécification fonctionnelle',1),(441,'Contexte et objectifs',2),(442,'Périmètre',2),(443,'Acteurs / Rôles',2),(444,'Règles de gestion',2),(445,'Parcours / cas d’usage',2),(446,'Critères d’acceptation (Definition of Done)',2),(447,'Chiffrage',1),(448,NULL,1),(449,'Compte rendu d\'atelier',1),(450,'Contexte',2),(451,'Points abordés / Décisions',2),(452,'Prochaines étapes',2);
 /*!40000 ALTER TABLE `title` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -978,6 +1081,7 @@ CREATE TABLE `url_field` (
 
 LOCK TABLES `url_field` WRITE;
 /*!40000 ALTER TABLE `url_field` DISABLE KEYS */;
+INSERT INTO `url_field` VALUES (790,NULL),(825,'https://example.com');
 /*!40000 ALTER TABLE `url_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1058,4 +1162,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-01-14 21:27:56
+-- Dump completed on 2026-01-19 10:56:56
