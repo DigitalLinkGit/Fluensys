@@ -2,12 +2,17 @@
 
 namespace App\Controller\Capture;
 
-use App\Controller\AbstractAppController;
+
 use App\Entity\Capture\CaptureElement;
 use App\Entity\Capture\Field\Field;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
 use App\Service\Factory\FieldFactory;
+use App\Service\Helper\ActivityLogLogger;
+use App\Service\Helper\ActivityLogProvider;
+use App\Service\Helper\LivecycleStatusManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +20,12 @@ use Symfony\Component\Routing\Attribute\Route;
 use Twig\Environment;
 
 #[Route('/capture/element')]
-final class FieldAjaxController extends AbstractAppController
+final class FieldAjaxController extends AbstractController
 {
+    public function __construct(
+        private readonly LoggerInterface $logger,
+    ) {
+    }
     #[Route('/{id}/field/add', name: 'app_field_add', methods: ['POST'])]
     public function add(
         Request $request,

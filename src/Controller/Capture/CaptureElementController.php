@@ -2,7 +2,6 @@
 
 namespace App\Controller\Capture;
 
-use App\Controller\AbstractAppController;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement;
 use App\Entity\Capture\Field\Field;
@@ -10,6 +9,7 @@ use App\Entity\Capture\Field\FileField;
 use App\Entity\Capture\Field\ImageField;
 use App\Entity\Capture\Field\TableField;
 use App\Entity\Capture\Rendering\Chapter;
+use App\Entity\Enum\ActivityAction;
 use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Interface\UploadableField;
 use App\Entity\Tenant\User;
@@ -17,23 +17,30 @@ use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
 use App\Form\Capture\CaptureElement\CaptureElementTemplateForm;
 use App\Form\Capture\CaptureElement\CaptureElementValidationForm;
 use App\Form\Capture\Rendering\RenderTextEditorForm;
-use App\Service\Factory\CaptureElementFactory;
-use App\Service\Helper\CaptureElementRouter;
-use App\Service\Helper\CaptureElementTypeManager;
+use App\Service\Helper\ActivityLogLogger;
+use App\Service\Helper\ActivityLogProvider;
 use App\Service\Helper\ConditionToggler;
 use App\Service\Helper\FieldTypeManager;
 use App\Service\Helper\FileUploadManager;
 use App\Service\Helper\LivecycleStatusManager;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/capture/element')]
-final class CaptureElementController extends AbstractAppController
+final class CaptureElementController extends AbstractController
 {
+    public function __construct(
+        private readonly LivecycleStatusManager $statusManager,
+        private readonly ActivityLogProvider $activityLogProvider,
+        private readonly ActivityLogLogger $activityLogLogger,
+    ) {
+    }
+
     #[Route('/{id}/show', name: 'app_capture_element_show', methods: ['GET'])]
     public function show(CaptureElement $captureElement): Response
     {
@@ -46,29 +53,6 @@ final class CaptureElementController extends AbstractAppController
     public function formPreview(CaptureElement $element): Response
     {
         $form = $this->createForm(CaptureElementContributorForm::class, $element);
-        dump('PREVIEW element fields', [
-            'element_id' => $element->getId(),
-            'fields' => array_map(static function ($f) {
-                if (!$f instanceof Field) {
-                    return ['class' => is_object($f) ? get_class($f) : gettype($f)];
-                }
-
-                $row = [
-                    'field_id' => $f->getId(),
-                    'class' => get_class($f),
-                ];
-
-                if ($f instanceof TableField) {
-                    $row['columns_count'] = $f->getColumns()->count();
-                    $row['columns_ids'] = array_map(
-                        static fn ($c) => method_exists($c, 'getId') ? $c->getId() : null,
-                        $f->getColumns()->toArray()
-                    );
-                }
-
-                return $row;
-            }, $element->getFields()->toArray()),
-        ]);
 
         return $this->render('capture/capture_element/preview.html.twig', [
             'templateMode' => true,
@@ -80,6 +64,9 @@ final class CaptureElementController extends AbstractAppController
     #[Route('/{id}/render-text/edit', name: 'app_capture_element_render_text_edit', methods: ['GET', 'POST'])]
     public function editRenderText(Request $request, CaptureElement $element, EntityManagerInterface $entityManager): Response
     {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
         // Build available variables from Fields and CalculatedVariables
         $fieldVars = [];
         foreach ($element->getFields() as $f) {
@@ -104,17 +91,18 @@ final class CaptureElementController extends AbstractAppController
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && !$form->isValid()) {
-            foreach ($form->getErrors(true, true) as $error) {
-                $this->addFlash('danger', $error->getMessage());
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $element->setChapter($chapter);
+                $entityManager->persist($chapter);
+                $entityManager->flush();
+                $this->addFlash('success', 'Rendu texte enregistré.');
+                $this->activityLogLogger->logForCaptureElement($element, ActivityAction::PUBLISHED, $user);
+            } else {
+                foreach ($form->getErrors(true, true) as $error) {
+                    $this->addFlash('danger', $error->getMessage());
+                }
             }
-        }
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $element->setChapter($chapter);
-            $entityManager->persist($chapter);
-            $entityManager->flush();
-            $this->addFlash('success', 'Rendu texte enregistré.');
 
             return $this->redirectToRoute('app_capture_element_edit', ['id' => $element->getId()]);
         }
@@ -127,7 +115,7 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/{id}/respond', name: 'app_capture_element_respond', methods: ['POST'])]
-    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, LivecycleStatusManager $statusManager, FileUploadManager $fileUploadManager): Response
+    public function respond(Request $request, CaptureElement $element, EntityManagerInterface $entityManager, ConditionToggler $toggler, FileUploadManager $fileUploadManager): Response
     {
         /** @var User|null $user */
         $user = $this->getUser();
@@ -138,6 +126,7 @@ final class CaptureElementController extends AbstractAppController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // files management
             if ($form->has('fields')) {
                 foreach ($form->get('fields') as $fieldForm) {
                     $field = $fieldForm->getData();
@@ -162,16 +151,17 @@ final class CaptureElementController extends AbstractAppController
                     }
                 }
             }
+            // Status management
+            $this->statusManager->submit($element, $user, false);
 
-            $statusManager->submit($element, $user, false);
-
+            // Toggle elements activation
             if (null !== $capture) {
                 $toggler->apply($capture->getConditions()->toArray());
             }
 
             $entityManager->persist($element);
             $entityManager->flush();
-
+            $this->activityLogLogger->logForCaptureElement($element, ActivityAction::SUBMITTED, $user);
             $this->addFlash('success', 'Votre réponse a bien été enregistrée');
         } else {
             foreach ($form->getErrors(true, true) as $error) {
@@ -207,6 +197,7 @@ final class CaptureElementController extends AbstractAppController
                 if ($isValidated) {
                     $statusManager->validate($element, $user, false);
                     $this->addFlash('success', 'Enregistrement réussi. L\'élément à été validé');
+                    $this->activityLogLogger->logForCaptureElement($element, ActivityAction::VALIDATED, $user);
                 } else {
                     $this->addFlash('warning', 'Enregistrement réussi. L\'élément n\'est pas valide');
                 }
@@ -229,7 +220,7 @@ final class CaptureElementController extends AbstractAppController
     }
 
     #[Route('/new', name: 'app_capture_element_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, CaptureElementTypeManager $typeManager, CaptureElementFactory $factory, CaptureElementRouter $router): Response
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
         $captureId = $request->query->getInt('capture');
 
@@ -251,6 +242,7 @@ final class CaptureElementController extends AbstractAppController
 
                 $em->persist($element);
                 $em->flush();
+                $this->activityLogLogger->logForCaptureElement($element, ActivityAction::CREATED, $this->getUser());
 
                 return $this->redirectToRoute('app_capture_element_edit', ['id' => $element?->getId()], 303);
             } else {
@@ -295,7 +287,7 @@ final class CaptureElementController extends AbstractAppController
             // 2) Remove the element itself
             $entityManager->remove($element);
             $entityManager->flush();
-
+            $this->activityLogLogger->logForCaptureElement($element, ActivityAction::DELETED, $this->getUser());
             if ($removedConditions > 0) {
                 $this->addFlash(
                     'success',
@@ -334,7 +326,7 @@ final class CaptureElementController extends AbstractAppController
             if ($form->isValid()) {
                 try {
                     // update elements order
-                    $raw = (string) $request->request->get('fields_order', '[]');
+                    /*$raw = (string) $request->request->get('fields_order', '[]');
                     $orderedIds = json_decode($raw, true);
 
                     if (is_array($orderedIds)) {
@@ -345,28 +337,27 @@ final class CaptureElementController extends AbstractAppController
                             }
                             $field->setPosition($index);
                         }
-                    }
+                    }*/
 
                     // Sync TableField columns from subtype[columns_raw]
-                    $root = $form->getName(); // usually "capture_element_template_form" (Symfony decides)
+                    $root = $form->getName();
                     $payload = $request->request->all($root);
 
                     if (isset($payload['fields']) && is_array($payload['fields'])) {
                         foreach ($form->get('fields') as $fieldForm) {
                             $field = $fieldForm->getData();
-                            if (!$field instanceof TableField) {
-                                continue;
+                            if ($field instanceof TableField) {
+                                $entryKey = $fieldForm->getName();
+                                $rawColumns = $payload['fields'][$entryKey]['subtype']['columns_raw'] ?? null;
+                                $field->syncColumnsFromRaw(is_string($rawColumns) ? $rawColumns : null);
                             }
-
-                            $entryKey = $fieldForm->getName(); // key of this row in the collection
-                            $rawColumns = $payload['fields'][$entryKey]['subtype']['columns_raw'] ?? null;
-                            $field->syncColumnsFromRaw(is_string($rawColumns) ? $rawColumns : null);
                         }
                     }
 
                     $entityManager->persist($element);
                     $entityManager->flush();
                     $this->addFlash('success', 'Élément enregistré avec succès.');
+                    $this->activityLogLogger->logForCaptureElement($element, ActivityAction::UPDATED, $this->getUser());
 
                     return $this->redirectToRoute('app_capture_element_edit', [
                         'id' => $element->getId(),

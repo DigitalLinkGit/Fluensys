@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
+use App\Entity\Enum\ActivityAction;
 use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Project;
 use App\Entity\Tenant\User;
@@ -11,6 +12,8 @@ use App\Form\ProjectContributorNewForm;
 use App\Form\ProjectTemplateForm;
 use App\Repository\CaptureRepository;
 use App\Repository\ProjectRepository;
+use App\Service\Helper\ActivityLogLogger;
+use App\Service\Helper\ActivityLogProvider;
 use App\Service\Helper\LivecycleStatusManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -26,6 +29,8 @@ final class ProjectController extends AbstractController
 {
     public function __construct(
         private readonly LivecycleStatusManager $statusManager,
+        private readonly ActivityLogProvider $activityLogProvider,
+        private readonly ActivityLogLogger $activityLogLogger,
     ) {
     }
 
@@ -61,7 +66,7 @@ final class ProjectController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($project);
             $entityManager->flush();
-
+            $this->activityLogLogger->logForProject($project, ActivityAction::TEMPLATE_CREATED, $this->getUser());
             return $this->redirectToRoute('app_project_template_edit', ['id' => $project->getId()], Response::HTTP_SEE_OTHER);
         }
 
@@ -97,7 +102,7 @@ final class ProjectController extends AbstractController
             $this->statusManager->init($clone, $user, false);
             $entityManager->persist($clone);
             $entityManager->flush();
-
+            $this->activityLogLogger->logForProject($clone, ActivityAction::CREATED, $this->getUser());
             return $this->redirectToRoute('app_project_participant_assign', ['id' => $clone->getId()]);
         }
 
@@ -123,16 +128,17 @@ final class ProjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+            $this->activityLogLogger->logForProject($project, ActivityAction::UPDATED, $this->getUser());
             return $this->redirectToRoute('app_project_edit', [
                 'id' => $project->getId(),
             ], Response::HTTP_SEE_OTHER);
         }
-
+        $activity_logs = $this->activityLogProvider->forProject($project);
         return $this->render('project/edit.html.twig', [
             'project' => $project,
             'form' => $form,
             'templateMode' => false,
+            'activity_logs' => $activity_logs,
         ]);
     }
 
@@ -144,16 +150,17 @@ final class ProjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+            $this->activityLogLogger->logForProject($project, ActivityAction::TEMPLATE_UPDATED, $this->getUser());
             return $this->redirectToRoute('app_project_template_edit', [
                 'id' => $project->getId(),
             ], Response::HTTP_SEE_OTHER);
         }
-
+        $activity_logs = $this->activityLogProvider->forProject($project);
         return $this->render('project/edit.html.twig', [
             'project' => $project,
             'form' => $form,
             'templateMode' => true,
+            'activity_logs' => $activity_logs,
         ]);
     }
 
@@ -163,6 +170,7 @@ final class ProjectController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$project->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($project);
             $entityManager->flush();
+            $this->activityLogLogger->logForProject($project, ActivityAction::DELETED, $this->getUser());
         }
 
         return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
@@ -179,7 +187,7 @@ final class ProjectController extends AbstractController
             throw new BadRequestHttpException('Invalid kind. Expected "standard" or "recurring".');
         }
         $em->flush();
-
+        $this->activityLogLogger->logForProject($project, ActivityAction::TEMPLATE_UPDATED, $this->getUser());
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 
@@ -194,7 +202,7 @@ final class ProjectController extends AbstractController
             throw new BadRequestHttpException('Invalid kind. Expected "standard" or "recurring".');
         }
         $em->flush();
-
+        $this->activityLogLogger->logForProject($project, ActivityAction::TEMPLATE_UPDATED, $this->getUser());
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 
@@ -228,7 +236,7 @@ final class ProjectController extends AbstractController
         // ToDo: Validation before publish
         $this->statusManager->publishTemplate($project, $user);
         $em->flush();
-
+        $this->activityLogLogger->logForProject($project, ActivityAction::PUBLISHED, $this->getUser());
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 
@@ -241,7 +249,7 @@ final class ProjectController extends AbstractController
         // ToDo: Validation before publish
         $this->statusManager->unpublishTemplate($project, $user);
         $em->flush();
-
+        $this->activityLogLogger->logForProject($project, ActivityAction::UNPUBLISHED, $this->getUser());
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 

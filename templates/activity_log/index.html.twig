@@ -1,0 +1,37 @@
+{# templates/activity_log/index.html.twig #}
+{% if logs is defined and logs is not null %}
+<table class="table table-sm">
+    <thead>
+    <tr>
+        <th>Projet</th>
+        <th>Capture</th>
+        <th>CaptureElement</th>
+        <th>Action</th>
+        <th>Personne</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for log in logs %}
+        <tr>
+            <td>{{ log.project ? log.project.name : '-' }}</td>
+            <td>{{ log.capture ? log.capture.name : '-' }}</td>
+            <td>{{ log.captureElement ? log.captureElement.name : '-' }}</td>
+            <td>{{ log.subjectType.value }} : {{ log.subjectLabel }} ({{ log.action.value }})</td>
+            <td>
+                {% if log.actorUser %}
+                    {{ log.actorUser.username }}
+                {% elseif log.actorContact %}
+                    {{ log.actorContact.name }}
+                {% else %}
+                    system
+                {% endif %}
+            </td>
+            <td>{{ log.occurredAt|date('d/m/Y H:i') }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6" class="text-muted">Aucun log.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}

@@ -5,6 +5,7 @@ namespace App\Controller\Capture;
 use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement;
+use App\Entity\Enum\ActivityAction;
 use App\Entity\Enum\LivecycleStatus;
 use App\Entity\Project;
 use App\Entity\Tenant\User;
@@ -14,6 +15,8 @@ use App\Form\Capture\CaptureElement\CaptureElementContributorForm;
 use App\Form\Capture\CaptureTemplateForm;
 use App\Form\Capture\CaptureTemplateNewForm;
 use App\Repository\CaptureRepository;
+use App\Service\Helper\ActivityLogLogger;
+use App\Service\Helper\ActivityLogProvider;
 use App\Service\Helper\ConditionToggler;
 use App\Service\Helper\LivecycleStatusManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +33,8 @@ final class CaptureController extends AbstractController
 {
     public function __construct(
         private readonly LivecycleStatusManager $statusManager,
+        private readonly ActivityLogProvider $activityLogProvider,
+        private readonly ActivityLogLogger $activityLogLogger,
     ) {
     }
 
@@ -76,6 +81,7 @@ final class CaptureController extends AbstractController
 
             $em->persist($clone);
             $em->flush();
+            $this->activityLogLogger->logForCapture($clone, ActivityAction::CREATED, $user);
 
             return $this->redirectToRoute('app_capture_participant_assign', [
                 'id' => $clone->getId(),
@@ -137,7 +143,7 @@ final class CaptureController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($capture);
             $em->flush();
-
+            $this->activityLogLogger->logForCapture($capture, ActivityAction::TEMPLATE_CREATED, $this->getUser());
             return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()], Response::HTTP_SEE_OTHER);
         }
 
@@ -211,12 +217,14 @@ final class CaptureController extends AbstractController
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $em->flush();
+                $this->activityLogLogger->logForCapture($capture, ActivityAction::UPDATED, $user);
             } else {
                 foreach ($form->getErrors(true, true) as $error) {
                     $this->addFlash('danger', $error->getMessage());
                 }
             }
         }
+        $activity_logs = $this->activityLogProvider->forCapture($capture);
 
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
@@ -224,6 +232,7 @@ final class CaptureController extends AbstractController
             'conditionsByTargetId' => $conditionsByTargetId,
             'templateMode' => false,
             'responseForms' => $responseForms,
+            'activity_logs' => $activity_logs,
         ]);
     }
 
@@ -262,6 +271,7 @@ final class CaptureController extends AbstractController
                     }
                 }
                 $em->flush();
+                $this->activityLogLogger->logForCapture($capture, ActivityAction::TEMPLATE_UPDATED, $this->getUser());
             } else {
                 foreach ($form->getErrors(true, true) as $error) {
                     $this->addFlash('danger', $error->getMessage());
@@ -269,13 +279,14 @@ final class CaptureController extends AbstractController
             }
         }
         $projectId = $request->query->get('projectId');
-
+        $activity_logs = $this->activityLogProvider->forCapture($capture);
         return $this->render('capture/edit.html.twig', [
             'capture' => $capture,
             'form' => $form,
             'conditionsByTargetId' => $conditionsByTargetId,
             'templateMode' => true,
             'projectId' => $projectId,
+            'activity_logs' => $activity_logs,
         ]);
     }
 
@@ -286,6 +297,7 @@ final class CaptureController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$capture->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($capture);
             $entityManager->flush();
+            $this->activityLogLogger->logForCapture($capture, ActivityAction::DELETED, $this->getUser());
         }
 
         $route = $capture->isTemplate() ? 'app_capture_template_index' : 'app_capture_index';
@@ -324,7 +336,7 @@ final class CaptureController extends AbstractController
         }
         $capture->addCaptureElement($element);
         $em->flush();
-
+        $this->activityLogLogger->logForCapture($capture, ActivityAction::TEMPLATE_UPDATED, $this->getUser());
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
     }
 
@@ -340,7 +352,7 @@ final class CaptureController extends AbstractController
         // ToDo: Validation before publish
         $this->statusManager->publishTemplate($capture, $user);
         $em->flush();
-
+        $this->activityLogLogger->logForCapture($capture, ActivityAction::PUBLISHED, $this->getUser());
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
     }
 
@@ -353,7 +365,7 @@ final class CaptureController extends AbstractController
         // ToDo: Validation before publish
         $this->statusManager->unpublishTemplate($capture, $user);
         $em->flush();
-
+        $this->activityLogLogger->logForCapture($capture, ActivityAction::UNPUBLISHED, $this->getUser());
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
     }
 
