@@ -217,6 +217,7 @@ final class CaptureController extends AbstractController
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $em->flush();
+                $this->addFlash('success', 'La capture a été enregistrée');
                 $this->activityLogLogger->logForCapture($capture, ActivityAction::UPDATED, $user);
             } else {
                 foreach ($form->getErrors(true, true) as $error) {

@@ -33,6 +33,7 @@ final readonly class ActivityLogLogger
         $log = $this->baseLog($action, $actorUser, $actorContact, $occurredAt);
 
         $log->setProject($project);
+        $log->setAccount($project->getAccount());
         $log->setCapture(null);
         $log->setCaptureElement(null);
 
@@ -57,6 +58,7 @@ final readonly class ActivityLogLogger
 
         $log->setProject($capture->getOwnerProject());
         $log->setCapture($capture);
+        $log->setAccount($capture->getAccount());
         $log->setCaptureElement(null);
 
         $log->setSubjectType(ActivitySubjectType::CAPTURE);
@@ -78,11 +80,9 @@ final readonly class ActivityLogLogger
     ): ActivityLog {
         $log = $this->baseLog($action, $actorUser, $actorContact, $occurredAt);
 
-        $capture = method_exists($captureElement, 'getCapture') ? $captureElement->getCapture() : null;
-        $project = ($capture && method_exists($capture, 'getProject')) ? $capture->getProject() : null;
-
         $log->setProject($captureElement->getCapture()->getOwnerProject());
         $log->setCapture($captureElement->getCapture());
+        $log->setAccount($captureElement->getCapture()->getAccount());
         $log->setCaptureElement($captureElement);
 
         $log->setSubjectType(ActivitySubjectType::CAPTURE_ELEMENT);

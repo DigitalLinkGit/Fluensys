@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Account\Account;
 use App\Entity\Account\Contact;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement;
@@ -30,6 +31,10 @@ final class ActivityLog
 
     #[ORM\Column(type: 'string', enumType: ActivityAction::class)]
     private ActivityAction $action;
+
+    #[ORM\ManyToOne(targetEntity: Account::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Account $account = null;
 
     #[ORM\ManyToOne(targetEntity: Project::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -94,6 +99,18 @@ final class ActivityLog
     public function setAction(ActivityAction $action): self
     {
         $this->action = $action;
+
+        return $this;
+    }
+
+    public function getAccount(): ?Account
+    {
+        return $this->account;
+    }
+
+    public function setAccount(?Account $account): self
+    {
+        $this->account = $account;
 
         return $this;
     }

@@ -76,6 +76,11 @@
                    role="tab" aria-controls="information-system"
                    aria-selected="false">Système d'information</a>
             </li>#}
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-logs" class="tab__link nav-link" data-bs-toggle="tab" href="#logs" role="tab"
+                   aria-controls="logs"
+                   aria-selected="true">Activité</a>
+            </li>
         </ul>
     </div>
     <div class="tab-content">
@@ -258,6 +263,9 @@
 
             </div>
         </div>#}
+        <div id="logs" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-logs">
+            {% include 'activity_log/index.html.twig' with {logs:activity_logs} %}
+        </div>
     </div>
 
     {{ form_end(form) }}

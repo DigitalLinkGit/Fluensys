@@ -2,6 +2,7 @@
 
 namespace App\Service\Helper;
 
+use App\Entity\Account\Account;
 use App\Entity\Capture\Capture;
 use App\Entity\Capture\CaptureElement;
 use App\Entity\Project;
@@ -19,6 +20,7 @@ final readonly class ActivityLogProvider
     public function forProject(Project $project, int $limit = 200): array
     {
         return $this->repo->findForContext(
+            accountId: null,
             projectId: $project->getId(),
             captureId: null,
             captureElementId: null,
@@ -32,12 +34,11 @@ final readonly class ActivityLogProvider
      */
     public function forCapture(Capture $capture, int $limit = 200): array
     {
-        $projectId = method_exists($capture, 'getProject') && $capture->getProject()
-            ? $capture->getProject()->getId()
-            : null;
+        $project = $capture->getOwnerProject();
 
         return $this->repo->findForContext(
-            projectId: $projectId,
+            accountId: null,
+            projectId: null,
             captureId: $capture->getId(),
             captureElementId: null,
             action: null,
@@ -50,15 +51,30 @@ final readonly class ActivityLogProvider
      */
     public function forCaptureElement(CaptureElement $captureElement, int $limit = 200): array
     {
-        $capture = method_exists($captureElement, 'getCapture') ? $captureElement->getCapture() : null;
-        $projectId = ($capture && method_exists($capture, 'getProject') && $capture->getProject())
-            ? $capture->getProject()->getId()
-            : null;
+        $capture = $captureElement->getCapture();
+        $project = $capture->getOwnerProject();
 
         return $this->repo->findForContext(
-            projectId: $projectId,
-            captureId: $capture?->getId(),
+            accountId: null,
+            projectId: null,
+            captureId: null,
             captureElementId: $captureElement->getId(),
+            action: null,
+            limit: $limit,
+        );
+    }
+
+    /**
+     * @return array<\App\Entity\ActivityLog>
+     */
+    public function forAccount(Account $account, int $limit = 200): array
+    {
+
+        return $this->repo->findForContext(
+            accountId: $account->getId(),
+            projectId: null,
+            captureId: null,
+            captureElementId: null,
             action: null,
             limit: $limit,
         );
