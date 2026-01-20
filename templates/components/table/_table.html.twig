@@ -13,17 +13,13 @@
 
 {% import 'components/table/_table_cell.html.twig' as cell_format %}
 
-{# Add button (if no filters) #}
-{% if add_action is not null and add_action.route is defined and not filter %}
-    <div class="text-end">
-        {% include 'components/button/_btn_new.html.twig' with {
-            route: add_action.route,
-            params: add_action.params|default({})
-        } %}
-    </div>
-{% endif %}
-
-
+{# Add button #}
+<div class="text-end">
+    {% include 'components/button/_btn_new.html.twig' with {
+        route: add_action.route,
+        params: add_action.params|default({})
+    } %}
+</div>
 
 
 {# Header #}
@@ -34,50 +30,62 @@
 >
     <thead class="table-light">
     <tr>
-        {% for header in headers %}
-            <th>{{ header }}</th>
+        {% for column in columns %}
+            {% set column_index = loop.index0 %}
+            {% set label = headers[column_index] ?? column %}
+
+            <th class="position-relative overflow-visible">
+                <div class="d-inline-flex align-items-center gap-2">
+                    <span>{{ label }}</span>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm p-0"
+                        title="Filtrer"
+                        data-action="click->table-filters#toggleFilter"
+                        data-table-filters-column-param="{{ column_index }}"
+                        data-table-filters-role="filter"
+                    >
+                        <i class="bi bi-funnel"></i>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm p-0"
+                        title="Trier"
+                        data-action="click->table-filters#sort"
+                        data-table-filters-column-param="{{ column_index }}"
+                        data-table-filters-role="sort"
+                    >
+                        <i class="bi bi-sort-alpha-down"></i>
+                    </button>
+                </div>
+
+                {# Filter input #}
+                <div
+                    class="table-filter-popover d-none"
+                    data-table-filters-target="filterPopover"
+                    data-table-filters-column="{{ column_index }}"
+                >
+                    <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        placeholder="Filtrer {{ label }}"
+                        data-table-filters-target="filterInput"
+                        data-table-filters-column="{{ column_index }}"
+                        data-action="input->table-filters#filter blur->table-filters#closeFilter"
+
+                    >
+                </div>
+            </th>
+
         {% endfor %}
         {% if has_row_actions %}
             <th></th>
         {% endif %}
     </tr>
-
-    {# Filters and sorts row #}
-    {% if filter or sort %}
-        <tr class="filter-row">
-            {% for column in columns %}
-                {% set column_index = loop.index0 %}
-                <td class="position-relative">
-                    <div class="d-flex gap-1">
-                        {% if filter %}
-                            <input type="text" class="form-control form-control-sm filter"
-                                   placeholder="Filtrer {{ headers[column_index] ?? column }}"
-                                   oninput="filterTable(this)" data-filter-column="{{ column_index }}"
-                                   data-table-id="{{ table_id }}">
-                        {% endif %}
-                        {% if sort %}
-                            <button type="button" class="btn btn-sm"
-                                    onclick="sortTable('{{ table_id }}', {{ column_index }})"
-                                    title="Trier cette colonne">
-                                <i class="bi bi-sort-alpha-down"></i>
-                            </button>
-                        {% endif %}
-                    </div>
-                </td>
-            {% endfor %}
-            {% if has_row_actions %}
-                <td class="table-actions">
-                    {% if add_action is not null and add_action.route is defined %}
-                        {% include 'components/button/_btn_new.html.twig' with {
-                            route: add_action.route,
-                            params: add_action.params|default({})
-                        } %}
-                    {% endif %}
-                </td>
-            {% endif %}
-        </tr>
-    {% endif %}
     </thead>
+
 
     <tbody>
     {% for item in items %}

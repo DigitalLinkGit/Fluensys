@@ -269,6 +269,20 @@ textarea:focus,
     width: 1%;
 }
 
+.table-filter-popover{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    margin-top: .25rem;
+    background: var(--easy-bg-light);
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: .25rem;
+    padding: .5rem;
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,.08);
+}
+
 /* ===================== LISTS ===================== */
 ul.list-group .list-group-item {
     border: none !important;
