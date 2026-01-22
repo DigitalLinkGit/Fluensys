@@ -77,4 +77,9 @@ trait LivecycleStatusTrait
         return LivecycleStatus::COLLECTING === $this->status;
     }
 
+    public function isInPreparation(): bool
+    {
+        return LivecycleStatus::IN_PREPARATION === $this->status;
+    }
+
 }

@@ -5,208 +5,218 @@
 {% block body %}
     {{ form_start(form) }}
     {% include 'capture/_header.html.twig' with { capture: capture, templateMode: templateMode } %}
-    <div class="row align-items-start">
-        {% include 'capture/_capture_form.html.twig' with { form: form } %}
-        <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
-            {% if capture.draft %}
-                {% include 'components/button/_btn.html.twig' with {
-                    btn: {
-                        type: 'link',
-                        route: 'app_capture_template_publish',
-                        param_map: { id: 'capture.id' },
-                        icon: 'bi-box-arrow-up',
-                        label: 'Publier',
-                        class: 'btn btn-outline-primary'
-                    }
-                } %}
-            {% endif %}
-            {% if capture.template %}
-                {% include 'components/button/_btn.html.twig' with {
-                    btn: {
-                        type: 'link',
-                        route: 'app_capture_template_unpublish',
-                        param_map: { id: 'capture.id' },
-                        icon: 'bi-box-arrow-down',
-                        label: 'Dé-Publier',
-                        class: 'btn btn-outline-primary'
-                    }
-                } %}
-            {% endif %}
-            <button type="button"
-                    class="btn btn-outline-primary"
-                    data-bs-toggle="modal"
-                    data-bs-target="#documentPreviewModal"
-                    data-capture-id="{{ capture.id }}">
-                <i class="bi bi-eye me-1"></i>
-                Aperçu du document
-            </button>
-            {% if capture.draft or capture.template %}
-                {% if projectId is defined and projectId is not null %}
-                    {% include 'components/button/_btn.html.twig' with {
-                        btn: {
-                            type: 'link',
-                            label: 'Retour',
-                            icon: 'bi-arrow-left',
-                            route: 'app_project_template_edit',
-                            param_map: { id: 'projectId' },
-                            class: 'btn btn-outline-primary'
-                        }
-                    } %}
-                {% else %}
-                    {% include 'components/button/_btn.html.twig' with {
-                        btn: {
-                            type: 'link',
-                            label: 'Retour',
-                            icon: 'bi-arrow-left',
-                            route: 'app_capture_template_index',
-                            class: 'btn btn-outline-primary'
-                        }
-                    } %}
-                {% endif %}
-            {% else %}
-                {% if capture.ownerProject is defined and capture.ownerProject is not null %}
-                    {% include 'components/button/_btn.html.twig' with {
-                        btn: {
-                            type: 'link',
-                            label: 'Retour',
-                            icon: 'bi-arrow-left',
-                            route: 'app_project_edit',
-                            param_map: { id: 'capture.ownerProject.id' },
-                            class: 'btn btn-outline-primary'
-                        }
-                    } %}
-                {% else %}
-                    {% include 'components/button/_btn.html.twig' with {
-                        btn: {
-                            type: 'link',
-                            label: 'Retour',
-                            icon: 'bi-arrow-left',
-                            route: 'app_capture_index',
-                            class: 'btn btn-outline-primary'
-                        }
-                    } %}
-                {% endif %}
-            {% endif %}
-
+<div class="row align-items-start">
+    {% include 'capture/_capture_form.html.twig' with { form: form } %}
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% if capture.draft %}
             {% include 'components/button/_btn.html.twig' with {
                 btn: {
-                    type: 'submit',
-                    label: 'Enregistrer',
-                    icon: 'bi-check',
-                    class: 'btn btn-primary'
+                    type: 'link',
+                    route: 'app_capture_template_publish',
+                    param_map: { id: 'capture.id' },
+                    icon: 'bi-box-arrow-up',
+                    label: 'Publier',
+                    class: 'btn btn-outline-primary'
                 }
             } %}
-
-            {% include 'components/modal/_modal_document_preview.html.twig' %}
-
-        </div>
-    </div>
-    {% if not capture.template and not capture.draft %}
-        {{ form_end(form) }}
-    {% endif %}
-
-    <div
-        data-controller="tabs-persist"
-        data-tabs-persist-default-tab-value="#capture-elements"
-        data-tabs-persist-storage-key-value="captureTabs"
-        data-tabs-persist-mode-value="storage"
-    >
-        <ul class="tabs tabs--primary my-3 nav" role="tablist">
-            <li class="tab nav-item" role="presentation">
-                <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements"
-                   role="tab"
-                   aria-controls="capture-elements"
-                   aria-selected="false">Eléments de capture</a>
-            </li>
-            <li class="tab nav-item" role="presentation">
-                <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
-                   aria-controls="roles"
-                   aria-selected="true">Rôles</a>
-            </li>
-            {% if capture.template or capture.draft %}
-                <li class="tab nav-item" role="presentation">
-                    <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
-                       aria-controls="conditions"
-                       aria-selected="true">Conditions</a>
-                </li>
-                <li class="tab nav-item" role="presentation">
-                    <a id="tab-document" class="tab__link nav-link" data-bs-toggle="tab" href="#document" role="tab"
-                       aria-controls="document"
-                       aria-selected="true">Document</a>
-                </li>
+        {% endif %}
+        {% if capture.template %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    route: 'app_capture_template_unpublish',
+                    param_map: { id: 'capture.id' },
+                    icon: 'bi-box-arrow-down',
+                    label: 'Dé-Publier',
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
+        {% endif %}
+        <button type="button"
+                class="btn btn-outline-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#documentPreviewModal"
+                data-capture-id="{{ capture.id }}">
+            <i class="bi bi-eye me-1"></i>
+            Aperçu du document
+        </button>
+        {% if capture.draft or capture.template %}
+            {% if projectId is defined and projectId is not null %}
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
+                        type: 'link',
+                        label: 'Retour',
+                        icon: 'bi-arrow-left',
+                        route: 'app_project_template_edit',
+                        param_map: { id: 'projectId' },
+                        class: 'btn btn-outline-primary'
+                    }
+                } %}
+            {% else %}
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
+                        type: 'link',
+                        label: 'Retour',
+                        icon: 'bi-arrow-left',
+                        route: 'app_capture_template_index',
+                        class: 'btn btn-outline-primary'
+                    }
+                } %}
             {% endif %}
-            <li class="tab nav-item" role="presentation">
-                <a id="tab-logs" class="tab__link nav-link" data-bs-toggle="tab" href="#logs" role="tab"
-                   aria-controls="logs"
-                   aria-selected="true">Activité</a>
-            </li>
-        </ul>
-    </div>
-    <div class="tab-content">
-        <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
-            <div class="row mx-2 mt-2 px-0 g-0 col-header">
-                {% if capture.template or capture.draft %}
-                    <div class="col-auto pe-2 text-muted">
-                        <i class="bi bi-grip-vertical"></i>
-                    </div>
+        {% else %}
+            {% if capture.ownerProject is defined and capture.ownerProject is not null %}
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
+                        type: 'link',
+                        label: 'Retour',
+                        icon: 'bi-arrow-left',
+                        route: 'app_project_edit',
+                        param_map: { id: 'capture.ownerProject.id' },
+                        class: 'btn btn-outline-primary'
+                    }
+                } %}
+            {% else %}
+                {% if capture.inPreparation %}
+                    {% include 'components/button/_btn.html.twig' with {
+                        btn: {
+                            type: 'link',
+                            label: 'Lancer la capture',
+                            icon: 'bi-play-fill',
+                            route: 'app_capture_start',
+                            param_map: { id: 'capture.id' },
+                            class: 'btn btn-outline-primary'
+                        }
+                    } %}
                 {% endif %}
-                <div class="col-3">Nom</div>
-                <div class="col-3">Description</div>
-            </div>
-            {% include 'capture/_elements_panel.html.twig' with {
-                capture: capture,
-                form: form,
-                conditionsByTargetId: conditionsByTargetId,
-                templateMode: templateMode
-            } %}
-        </div>
-        <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
-            {% if not capture.template and not capture.draft %}
-                <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="col-header">Responsable :</div>
-                        {% if capture.responsible is defined and capture.responsible is not null %}
-                            <div class="fw-semibold">{{ capture.responsible.username }}</div>
-                        {% endif %}
-                    </div>
+                {% include 'components/button/_btn.html.twig' with {
+                    btn: {
+                        type: 'link',
+                        label: 'Retour',
+                        icon: 'bi-arrow-left',
+                        route: 'app_capture_index',
+                        class: 'btn btn-outline-primary'
+                    }
+                } %}
+            {% endif %}
+        {% endif %}
 
-                    <a href="{{ path('app_capture_participant_assign', { id: capture.id }) }}"
-                       class="btn btn-outline-primary btn-sm"
-                       title="Paramètres">
-                        <i class="bi bi-gear"></i>
-                    </a>
+        {% include 'components/button/_btn.html.twig' with {
+            btn: {
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
+            }
+        } %}
+
+        {% include 'components/modal/_modal_document_preview.html.twig' %}
+
+    </div>
+</div>
+{% if not capture.template and not capture.draft %}
+    {{ form_end(form) }}
+{% endif %}
+
+<div
+    data-controller="tabs-persist"
+    data-tabs-persist-default-tab-value="#capture-elements"
+    data-tabs-persist-storage-key-value="captureTabs"
+    data-tabs-persist-mode-value="storage"
+>
+    <ul class="tabs tabs--primary my-3 nav" role="tablist">
+        <li class="tab nav-item" role="presentation">
+            <a id="tab-capture-elements" class="tab__link nav-link" data-bs-toggle="tab" href="#capture-elements"
+               role="tab"
+               aria-controls="capture-elements"
+               aria-selected="false">Eléments de capture</a>
+        </li>
+        <li class="tab nav-item" role="presentation">
+            <a id="tab-roles" class="tab__link nav-link" data-bs-toggle="tab" href="#roles" role="tab"
+               aria-controls="roles"
+               aria-selected="true">Rôles</a>
+        </li>
+        {% if capture.template or capture.draft %}
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-conditions" class="tab__link nav-link" data-bs-toggle="tab" href="#conditions" role="tab"
+                   aria-controls="conditions"
+                   aria-selected="true">Conditions</a>
+            </li>
+            <li class="tab nav-item" role="presentation">
+                <a id="tab-document" class="tab__link nav-link" data-bs-toggle="tab" href="#document" role="tab"
+                   aria-controls="document"
+                   aria-selected="true">Document</a>
+            </li>
+        {% endif %}
+        <li class="tab nav-item" role="presentation">
+            <a id="tab-logs" class="tab__link nav-link" data-bs-toggle="tab" href="#logs" role="tab"
+               aria-controls="logs"
+               aria-selected="true">Activité</a>
+        </li>
+    </ul>
+</div>
+<div class="tab-content">
+    <div id="capture-elements" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-capture-elements">
+        <div class="row mx-2 mt-2 px-0 g-0 col-header">
+            {% if capture.template or capture.draft %}
+                <div class="col-auto pe-2 text-muted">
+                    <i class="bi bi-grip-vertical"></i>
                 </div>
             {% endif %}
-            {% include 'capture/_roles_panel.html.twig' with {
-                contributorRoles: capture.getContributorRoles(),
-                validatorRoles: capture.getValidatorRoles(),
-                participantAssignments: capture.getParticipantAssignments()
-            } %}
-
+            <div class="col-3">Nom</div>
+            <div class="col-3">Description</div>
         </div>
-        {% if capture.template or capture.draft %}
-            <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
-                {% include 'capture/_conditions_panel.html.twig' with { form: form } %}
-            </div>
-            <div id="document" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-document">
-                <div class="mx-2 mb-3">
-                    <div class="row g-3 align-items-end">
-                        <div class="col">
-                            {{ form_row(form.title.content) }}
-                        </div>
-                        <div class="col-auto">
-                            {{ form_row(form.title.level) }}
-                        </div>
-                    </div>
+        {% include 'capture/_elements_panel.html.twig' with {
+            capture: capture,
+            form: form,
+            conditionsByTargetId: conditionsByTargetId,
+            templateMode: templateMode
+        } %}
+    </div>
+    <div id="roles" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-roles">
+        {% if not capture.template and not capture.draft %}
+            <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="col-header">Responsable :</div>
+                    {% if capture.responsible is defined and capture.responsible is not null %}
+                        <div class="fw-semibold">{{ capture.responsible.username }}</div>
+                    {% endif %}
                 </div>
+
+                <a href="{{ path('app_capture_participant_assign', { id: capture.id }) }}"
+                   class="btn btn-outline-primary btn-sm"
+                   title="Paramètres">
+                    <i class="bi bi-gear"></i>
+                </a>
             </div>
         {% endif %}
-        <div id="logs" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-logs">
-            {% include 'activity_log/index.html.twig' with {logs:activity_logs} %}
+        {% include 'capture/_roles_panel.html.twig' with {
+            contributorRoles: capture.getContributorRoles(),
+            validatorRoles: capture.getValidatorRoles(),
+            participantAssignments: capture.getParticipantAssignments()
+        } %}
+
+    </div>
+    {% if capture.template or capture.draft %}
+        <div id="conditions" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-conditions">
+            {% include 'capture/_conditions_panel.html.twig' with { form: form } %}
         </div>
+        <div id="document" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-document">
+            <div class="mx-2 mb-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col">
+                        {{ form_row(form.title.content) }}
+                    </div>
+                    <div class="col-auto">
+                        {{ form_row(form.title.level) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div id="logs" class="tab-pane fade" role="tabpanel" aria-labelledby="tab-logs">
+        {% include 'activity_log/index.html.twig' with {logs:activity_logs} %}
+    </div>
     {% if capture.template or capture.draft %}
         {{ form_end(form) }}
     {% endif %}
-{% endblock %}
-
-
+    {% endblock %}

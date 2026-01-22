@@ -6,6 +6,7 @@ enum LivecycleStatus: string
 {
     case TEMPLATE = 'template';
     case DRAFT = 'draft';
+    case IN_PREPARATION = 'in_preparation';
     case READY = 'ready';
     case COLLECTING = 'collecting';
     case PENDING = 'pending';
@@ -17,6 +18,7 @@ enum LivecycleStatus: string
         return match ($this) {
             self::TEMPLATE => 'Template',
             self::DRAFT => 'Draft',
+            self::IN_PREPARATION => 'In preparation',
             self::READY => 'Ready',
             self::COLLECTING => 'Collecting',
             self::PENDING => 'Pending',

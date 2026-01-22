@@ -357,6 +357,22 @@ final class CaptureController extends AbstractController
         return $this->redirectToRoute('app_capture_template_edit', ['id' => $capture->getId()]);
     }
 
+    #[Route('/template/{id}/start', name: 'app_capture_start', methods: ['GET'])]
+    public function start(Capture $capture, EntityManagerInterface $em): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        if (!$capture->isInPreparation()) {
+            throw new NotFoundHttpException('Cette capture ne peut pas être lancée');
+        }
+        // ToDo: Validation before starting
+        $this->statusManager->start($capture, $user);
+        $em->flush();
+        $this->activityLogLogger->logForCapture($capture, ActivityAction::STARTED, $this->getUser());
+        return $this->redirectToRoute('app_capture_edit', ['id' => $capture->getId()]);
+    }
+
     #[Route('/template/{id}/unpublish', name: 'app_capture_template_unpublish', methods: ['GET'])]
     public function unpublishTemplate(Capture $capture, EntityManagerInterface $em): Response
     {

@@ -19,48 +19,60 @@
         {{ form_widget(form) }}
     {% endif %}
 {% if is_granted('ROLE_ADMIN') %}
-<div class="d-flex justify-content-end align-items-start gap-2 mt-4">
-    {% if project.isDraft() %}
+    <div class="d-flex justify-content-end align-items-start gap-2 mt-4">
+        {% if project.isDraft() %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    route: 'app_project_template_publish',
+                    param_map: { id: 'project.id' },
+                    icon: 'bi-box-arrow-up',
+                    label: 'Publier',
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
+        {% endif %}
+        {% if project.isTemplate() %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    route: 'app_project_template_unpublish',
+                    param_map: { id: 'project.id' },
+                    icon: 'bi-box-arrow-down',
+                    label: 'Dé-Publier',
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
+        {% endif %}
+        {% if project.inPreparation %}
+            {% include 'components/button/_btn.html.twig' with {
+                btn: {
+                    type: 'link',
+                    label: 'Lancer le projet',
+                    icon: 'bi-play-fill',
+                    route: 'app_project_start',
+                    param_map: { id: 'project.id' },
+                    class: 'btn btn-outline-primary'
+                }
+            } %}
+        {% endif %}
         {% include 'components/button/_btn.html.twig' with {
             btn: {
                 type: 'link',
-                route: 'app_project_template_publish',
-                param_map: { id: 'project.id' },
-                icon: 'bi-box-arrow-up',
-                label: 'Publier',
+                label: 'Retour',
+                icon: 'bi-arrow-left',
+                route: templateMode ? 'app_project_template_index':'app_project_index',
                 class: 'btn btn-outline-primary'
             }
         } %}
-    {% endif %}
-    {% if project.isTemplate() %}
         {% include 'components/button/_btn.html.twig' with {
             btn: {
-                type: 'link',
-                route: 'app_project_template_unpublish',
-                param_map: { id: 'project.id' },
-                icon: 'bi-box-arrow-down',
-                label: 'Dé-Publier',
-                class: 'btn btn-outline-primary'
+                type: 'submit',
+                label: 'Enregistrer',
+                icon: 'bi-check',
+                class: 'btn btn-primary'
             }
         } %}
-    {% endif %}
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'link',
-            label: 'Retour',
-            icon: 'bi-arrow-left',
-            route: templateMode ? 'app_project_template_index':'app_project_index',
-            class: 'btn btn-outline-primary'
-        }
-    } %}
-    {% include 'components/button/_btn.html.twig' with {
-        btn: {
-            type: 'submit',
-            label: 'Enregistrer',
-            icon: 'bi-check',
-            class: 'btn btn-primary'
-        }
-    } %}
-</div>
+    </div>
 {% endif %}
 {{ form_end(form) }}

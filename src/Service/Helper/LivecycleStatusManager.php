@@ -52,7 +52,7 @@ final readonly class LivecycleStatusManager
     public function init(LivecycleStatusAwareInterface $entity, User $user, bool $flush = true): void
     {
         if ($entity->isTemplate()) {
-            $this->transition($entity, LivecycleStatus::READY, $user, $flush);
+            $this->transition($entity, LivecycleStatus::IN_PREPARATION, $user, $flush);
         }
 
         if ($entity instanceof Capture) {
@@ -63,6 +63,25 @@ final readonly class LivecycleStatusManager
         if ($entity instanceof Project) {
             foreach ($entity->getCaptures() as $capture) {
                 $this->init($capture, $user, $flush);
+            }
+        }
+        if ($flush) {
+            $this->em->flush();
+        }
+    }
+
+    public function start(LivecycleStatusAwareInterface $entity, User $user, bool $flush = true): void
+    {
+        $this->transition($entity, LivecycleStatus::READY, $user, $flush);
+
+        if ($entity instanceof Capture) {
+            foreach ($entity->getCaptureElements() as $element) {
+                $this->start($element, $user, $flush);
+            }
+        }
+        if ($entity instanceof Project) {
+            foreach ($entity->getCaptures() as $capture) {
+                $this->start($capture, $user, $flush);
             }
         }
         if ($flush) {
@@ -95,60 +114,69 @@ final readonly class LivecycleStatusManager
         $this->transition($entity, LivecycleStatus::VALIDATED, $user, $flush);
     }
 
+    public function unvalidate(LivecycleStatusAwareInterface $entity, User $user, bool $flush = true): void
+    {
+        // VALIDATED -> SUBMITTED
+        $this->transition($entity, LivecycleStatus::SUBMITTED, $user, $flush);
+    }
+
     public function refresh(LivecycleStatusAwareInterface $entity, User $user, bool $flush): void
     {
-        // ToDo : add condition toggler here
-        if ($entity instanceof CaptureElement) {
-            if ($entity->isValidated() || $entity->isCollecting()) {
+        // Do not refresh "In preparation" status, wait start action form user
+        if(!$entity->isinPreparation()) {
+            // ToDo : add condition toggler here
+            if ($entity instanceof CaptureElement) {
+                if ($entity->isValidated() || $entity->isCollecting()) {
+                    return;
+                }
+                if ($entity->issubmitted()) {
+                    if (!$this->userHasValidatorRole($entity, $user) && !$this->assignmentHasValidatorRole($entity)) {
+                        $this->transition($entity, LivecycleStatus::PENDING, $user, $flush);
+                    }
+                } else {
+                    if ($this->userHasContributorRole($entity, $user) || $this->assignmentHasContributorRole($entity)) {
+                        $this->transition($entity, LivecycleStatus::READY, $user, $flush);
+                    } else {
+                        $this->transition($entity, LivecycleStatus::PENDING, $user, $flush);
+                    }
+                }
+
                 return;
             }
-            if ($entity->issubmitted()) {
-                if (!$this->userHasValidatorRole($entity, $user) && !$this->assignmentHasValidatorRole($entity)) {
-                    $this->transition($entity, LivecycleStatus::PENDING, $user, $flush);
+
+            if ($entity instanceof Capture) {
+                foreach ($entity->getCaptureElements() as $element) {
+                    $this->refresh($element, $user, false);
                 }
-            } else {
-                if ($this->userHasContributorRole($entity, $user) || $this->assignmentHasContributorRole($entity)) {
-                    $this->transition($entity, LivecycleStatus::READY, $user, $flush);
-                } else {
-                    $this->transition($entity, LivecycleStatus::PENDING, $user, $flush);
+
+                $this->refreshParentStatusFromChilds($entity, $user);
+
+
+                if ($flush) {
+                    $this->em->flush();
                 }
+
+                return;
             }
 
-            return;
+            if ($entity instanceof Project) {
+                foreach ($entity->getCaptures() as $capture) {
+                    $this->refresh($capture, $user, false);
+                }
+                foreach ($entity->getRecurringCaptures() as $capture) {
+                    $this->refresh($capture, $user, false);
+                }
+                $this->refreshParentStatusFromChilds($entity, $user);
+
+                if ($flush) {
+                    $this->em->flush();
+                }
+
+                return;
+            }
+
+            throw new \LogicException(sprintf('Unsupported entity for refresh(): %s', $entity::class));
         }
-
-        if ($entity instanceof Capture) {
-            foreach ($entity->getCaptureElements() as $element) {
-                $this->refresh($element, $user, false);
-            }
-
-            $this->refreshParentStatusFromChilds($entity, $user);
-
-            if ($flush) {
-                $this->em->flush();
-            }
-
-            return;
-        }
-
-        if ($entity instanceof Project) {
-            foreach ($entity->getCaptures() as $capture) {
-                $this->refresh($capture, $user, false);
-            }
-            foreach ($entity->getRecurringCaptures() as $capture) {
-                $this->refresh($capture, $user, false);
-            }
-
-            $this->refreshParentStatusFromChilds($entity, $user);
-
-            if ($flush) {
-                $this->em->flush();
-            }
-
-            return;
-        }
-
-        throw new \LogicException(sprintf('Unsupported entity for refresh(): %s', $entity::class));
     }
 
     private function refreshParentStatusFromChilds(LivecycleStatusAwareInterface $parent, User $user): void
@@ -226,7 +254,6 @@ final readonly class LivecycleStatusManager
 
         // PENDING
         if (\in_array(LivecycleStatus::PENDING, $statuses, true)) {
-
             $this->transition($parent, LivecycleStatus::PENDING, $user, false);
 
             return;
@@ -256,7 +283,8 @@ final readonly class LivecycleStatusManager
     {
         $map = [
             LivecycleStatus::DRAFT->value => [LivecycleStatus::TEMPLATE],
-            LivecycleStatus::TEMPLATE->value => [LivecycleStatus::READY, LivecycleStatus::PENDING, LivecycleStatus::DRAFT],
+            LivecycleStatus::TEMPLATE->value => [LivecycleStatus::IN_PREPARATION],
+            LivecycleStatus::IN_PREPARATION->value => [LivecycleStatus::READY, LivecycleStatus::PENDING, LivecycleStatus::COLLECTING],
             LivecycleStatus::READY->value => [LivecycleStatus::COLLECTING, LivecycleStatus::PENDING, LivecycleStatus::SUBMITTED],
             LivecycleStatus::COLLECTING->value => [LivecycleStatus::SUBMITTED],
             LivecycleStatus::PENDING->value => [LivecycleStatus::READY],

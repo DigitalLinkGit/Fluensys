@@ -253,6 +253,21 @@ final class ProjectController extends AbstractController
         return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
     }
 
+    #[Route('/template/{id}/start', name: 'app_project_start', methods: ['GET'])]
+    public function start(Project $project, EntityManagerInterface $em): Response
+    {
+        /** @var User|null $user */
+        $user = $this->getUser();
+
+        if (!$project->isInPreparation()) {
+            throw new NotFoundHttpException('Ce projet ne peut pas être lancé');
+        }
+        // ToDo: Validation before starting
+        $this->statusManager->start($project, $user);
+        $em->flush();
+        $this->activityLogLogger->logForProject($project, ActivityAction::STARTED, $this->getUser());
+        return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
+    }
     private function cloneProjectFromTemplate(Project $template, Account $account, string $name, mixed $description): Project
     {
         /** @var User|null $user */
