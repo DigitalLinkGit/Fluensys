@@ -32,10 +32,13 @@ final readonly class ActivityLogLogger
     ): ActivityLog {
         $log = $this->baseLog($action, $actorUser, $actorContact, $occurredAt);
 
-        $log->setProject($project);
-        $log->setAccount($project->getAccount());
-        $log->setCapture(null);
-        $log->setCaptureElement(null);
+        $log->setProjectId($project->getId());
+        $log->setProjectName($project->getName());
+        $account = $project->getAccount();
+        if ($account) {
+            $log->setAccountId($project->getAccount()->getId());
+            $log->setAccountName($project->getAccount()->getName());
+        }
 
         $log->setSubjectType(ActivitySubjectType::PROJECT);
         $log->setSubjectLabel($subjectLabel ?? $this->safeLabel($project, 'getName'));
@@ -55,11 +58,18 @@ final readonly class ActivityLogLogger
         ?string $subjectLabel = null,
     ): ActivityLog {
         $log = $this->baseLog($action, $actorUser, $actorContact, $occurredAt);
-
-        $log->setProject($capture->getOwnerProject());
-        $log->setCapture($capture);
-        $log->setAccount($capture->getAccount());
-        $log->setCaptureElement(null);
+        $project = $capture->getOwnerProject();
+        if ($project) {
+            $log->setProjectId($capture->getOwnerProject()->getId());
+            $log->setProjectName($capture->getOwnerProject()->getName());
+        }
+        $log->setCaptureId($capture->getId());
+        $log->setCaptureName($capture->getName());
+        $account = $capture->getAccount();
+        if ($account) {
+            $log->setAccountId($capture->getAccount()->getId());
+            $log->setAccountName($capture->getAccount()->getName());
+        }
 
         $log->setSubjectType(ActivitySubjectType::CAPTURE);
         $log->setSubjectLabel($subjectLabel ?? $this->safeLabel($capture, 'getName'));
@@ -80,10 +90,24 @@ final readonly class ActivityLogLogger
     ): ActivityLog {
         $log = $this->baseLog($action, $actorUser, $actorContact, $occurredAt);
 
-        $log->setProject($captureElement->getCapture()->getOwnerProject());
-        $log->setCapture($captureElement->getCapture());
-        $log->setAccount($captureElement->getCapture()->getAccount());
-        $log->setCaptureElement($captureElement);
+        $project = $captureElement->getCapture()->getOwnerProject();
+        if ($project) {
+            $log->setProjectId($captureElement->getCapture()->getOwnerProject()->getId());
+            $log->setProjectName($captureElement->getCapture()->getOwnerProject()->getName());
+        }
+        $capture = $captureElement->getCapture();
+        if ($capture) {
+            $log->setCaptureId($captureElement->getCapture()->getId());
+            $log->setCaptureName($captureElement->getCapture()->getName());
+        }
+        $account = $captureElement->getCapture()->getAccount();
+        if ($account) {
+            $log->setAccountId($captureElement->getCapture()->getAccount()->getId());
+            $log->setAccountName($captureElement->getCapture()->getAccount()->getName());
+        }
+
+        $log->setCaptureElementId($captureElement->getId());
+        $log->setCaptureElementName($captureElement->getName());
 
         $log->setSubjectType(ActivitySubjectType::CAPTURE_ELEMENT);
         $log->setSubjectLabel($subjectLabel ?? $this->safeLabel($captureElement, 'getName'));

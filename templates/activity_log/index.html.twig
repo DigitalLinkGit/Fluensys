@@ -15,10 +15,10 @@
     <tbody>
     {% for log in logs %}
         <tr>
-            <td>{{ log.account ? log.account.name : '-' }}</td>
-            <td>{{ log.project ? log.project.name : '-' }}</td>
-            <td>{{ log.capture ? log.capture.name : '-' }}</td>
-            <td>{{ log.captureElement ? log.captureElement.name : '-' }}</td>
+            <td>{{ log.accountName ? log.accountName : '-' }}</td>
+            <td>{{ log.projectName ? log.projectName : '-' }}</td>
+            <td>{{ log.captureName ? log.captureName : '-' }}</td>
+            <td>{{ log.captureElementName ? log.captureElementName : '-' }}</td>
             <td>{{ log.subjectType.value }} : {{ log.subjectLabel }} ({{ log.action.value }})</td>
             <td>
                 {% if log.actorUser %}

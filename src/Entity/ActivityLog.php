@@ -32,21 +32,30 @@ final class ActivityLog
     #[ORM\Column(type: 'string', enumType: ActivityAction::class)]
     private ActivityAction $action;
 
-    #[ORM\ManyToOne(targetEntity: Account::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?Account $account = null;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $accountId = null;
 
-    #[ORM\ManyToOne(targetEntity: Project::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?Project $project = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $accountName = null;
 
-    #[ORM\ManyToOne(targetEntity: Capture::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?Capture $capture = null;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $projectId = null;
 
-    #[ORM\ManyToOne(targetEntity: CaptureElement::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?CaptureElement $captureElement = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $projectName = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $captureId = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $captureName = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $captureElementId = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $captureElementName = null;
+
 
     #[ORM\Column(name: 'subject_type', type: 'string', enumType: ActivitySubjectType::class)]
     private ActivitySubjectType $subjectType;
@@ -99,54 +108,6 @@ final class ActivityLog
     public function setAction(ActivityAction $action): self
     {
         $this->action = $action;
-
-        return $this;
-    }
-
-    public function getAccount(): ?Account
-    {
-        return $this->account;
-    }
-
-    public function setAccount(?Account $account): self
-    {
-        $this->account = $account;
-
-        return $this;
-    }
-
-    public function getProject(): ?Project
-    {
-        return $this->project;
-    }
-
-    public function setProject(?Project $project): self
-    {
-        $this->project = $project;
-
-        return $this;
-    }
-
-    public function getCapture(): ?Capture
-    {
-        return $this->capture;
-    }
-
-    public function setCapture(?Capture $capture): self
-    {
-        $this->capture = $capture;
-
-        return $this;
-    }
-
-    public function getCaptureElement(): ?CaptureElement
-    {
-        return $this->captureElement;
-    }
-
-    public function setCaptureElement(?CaptureElement $captureElement): self
-    {
-        $this->captureElement = $captureElement;
 
         return $this;
     }
@@ -207,6 +168,102 @@ final class ActivityLog
     public function setActorContact(?Contact $actorContact): self
     {
         $this->actorContact = $actorContact;
+
+        return $this;
+    }
+
+    public function getAccountId(): ?int
+    {
+        return $this->accountId;
+    }
+
+    public function setAccountId(?int $accountId): static
+    {
+        $this->accountId = $accountId;
+
+        return $this;
+    }
+
+    public function getAccountName(): ?string
+    {
+        return $this->accountName;
+    }
+
+    public function setAccountName(?string $accountName): static
+    {
+        $this->accountName = $accountName;
+
+        return $this;
+    }
+
+    public function getProjectId(): ?int
+    {
+        return $this->projectId;
+    }
+
+    public function setProjectId(?int $projectId): static
+    {
+        $this->projectId = $projectId;
+
+        return $this;
+    }
+
+    public function getProjectName(): ?string
+    {
+        return $this->projectName;
+    }
+
+    public function setProjectName(?string $projectName): static
+    {
+        $this->projectName = $projectName;
+
+        return $this;
+    }
+
+    public function getCaptureId(): ?int
+    {
+        return $this->captureId;
+    }
+
+    public function setCaptureId(?int $captureId): static
+    {
+        $this->captureId = $captureId;
+
+        return $this;
+    }
+
+    public function getCaptureName(): ?string
+    {
+        return $this->captureName;
+    }
+
+    public function setCaptureName(?string $captureName): static
+    {
+        $this->captureName = $captureName;
+
+        return $this;
+    }
+
+    public function getCaptureElementId(): ?int
+    {
+        return $this->captureElementId;
+    }
+
+    public function setCaptureElementId(?int $captureElementId): static
+    {
+        $this->captureElementId = $captureElementId;
+
+        return $this;
+    }
+
+    public function getCaptureElementName(): ?string
+    {
+        return $this->captureElementName;
+    }
+
+    public function setCaptureElementName(?string $captureElementName): static
+    {
+        $this->captureElementName = $captureElementName;
 
         return $this;
     }

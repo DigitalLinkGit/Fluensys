@@ -3,6 +3,7 @@
 namespace App\Entity\Capture\Rendering;
 
 use App\Entity\Capture\CaptureElement;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]

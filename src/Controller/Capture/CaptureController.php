@@ -296,9 +296,9 @@ final class CaptureController extends AbstractController
     public function delete(Request $request, Capture $capture, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$capture->getId(), $request->getPayload()->getString('_token'))) {
+            $this->activityLogLogger->logForCapture($capture, ActivityAction::DELETED, $this->getUser());
             $entityManager->remove($capture);
             $entityManager->flush();
-            $this->activityLogLogger->logForCapture($capture, ActivityAction::DELETED, $this->getUser());
         }
 
         $route = $capture->isTemplate() ? 'app_capture_template_index' : 'app_capture_index';

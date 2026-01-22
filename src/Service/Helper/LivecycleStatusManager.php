@@ -177,6 +177,7 @@ final readonly class LivecycleStatusManager
 
             throw new \LogicException(sprintf('Unsupported entity for refresh(): %s', $entity::class));
         }
+
     }
 
     private function refreshParentStatusFromChilds(LivecycleStatusAwareInterface $parent, User $user): void
