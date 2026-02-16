@@ -1,7 +1,7 @@
 
 services:
 ###> doctrine/doctrine-bundle ###
-  database:
+  fluensys_database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
@@ -14,12 +14,38 @@ services:
       retries: 5
       start_period: 60s
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      - fluensys-db:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
 
+  fluensys:
+    image: ronanbriot/${COMPOSE_PROJECT_NAME}:0.0.2
+    container_name: ${COMPOSE_PROJECT_NAME}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${COMPOSE_PROJECT_NAME}_db
+      - TZ=Europe/Paris
+    volumes:
+      # Montage des fichiers PHP
+      - ./:/var/www/html
+    restart: unless-stopped
+  
+  node:
+    image: node:lts-alpine
+    container_name: "${COMPOSE_PROJECT_NAME}-node"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./:/home/node/app
+    command: "npm install --production=false > /dev/null && npm run watch"
+    tty: true
+
 volumes:
 ###> doctrine/doctrine-bundle ###
-  database_data:
+  fluensys-db:
 ###< doctrine/doctrine-bundle ###
+  fluensys:
